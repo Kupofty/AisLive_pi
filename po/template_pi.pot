@@ -1,0 +1,75 @@
+# Translation of Template plugin
+# Copyright (C) 2026 Kupofty
+# This file is distributed under the same license as the template_pi package.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-05 17:40+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/main-ui/main_ui_base.cpp:22
+msgid "This is the template plugin GUI"
+msgstr ""
+
+#: src/main-ui/main_ui_base.h:40
+msgid "Template Plugin"
+msgstr ""
+
+#: src/main-ui/main_ui_derived.h:13
+msgid "Template Plugin GUI"
+msgstr ""
+
+#: src/menu-entry/menuDialog_ui_base.cpp:22
+msgid "Dummy"
+msgstr ""
+
+#: src/menu-entry/menuDialog_ui_base.h:43
+msgid "Template Plugin Menu"
+msgstr ""
+
+#: src/plugin/template_plugin.cpp:69
+msgid "Template..."
+msgstr ""
+
+#: src/plugin/template_plugin.cpp:216
+msgid "Template Preferences"
+msgstr ""
+
+#: src/settings/settings_ui_base.cpp:33
+msgid "Keep plugin active when window is closed"
+msgstr ""
+
+#: src/settings/settings_ui_base.cpp:50
+msgid "Options"
+msgstr ""
+
+#: src/settings/settings_ui_base.cpp:61
+msgid "Restore last window position"
+msgstr ""
+
+#: src/settings/settings_ui_base.cpp:77
+msgid "Restore last window size"
+msgstr ""
+
+#: src/settings/settings_ui_base.cpp:91
+msgid "Display"
+msgstr ""
+
+#: src/settings/settings_ui_base.cpp:101
+msgid "OK"
+msgstr ""
+
+#: src/settings/settings_ui_base.cpp:104
+msgid "Apply"
+msgstr ""
+
+#: src/settings/settings_ui_base.h:55 src/settings/settings_ui_derived.h:17
+msgid "Template Plugin Preferences"
+msgstr ""

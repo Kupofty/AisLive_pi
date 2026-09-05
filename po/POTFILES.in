@@ -1,0 +1,16 @@
+src/main-ui/main_ui_base.cpp
+src/main-ui/main_ui_base.h
+src/main-ui/main_ui_derived.cpp
+src/main-ui/main_ui_derived.h
+src/menu-entry/menuDialog_ui_base.cpp
+src/menu-entry/menuDialog_ui_base.h
+src/menu-entry/menuDialog_ui_derived.cpp
+src/menu-entry/menuDialog_ui_derived.h
+src/plugin/template_plugin.cpp
+src/plugin/template_plugin.h
+src/settings/global_settings.cpp
+src/settings/global_settings.h
+src/settings/settings_ui_base.cpp
+src/settings/settings_ui_base.h
+src/settings/settings_ui_derived.cpp
+src/settings/settings_ui_derived.h

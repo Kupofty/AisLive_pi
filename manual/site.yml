@@ -1,0 +1,26 @@
+site:
+  title: Template Plugin Manual
+  url:  https://github.com/Kupofty/Template_pi
+  start_page: template_plugin:ROOT:index.adoc
+
+content:
+  sources:
+    - url: ../
+      start_path: manual
+      branches: HEAD
+      edit_url: https://github.com/Kupofty/template_pi/edit/master/{path}
+
+ui:   
+  bundle:
+    url: https://gitlab.com/leamas/antora-ui-default/-/raw/master/latest/ui-bundle.zip
+    snapshot: true
+
+output:
+  dir: ../docs
+  clean: true              
+
+asciidoc:
+  attributes:
+    copyright: 2026 Kupofty
+    license: CC BY-SA 4.0
+    license-link: https://creativecommons.org/licenses/by-sa/4.0/

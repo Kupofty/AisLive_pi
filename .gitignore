@@ -1,0 +1,14 @@
+.idea
+build/
+!build-conf.rc
+!build-deps
+.DS_Store
+*thumbs.db
+cache
+cmake-build-*
+local_config.cmake
+plugins
+*.bak
+buildwin/*.7z
+*.user
+.qtcreator

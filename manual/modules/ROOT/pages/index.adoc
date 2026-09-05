@@ -1,0 +1,97 @@
+:imagesdir: ../images/
+
+
+//----------------------------------------------------------------------------------------------------
+== Author
+Plugin created by ©link:https://github.com/Kupofty[Kupofty] 2026
+
+
+
+//----------------------------------------------------------------------------------------------------
+== Manual Version
+
+This manual applies to **version x.y.z**.
+
+
+//----------------------------------------------------------------------------------------------------
+== Overview
+
+AisLive is an https://opencpn.org[OpenCPN] plugin.
+
+[underline]#*Capabilities*#
+
+
+
+
+[underline]#*Use Cases*#
+
+
+
+
+
+//----------------------------------------------------------------------------------------------------
+== Links
+*Sources:*
+
+
+
+*Discussions:*
+
+
+
+//----------------------------------------------------------------------------------------------------
+== Installation
+
+[underline]#*Method 1: Plugin Manager (Recommended)*#
+
+1. Open OpenCPN
+2. Go to *Options → Plugins*
+3. Update catalog and search for the *Template* plugin
+4. Click *Install* then *Enable*
+
+
+[underline]#*Method 2: Manual Install (Cloudsmith)*#
+
+1. Go to Cloudsmith
+2. Select the correct tarball for your OS
+3. Download the `.tar.gz` archive (not the `.xml`)
+4. Click on *Options → Plugins → Import plugin...*
+5. Enable plugin in *Options → Plugins*
+
+
+[underline]#*Method 3: Build from Source (Github)*#
+
+Clone the repository:
+----
+git clone https://github.com/Kupofty/Template_pi
+----
+
+Create the build directory:
+----
+mkdir build
+cd build
+----
+
+.Linux
+----
+cmake ..
+make tarball
+----
+
+.Windows
+----
+cmake .. -A Win32
+cmake --build . --config Release --target tarball
+----
+
+Import the tarball in OpenCPN via *Options → Plugins → Import plugin...* and enable it. +
+For more information, see the INSTALL.md file in the GitHub repository.
+
+
+
+
+//----------------------------------------------------------------------------------------------------
+== User Interface
+To open the plugin, click on the toolbar icon :
+
+
