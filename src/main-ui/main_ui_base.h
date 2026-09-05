@@ -10,8 +10,11 @@
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/intl.h>
+#include <wx/button.h>
 #include <wx/string.h>
-#include <wx/stattext.h>
+#include <wx/bitmap.h>
+#include <wx/image.h>
+#include <wx/icon.h>
 #include <wx/gdicmn.h>
 #include <wx/font.h>
 #include <wx/colour.h>
@@ -29,7 +32,8 @@ class DialogMainGuiBase : public wxDialog
 	private:
 
 	protected:
-		wxStaticText* m_staticText1;
+		wxButton* m_button1;
+		wxButton* m_button2;
 
 		// Virtual event handlers, override them in your derived class
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
@@ -37,7 +41,7 @@ class DialogMainGuiBase : public wxDialog
 
 	public:
 
-		DialogMainGuiBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Template Plugin"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 286,120 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER );
+		DialogMainGuiBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("AisLive Plugin"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 286,120 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER );
 
 		~DialogMainGuiBase();
 

@@ -14,7 +14,7 @@
 class DialogSettings : public DialogSettingsBase
 {
   public:
-    DialogSettings(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Template Plugin Preferences"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE);
+    DialogSettings(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("AisLive Plugin Preferences"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE);
     ~DialogSettings();
 
   protected:

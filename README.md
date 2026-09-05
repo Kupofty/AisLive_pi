@@ -1,7 +1,6 @@
-# Template_pi
+# AisLive_pi
 
-Template_pi is an OpenCPN plugin template for quickly developing your own OpenCPN plugin.
-It provides a basic starting point for developing and coding a new OpenCPN plugin.
+AisLive_pi is an OpenCPN plugin.
 
 
 ## Documentation

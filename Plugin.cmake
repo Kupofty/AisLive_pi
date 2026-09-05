@@ -28,24 +28,24 @@ set(OCPN_RELEASE_REPO
 
 
 # ------- Plugin setup --------
-set(PKG_NAME template_pi)
+set(PKG_NAME aislive_pi)
 set(PKG_VERSION  1.0.0)
 set(PKG_PRERELEASE "") # Empty, or a tag like 'beta'
 
-set(DISPLAY_NAME Template)    # Dialogs, installer artifacts, ...
-set(PLUGIN_API_NAME Template) # As of GetCommonName() in plugin API
-set(PKG_SUMMARY "Template plugin")
-set(PKG_DESCRIPTION "Template plugin")
+set(DISPLAY_NAME AisLive)    # Dialogs, installer artifacts, ...
+set(PLUGIN_API_NAME AisLive) # As of GetCommonName() in plugin API
+set(PKG_SUMMARY "AisLive plugin")
+set(PKG_DESCRIPTION "AisLive plugin")
 set(PKG_AUTHOR "Kupofty")
 set(PKG_IS_OPEN_SOURCE "yes")
-set(PKG_HOMEPAGE https://github.com/Kupofty/Template_pi)
-set(PKG_INFO_URL https://github.com/Kupofty/Template_pi) #Used in the website button
+set(PKG_HOMEPAGE https://github.com/Kupofty/AisLive_pi)
+set(PKG_INFO_URL https://github.com/Kupofty/AisLive_pi) #Used in the website button
 
 # ------- Code sources --------
 set(SRC
     # OCPN plugin
-    ${CMAKE_SOURCE_DIR}/src/plugin/template_plugin.h
-    ${CMAKE_SOURCE_DIR}/src/plugin/template_plugin.cpp
+    ${CMAKE_SOURCE_DIR}/src/plugin/plugin.h
+    ${CMAKE_SOURCE_DIR}/src/plugin/plugin.cpp
 
     # Main UI
     ${CMAKE_SOURCE_DIR}/src/main-ui/main_ui_base.h

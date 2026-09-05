@@ -5,7 +5,7 @@
 
 #include "main_ui_derived.h"
 #include "settings/global_settings.h"
-#include "plugin/template_plugin.h"
+#include "plugin/plugin.h"
 
 
 ////////////////////////////

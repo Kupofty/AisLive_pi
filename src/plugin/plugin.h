@@ -1,5 +1,5 @@
-#ifndef TEMPLATE_PLUGIN_H
-#define TEMPLATE_PLUGIN_H
+#ifndef PLUGIN_H
+#define PLUGIN_H
 
 
 ///////////////
@@ -39,12 +39,12 @@
 //////////////
 
 //Main plugin class
-class TemplatePlugin : public opencpn_plugin_120, public wxEvtHandler
+class Plugin : public opencpn_plugin_120, public wxEvtHandler
 {
   public:
     // Constructor
-    TemplatePlugin(void* ppimgr);
-    ~TemplatePlugin();
+    Plugin(void* ppimgr);
+    ~Plugin();
     int Init() override;
     bool DeInit() override;
 
@@ -84,9 +84,9 @@ class TemplatePlugin : public opencpn_plugin_120, public wxEvtHandler
     // Toolbar button Id & state
     int toolbarId;
     bool isToolbarActive;
-    int templateMenuID;
+    int menuID;
 };
 
 
-#endif //TEMPLATE_PLUGIN_H
+#endif //PLUGIN_H
 

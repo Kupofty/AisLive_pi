@@ -1,6 +1,6 @@
-# Template_pi Changelog
+# AisLive_pi Changelog
 
 
 --------------------------------------------------------------------------------------------
-## [v1.0.0] / yyyy-mm-dd
+## [v1.0.0] / 2026-mm-dd
 ### Initial release

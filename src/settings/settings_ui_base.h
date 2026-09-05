@@ -52,7 +52,7 @@ class DialogSettingsBase : public wxDialog
 
 	public:
 
-		DialogSettingsBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Template Plugin Preferences"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 350,300 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER );
+        DialogSettingsBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("AisLive Plugin Preferences"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 350,300 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER );
 
 		~DialogSettingsBase();
 

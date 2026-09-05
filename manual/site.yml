@@ -1,6 +1,6 @@
 site:
-  title: Template Plugin Manual
-  url:  https://github.com/Kupofty/Template_pi
+  title: AisLive Plugin Manual
+  url:  https://github.com/Kupofty/AisLive_pi
   start_page: template_plugin:ROOT:index.adoc
 
 content:
@@ -8,7 +8,7 @@ content:
     - url: ../
       start_path: manual
       branches: HEAD
-      edit_url: https://github.com/Kupofty/template_pi/edit/master/{path}
+      edit_url: https://github.com/Kupofty/aislive_pi/edit/master/{path}
 
 ui:   
   bundle:

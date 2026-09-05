@@ -19,9 +19,23 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 
 	bSizer2->Add( 0, 0, 1, wxEXPAND, 5 );
 
-	m_staticText1 = new wxStaticText( this, wxID_ANY, _("This is the template plugin GUI"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText1->Wrap( -1 );
-	bSizer2->Add( m_staticText1, 0, wxALIGN_CENTER|wxALL, 5 );
+	wxBoxSizer* bSizer21;
+	bSizer21 = new wxBoxSizer( wxHORIZONTAL );
+
+
+	bSizer21->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_button1 = new wxButton( this, wxID_ANY, _("Start"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer21->Add( m_button1, 0, wxALL, 5 );
+
+	m_button2 = new wxButton( this, wxID_ANY, _("Stop"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer21->Add( m_button2, 0, wxALL, 5 );
+
+
+	bSizer21->Add( 0, 0, 1, wxEXPAND, 5 );
+
+
+	bSizer2->Add( bSizer21, 1, wxEXPAND, 5 );
 
 
 	bSizer2->Add( 0, 0, 1, wxEXPAND, 5 );

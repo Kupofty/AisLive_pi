@@ -1,6 +1,6 @@
 //////////////////////////////////////
 /// Project:  OpenCPN              ///
-/// Plugin:   Template             ///
+/// Plugin:   AisLive              ///
 /// Author:   Kupofty              ///
 //////////////////////////////////////
 
@@ -8,7 +8,7 @@
 ///////////////////////
 /// Include Headers ///
 ///////////////////////
-#include "template_plugin.h"
+#include "plugin.h"
 #include "settings/global_settings.h"
 #include "settings/settings_ui_derived.h"
 
@@ -18,7 +18,7 @@
 /// Class Factories ///
 ///////////////////////
 extern "C" DECL_EXP opencpn_plugin* create_pi(void *ppimgr) {
-  return new TemplatePlugin(ppimgr);
+  return new Plugin(ppimgr);
 }
 
 extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p) {
@@ -30,24 +30,24 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p) {
 ////////////////////////////
 /// Class Initialization ///
 ////////////////////////////
-TemplatePlugin::TemplatePlugin(void* ppimgr) : opencpn_plugin_120(ppimgr), wxEvtHandler()
+Plugin::Plugin(void* ppimgr) : opencpn_plugin_120(ppimgr), wxEvtHandler()
 {
   //Logo for plugin catalog (SVG only)
   wxString pluginFolder = GetPluginDataDir(PKG_NAME) + wxFileName::GetPathSeparator() + "data" + wxFileName::GetPathSeparator();
-  g_pluginBitmap = GetBitmapFromSVGFile(pluginFolder + "icon_template_catalog.svg", 32, 32);
+  g_pluginBitmap = GetBitmapFromSVGFile(pluginFolder + "icon_catalog.svg", 32, 32);
 
   // A flag used to indicate the toggled/untoggled state of the toolbar button
   isToolbarActive = false;
 }
 
-TemplatePlugin::~TemplatePlugin()
+Plugin::~Plugin()
 {
 }
 
-int TemplatePlugin::Init()
+int Plugin::Init()
 {
   //Load translations
-  AddLocaleCatalog("opencpn-template_pi");
+  AddLocaleCatalog("opencpn-aislive_pi");
 
   //Init GUI
   parentWindow = GetOCPNCanvasWindow();
@@ -59,15 +59,15 @@ int TemplatePlugin::Init()
 
   //Add the toolbar button (SVG only)
   wxString pluginFolder = GetPluginDataDir(PKG_NAME) + wxFileName::GetPathSeparator() + "data" + wxFileName::GetPathSeparator();
-  wxString normalIcon   = pluginFolder + "icon_template_toolbar_default.svg";
-  wxString rolloverIcon = pluginFolder + "icon_template_toolbar_toggled.svg"; //BUG : rollover state not working in OpenCPN
-  wxString toggledIcon  = pluginFolder + "icon_template_toolbar_toggled.svg";
-  toolbarId = InsertPlugInToolSVG("Template", normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK, "Template", "Template Plugin Toolbar", NULL, -1, 0, this);
+  wxString normalIcon   = pluginFolder + "icon_toolbar_default.svg";
+  wxString rolloverIcon = pluginFolder + "icon_toolbar_toggled.svg"; //BUG : rollover state not working in OpenCPN
+  wxString toggledIcon  = pluginFolder + "icon_toolbar_toggled.svg";
+  toolbarId = InsertPlugInToolSVG("AisLive", normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK, "AisLive", "AisLive Plugin Toolbar", NULL, -1, 0, this);
 
   //Right-click menu entry
-  wxMenu templateMenu;
-  templateMenuID = AddCanvasContextMenuItem(new wxMenuItem(&templateMenu, -1, _("Template...")), this);
-  SetCanvasContextMenuItemViz(templateMenuID, false);
+  wxMenu menu;
+  menuID = AddCanvasContextMenuItem(new wxMenuItem(&menu, -1, _("AisLive...")), this);
+  SetCanvasContextMenuItemViz(menuID, false);
 
   //Inform OpenCPN about the plugin capabilities and requested callbacks
   return  ( INSTALLS_TOOLBAR_TOOL  //Add toolbar icon
@@ -75,7 +75,7 @@ int TemplatePlugin::Init()
           | WANTS_CURSOR_LATLON);  //Enable SetCursorLatLon()
 }
 
-bool TemplatePlugin::DeInit()
+bool Plugin::DeInit()
 {
   SaveSettings();
 
@@ -87,7 +87,7 @@ bool TemplatePlugin::DeInit()
 
     isToolbarActive = false;
     SetToolbarItemState(toolbarId, false);
-    SetCanvasContextMenuItemViz(templateMenuID, false);
+    SetCanvasContextMenuItemViz(menuID, false);
   }
 
   return true;
@@ -98,54 +98,54 @@ bool TemplatePlugin::DeInit()
 ////////////////////////////////////////
 /// OCPN Required Plugin Information ///
 ////////////////////////////////////////
-int TemplatePlugin::GetAPIVersionMajor()
+int Plugin::GetAPIVersionMajor()
 {
   return atoi(API_VERSION);
 }
 
-int TemplatePlugin::GetAPIVersionMinor()
+int Plugin::GetAPIVersionMinor()
 {
   std::string v(API_VERSION);
   size_t dotpos = v.find('.');
   return atoi(v.substr(dotpos + 1).c_str());
 }
 
-int TemplatePlugin::GetPlugInVersionMajor()
+int Plugin::GetPlugInVersionMajor()
 {
   return PLUGIN_VERSION_MAJOR;
 }
 
-int TemplatePlugin::GetPlugInVersionMinor()
+int Plugin::GetPlugInVersionMinor()
 {
   return PLUGIN_VERSION_MINOR;
 }
 
-int TemplatePlugin::GetPlugInVersionPatch()
+int Plugin::GetPlugInVersionPatch()
 {
   return PLUGIN_VERSION_PATCH;
 }
 
-wxString TemplatePlugin::GetCommonName()
+wxString Plugin::GetCommonName()
 {
   return PLUGIN_API_NAME;
 }
 
-wxString TemplatePlugin::GetShortDescription()
+wxString Plugin::GetShortDescription()
 {
   return PKG_SUMMARY;
 }
 
-wxString TemplatePlugin::GetLongDescription()
+wxString Plugin::GetLongDescription()
 {
   return PKG_DESCRIPTION;
 }
 
-wxBitmap* TemplatePlugin::GetPlugInBitmap()
+wxBitmap* Plugin::GetPlugInBitmap()
 {
   return &g_pluginBitmap;
 }
 
-int TemplatePlugin::GetToolbarToolCount() {
+int Plugin::GetToolbarToolCount() {
   return 1;
 }
 
@@ -154,11 +154,11 @@ int TemplatePlugin::GetToolbarToolCount() {
 ////////////////
 /// Settings ///
 ////////////////
-void TemplatePlugin::LoadSettings()
+void Plugin::LoadSettings()
 {
   if (configSettings)
   {
-    configSettings->SetPath("/PlugIns/TemplatePlugin");
+    configSettings->SetPath("/PlugIns/AisLivePlugin");
 
     configSettings->Read("RestoreWindowSize", &g_restoreWindowSize, 1);
     configSettings->Read("WindowWidth", &g_windowWidth, 650);
@@ -172,7 +172,7 @@ void TemplatePlugin::LoadSettings()
   }
 }
 
-void TemplatePlugin::SaveSettings()
+void Plugin::SaveSettings()
 {
   //Update settings variables
   if (myGUI != NULL)
@@ -188,7 +188,7 @@ void TemplatePlugin::SaveSettings()
 
   if (configSettings)
   {
-    configSettings->SetPath("/PlugIns/TemplatePlugin");
+    configSettings->SetPath("/PlugIns/AisLivePlugin");
 
     configSettings->Write("RestoreWindowSize", g_restoreWindowSize);
     configSettings->Write("WindowWidth", g_windowWidth);
@@ -208,12 +208,12 @@ void TemplatePlugin::SaveSettings()
 /////////////////////////////////
 /// OCPN Interactions Methods ///
 /////////////////////////////////
-void TemplatePlugin::ShowPreferencesDialog(wxWindow* parent)
+void Plugin::ShowPreferencesDialog(wxWindow* parent)
 {
   auto dialogSettings = std::make_unique<DialogSettings>(
     parent,
     wxID_ANY,
-    _("Template Preferences"),
+    _("AisLive Preferences"),
     wxDefaultPosition,
     wxDefaultSize,
     wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER
@@ -223,7 +223,7 @@ void TemplatePlugin::ShowPreferencesDialog(wxWindow* parent)
     SaveSettings();
 }
 
-void TemplatePlugin::OnToolbarToolCallback(int id)
+void Plugin::OnToolbarToolCallback(int id)
 {
   if (id != toolbarId)
     return;
@@ -248,7 +248,7 @@ void TemplatePlugin::OnToolbarToolCallback(int id)
     myGUI->Show();
     myGUI->Raise();
     myGUI->SetFocus();
-    SetCanvasContextMenuItemViz(templateMenuID, true);
+    SetCanvasContextMenuItemViz(menuID, true);
   }
   else
   {
@@ -256,7 +256,7 @@ void TemplatePlugin::OnToolbarToolCallback(int id)
 
     if(!g_keepWindowActive)
     {
-      SetCanvasContextMenuItemViz(templateMenuID, false);
+      SetCanvasContextMenuItemViz(menuID, false);
     }
   }
 
@@ -264,13 +264,13 @@ void TemplatePlugin::OnToolbarToolCallback(int id)
   RequestRefresh(parentWindow);
 }
 
-void TemplatePlugin::OnContextMenuItemCallback(int id)
+void Plugin::OnContextMenuItemCallback(int id)
 {
   if (myGUI == NULL)
     return;
 
   //Entry in right-click menu
-  if(id == templateMenuID)
+  if(id == menuID)
   {
     DialogMenuEntry dlg(GetOCPNCanvasWindow());
 
@@ -286,14 +286,14 @@ void TemplatePlugin::OnContextMenuItemCallback(int id)
 ////////////////////
 /// wxGUI Events ///
 ////////////////////
-void TemplatePlugin::OnGuiClosed()
+void Plugin::OnGuiClosed()
 {
   isToolbarActive = false;
   SetToolbarItemState(toolbarId, false);
   myGUI->Hide();
 
   if(!g_keepWindowActive)
-    SetCanvasContextMenuItemViz(templateMenuID, false);
+    SetCanvasContextMenuItemViz(menuID, false);
 
   //Refresh screen
   RequestRefresh(parentWindow);

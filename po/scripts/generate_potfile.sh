@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==============================================================
-# Translation Template Generation Script
+# Translation AisLive Generation Script
 # ==============================================================
 
 # --------------------------------------------------------------
@@ -102,18 +102,18 @@ ok "POTFILES.in generated successfully"
 # Provides the list of files to scan.
 #
 # Output:
-# po/template_pi.pot
+# po/aislive_pi.pot
 #
 # This file is the master translation template used to update
 # language-specific .po files.
 # --------------------------------------------------------------
-step "2/3 → Generating template_pi.pot"
+step "2/3 → Generating aislive_pi.pot"
 
 xgettext \
     --add-comments=TRANSLATORS \
     --force-po \
     --from-code=UTF-8 \
-    --output=po/template_pi.pot \
+    --output=po/aislive_pi.pot \
     --keyword=_ \
     --width=80 \
     --files-from=po/POTFILES.in
@@ -122,7 +122,7 @@ ok "POT file generated successfully"
 
 
 # --------------------------------------------------------------
-# STEP 3: Update template_pi.pot header
+# STEP 3: Update aislive_pi.pot header
 #
 # Replace default xgettext header with custom project header
 # while preserving extracted translation entries.
@@ -131,13 +131,13 @@ step "3/3 → Updating POT header"
 
 {
 cat <<'EOF'
-# Translation of Template plugin
+# Translation of AisLive plugin
 # Copyright (C) 2026 Kupofty
-# This file is distributed under the same license as the template_pi package.
+# This file is distributed under the same license as the aislive_pi package.
 EOF
 
-tail -n +7 po/template_pi.pot
-} > po/template_pi.pot.tmp && mv po/template_pi.pot.tmp po/template_pi.pot
+tail -n +7 po/aislive_pi.pot
+} > po/aislive_pi.pot.tmp && mv po/aislive_pi.pot.tmp po/aislive_pi.pot
 
 ok "POT header updated"
 
@@ -148,6 +148,6 @@ ok "POT header updated"
 echo -e "${GREEN}"
 echo "=============================================================="
 echo " Translation template generation completed"
-echo " Output: po/template_pi.pot"
+echo " Output: po/aislive_pi.pot"
 echo "=============================================================="
 echo -e "${NC}"
