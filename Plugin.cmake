@@ -12,16 +12,16 @@
 
 # -------- Options ----------
 set(OCPN_TEST_REPO
-    "YOUR_CLOUDSMITH_ALPHA_PATH"
+    "kupoftyopencpn/aislive-alpha"
     CACHE STRING "Default repository for untagged builds"
 )
 set(OCPN_BETA_REPO
-    "YOUR_CLOUDSMITH_BETA_PATH"
+    "kupoftyopencpn/aislive-beta"
     CACHE STRING
     "Default repository for tagged builds matching 'beta'"
 )
 set(OCPN_RELEASE_REPO
-    "YOUR_CLOUDSMITH_PROD_PATH"
+    "kupoftyopencpn/aislive-prod"
     CACHE STRING
     "Default repository for tagged builds not matching 'beta'"
 )
@@ -29,13 +29,13 @@ set(OCPN_RELEASE_REPO
 
 # ------- Plugin setup --------
 set(PKG_NAME aislive_pi)
-set(PKG_VERSION  1.0.0)
+set(PKG_VERSION  0.0.1)
 set(PKG_PRERELEASE "") # Empty, or a tag like 'beta'
 
 set(DISPLAY_NAME AisLive)    # Dialogs, installer artifacts, ...
 set(PLUGIN_API_NAME AisLive) # As of GetCommonName() in plugin API
-set(PKG_SUMMARY "AisLive plugin")
-set(PKG_DESCRIPTION "AisLive plugin")
+set(PKG_SUMMARY "Online AIS Stream")
+set(PKG_DESCRIPTION "Connects to the OpenWaters.io AIS stream and fetches live AIS targets over the internet for display in OpenCPN")
 set(PKG_AUTHOR "Kupofty")
 set(PKG_IS_OPEN_SOURCE "yes")
 set(PKG_HOMEPAGE https://github.com/Kupofty/AisLive_pi)
