@@ -25,11 +25,11 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 
 	bSizer21->Add( 0, 0, 1, wxEXPAND, 5 );
 
-	m_button1 = new wxButton( this, wxID_ANY, _("Start"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer21->Add( m_button1, 0, wxALL, 5 );
+	m_button_start = new wxButton( this, wxID_ANY, _("Start"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer21->Add( m_button_start, 0, wxALL, 5 );
 
-	m_button2 = new wxButton( this, wxID_ANY, _("Stop"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer21->Add( m_button2, 0, wxALL, 5 );
+	m_button_stop = new wxButton( this, wxID_ANY, _("Stop"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer21->Add( m_button_stop, 0, wxALL, 5 );
 
 
 	bSizer21->Add( 0, 0, 1, wxEXPAND, 5 );
@@ -48,6 +48,8 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 
 	// Connect Events
 	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( DialogMainGuiBase::OnClose ) );
+	m_button_start->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogMainGuiBase::OnButtonClick_startStream ), NULL, this );
+	m_button_stop->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogMainGuiBase::OnButtonClick_stopStream ), NULL, this );
 }
 
 DialogMainGuiBase::~DialogMainGuiBase()

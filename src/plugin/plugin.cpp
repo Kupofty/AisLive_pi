@@ -299,3 +299,9 @@ void Plugin::OnGuiClosed()
   RequestRefresh(parentWindow);
 }
 
+
+void Plugin::sendNmeaSentence(wxString sentence)
+{
+    PushNMEABuffer(sentence); //using old API
+}
+

@@ -32,11 +32,13 @@ class DialogMainGuiBase : public wxDialog
 	private:
 
 	protected:
-		wxButton* m_button1;
-		wxButton* m_button2;
+		wxButton* m_button_start;
+		wxButton* m_button_stop;
 
 		// Virtual event handlers, override them in your derived class
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_startStream( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_stopStream( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:

@@ -67,6 +67,7 @@ class Plugin : public opencpn_plugin_120, public wxEvtHandler
 
     //Main GUI wxEvent
     void OnGuiClosed();
+    void sendNmeaSentence(wxString sentence);
 
   private:
     //GUI
