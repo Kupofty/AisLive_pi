@@ -155,8 +155,6 @@ double DialogMainGui::getSearchBoxSize()
 /////////////////
 void DialogMainGui::OnClose(wxCloseEvent& event)
 {
-    StopAisStream();
-
     if (plugin)
     {
         plugin->OnGuiClosed();
