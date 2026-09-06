@@ -19,8 +19,17 @@ DialogMenuEntryBase::DialogMenuEntryBase( wxWindow* parent, wxWindowID id, const
 
 	bSizer1->Add( 0, 0, 1, wxEXPAND, 5 );
 
-	m_button_updateSearchPosition = new wxButton( this, wxID_ANY, _("Update search position to cursor"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer1->Add( m_button_updateSearchPosition, 0, wxALIGN_CENTER|wxALL, 5 );
+	wxStaticBoxSizer* sbSizer1;
+	sbSizer1 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Update search position") ), wxVERTICAL );
+
+	m_button_updateSearchPosOnBoat = new wxButton( sbSizer1->GetStaticBox(), wxID_ANY, _("On boat"), wxDefaultPosition, wxDefaultSize, 0 );
+	sbSizer1->Add( m_button_updateSearchPosOnBoat, 0, wxALIGN_CENTER|wxALL, 5 );
+
+	m_button_updateSearchPosition = new wxButton( sbSizer1->GetStaticBox(), wxID_ANY, _("On cursor"), wxDefaultPosition, wxDefaultSize, 0 );
+	sbSizer1->Add( m_button_updateSearchPosition, 0, wxALIGN_CENTER|wxALL, 5 );
+
+
+	bSizer1->Add( sbSizer1, 1, wxALL|wxEXPAND, 5 );
 
 
 	bSizer1->Add( 0, 0, 1, wxEXPAND, 5 );
@@ -32,6 +41,7 @@ DialogMenuEntryBase::DialogMenuEntryBase( wxWindow* parent, wxWindowID id, const
 	this->Centre( wxBOTH );
 
 	// Connect Events
+	m_button_updateSearchPosOnBoat->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogMenuEntryBase::OnButtonClick_UpdateSearchPosOnBoat ), NULL, this );
 	m_button_updateSearchPosition->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogMenuEntryBase::OnButtonClick_UpdateSearchPosition ), NULL, this );
 }
 

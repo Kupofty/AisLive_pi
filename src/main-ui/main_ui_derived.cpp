@@ -97,17 +97,23 @@ DialogMainGui::~DialogMainGui()
 /////////////////////
 void DialogMainGui::updateSearchPosition(double lat, double lon)
 {
+    //Update search position
     m_searchLatitude = lat;
     m_searchLongitude = lon;
 
+    //Update labels
+    const wxString latDir = lat >= 0.0 ? "N" : "S";
+    const wxString lonDir = lon >= 0.0 ? "E" : "W";
+
     m_staticText_searchLatitude->SetLabel(
-        wxString::Format("%.6f", m_searchLatitude)
+        wxString::Format("%.6f°%s", std::abs(lat), latDir)
         );
 
     m_staticText_searchLongitude->SetLabel(
-        wxString::Format("%.6f", m_searchLongitude)
+        wxString::Format("%.6f°%s", std::abs(lon), lonDir)
         );
 
+    //Refresh stream with updated search location
     RestartAisStream();
 }
 
@@ -119,6 +125,12 @@ void DialogMainGui::updateSearchBoxSize(double degrees)
         );
 
     RestartAisStream();
+}
+
+void DialogMainGui::updateBoatPosition(double lat, double lon)
+{
+    m_boatLatitude = lat;
+    m_boatLongitude = lon;
 }
 
 

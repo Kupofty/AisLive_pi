@@ -72,7 +72,8 @@ int Plugin::Init()
   //Inform OpenCPN about the plugin capabilities and requested callbacks
   return  ( INSTALLS_TOOLBAR_TOOL  //Add toolbar icon
           | WANTS_PREFERENCES      //Add "Preferences" button in plugin catalogue
-          | WANTS_CURSOR_LATLON);  //Enable SetCursorLatLon()
+          | WANTS_CURSOR_LATLON    //Enable SetCursorLatLon()
+          | WANTS_NMEA_EVENTS);    //Enable SetPositionFix
 }
 
 bool Plugin::DeInit()
@@ -212,6 +213,15 @@ void Plugin::SetCursorLatLon(double lat, double lon)
     m_cursor_lon = lon;
 }
 
+void Plugin::SetPositionFix(PlugIn_Position_Fix &pfix)
+{
+    m_boat_lat = pfix.Lat;
+    m_boat_lon = pfix.Lon;
+
+    if (myGUI != NULL)
+        myGUI->updateBoatPosition(m_boat_lat, m_boat_lon);
+}
+
 
 
 /////////////////////////////////
@@ -285,7 +295,21 @@ void Plugin::OnContextMenuItemCallback(int id)
 
     if(dlg.ShowModal() == wxID_OK)
     {
-        myGUI->updateSearchPosition(m_cursor_lat, m_cursor_lon);
+        switch(dlg.m_action)
+        {
+            case DialogAction::UpdateToCursor:
+                myGUI->updateSearchPosition(m_cursor_lat, m_cursor_lon);
+                break;
+
+            case DialogAction::UpdateToBoat:
+                myGUI->updateSearchPosition(m_boat_lat, m_boat_lon);
+                break;
+
+            case DialogAction::None:
+                break;
+        }
+
+
     }
   }
 }

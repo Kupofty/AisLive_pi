@@ -20,6 +20,7 @@ public:
 
     Plugin* plugin = nullptr;
     void updateSearchPosition(double lat, double lon);
+    void updateBoatPosition(double lat, double lon);
     void updateSearchBoxSize(double degrees);
 
 protected:
@@ -40,8 +41,11 @@ private:
     void RestartAisStream();
     void AisStreamThreadFunc();
 
-    double m_searchLatitude = 59.5;
-    double m_searchLongitude = 10.5;
+    double m_boatLatitude = 0;
+    double m_boatLongitude = 0;
+
+    double m_searchLatitude = 0;
+    double m_searchLongitude = 0;
     double m_searchBoxSize = 1.0;
 };
 

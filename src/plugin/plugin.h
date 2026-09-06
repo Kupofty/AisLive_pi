@@ -62,6 +62,7 @@ class Plugin : public opencpn_plugin_120, public wxEvtHandler
 
     //Plugin sets
     void SetCursorLatLon(double lat, double lon) override;
+    void SetPositionFix(PlugIn_Position_Fix &pfix) override;
 
     //OCPN Interactions
     void ShowPreferencesDialog(wxWindow* parent) override;
@@ -93,6 +94,10 @@ class Plugin : public opencpn_plugin_120, public wxEvtHandler
     //Cursor position
     double m_cursor_lat;
     double m_cursor_lon;
+
+    //Boat position
+    double m_boat_lat;
+    double m_boat_lon;
 };
 
 
