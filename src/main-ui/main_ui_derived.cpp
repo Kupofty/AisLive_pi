@@ -131,6 +131,8 @@ void DialogMainGui::StartAisStream()
 
     m_streaming = true;
     m_streamThread = std::thread(&DialogMainGui::AisStreamThreadFunc, this);
+
+    m_staticText_streamState->SetLabel(_("Running"));
 }
 
 void DialogMainGui::StopAisStream()
@@ -141,6 +143,7 @@ void DialogMainGui::StopAisStream()
     }
 
     m_streaming = false;
+    m_staticText_streamState->SetLabel(_("Stopped"));
 
     // The worker thread is blocked in a synchronous ws.read(). Closing the
     // underlying socket from this thread is the standard way to unblock a

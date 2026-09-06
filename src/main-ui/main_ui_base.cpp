@@ -37,6 +37,86 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 
 	bSizer2->Add( bSizer21, 1, wxEXPAND, 5 );
 
+	wxBoxSizer* bSizer3;
+	bSizer3 = new wxBoxSizer( wxHORIZONTAL );
+
+
+	bSizer3->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_staticText2 = new wxStaticText( this, wxID_ANY, _("Stream:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText2->Wrap( -1 );
+	bSizer3->Add( m_staticText2, 0, wxALIGN_CENTER|wxALL, 5 );
+
+	m_staticText_streamState = new wxStaticText( this, wxID_ANY, _("Not running"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText_streamState->Wrap( -1 );
+	bSizer3->Add( m_staticText_streamState, 0, wxALIGN_CENTER|wxALL, 5 );
+
+
+	bSizer3->Add( 0, 0, 1, wxEXPAND, 5 );
+
+
+	bSizer2->Add( bSizer3, 1, wxEXPAND, 5 );
+
+
+	bSizer2->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_staticline1 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	bSizer2->Add( m_staticline1, 0, wxEXPAND | wxALL, 5 );
+
+
+	bSizer2->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer4;
+	bSizer4 = new wxBoxSizer( wxHORIZONTAL );
+
+
+	bSizer4->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_staticText4 = new wxStaticText( this, wxID_ANY, _("Latitude:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText4->Wrap( -1 );
+	bSizer4->Add( m_staticText4, 0, wxALL, 5 );
+
+	m_staticText_searchLatitude = new wxStaticText( this, wxID_ANY, _("59.5°N"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText_searchLatitude->Wrap( -1 );
+	bSizer4->Add( m_staticText_searchLatitude, 0, wxALL, 5 );
+
+
+	bSizer4->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_staticText6 = new wxStaticText( this, wxID_ANY, _("Latitude:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText6->Wrap( -1 );
+	bSizer4->Add( m_staticText6, 0, wxALL, 5 );
+
+	m_staticText_searchLongitude = new wxStaticText( this, wxID_ANY, _("10.5°E"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText_searchLongitude->Wrap( -1 );
+	bSizer4->Add( m_staticText_searchLongitude, 0, wxALL, 5 );
+
+
+	bSizer4->Add( 0, 0, 1, wxEXPAND, 5 );
+
+
+	bSizer2->Add( bSizer4, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer6;
+	bSizer6 = new wxBoxSizer( wxHORIZONTAL );
+
+
+	bSizer6->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_staticText8 = new wxStaticText( this, wxID_ANY, _("Search box size:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText8->Wrap( -1 );
+	bSizer6->Add( m_staticText8, 0, wxALL, 5 );
+
+	m_staticText_searchBoxSize = new wxStaticText( this, wxID_ANY, _("1° x 1°"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText_searchBoxSize->Wrap( -1 );
+	bSizer6->Add( m_staticText_searchBoxSize, 0, wxALL, 5 );
+
+
+	bSizer6->Add( 0, 0, 1, wxEXPAND, 5 );
+
+
+	bSizer2->Add( bSizer6, 1, wxEXPAND, 5 );
+
 
 	bSizer2->Add( 0, 0, 1, wxEXPAND, 5 );
 

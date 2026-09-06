@@ -20,6 +20,8 @@
 #include <wx/colour.h>
 #include <wx/settings.h>
 #include <wx/sizer.h>
+#include <wx/stattext.h>
+#include <wx/statline.h>
 #include <wx/dialog.h>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -34,6 +36,15 @@ class DialogMainGuiBase : public wxDialog
 	protected:
 		wxButton* m_button_start;
 		wxButton* m_button_stop;
+		wxStaticText* m_staticText2;
+		wxStaticText* m_staticText_streamState;
+		wxStaticLine* m_staticline1;
+		wxStaticText* m_staticText4;
+		wxStaticText* m_staticText_searchLatitude;
+		wxStaticText* m_staticText6;
+		wxStaticText* m_staticText_searchLongitude;
+		wxStaticText* m_staticText8;
+		wxStaticText* m_staticText_searchBoxSize;
 
 		// Virtual event handlers, override them in your derived class
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
@@ -43,7 +54,7 @@ class DialogMainGuiBase : public wxDialog
 
 	public:
 
-		DialogMainGuiBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("AisLive Plugin"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 286,120 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER );
+		DialogMainGuiBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("AisLive Plugin"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 286,208 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER );
 
 		~DialogMainGuiBase();
 
