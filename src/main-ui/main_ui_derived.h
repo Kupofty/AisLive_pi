@@ -41,6 +41,7 @@ private:
     void RestartAisStream();
     void AisStreamThreadFunc();
 
+    bool m_initialBoatPositionSet = false;
     double m_boatLatitude = 0;
     double m_boatLongitude = 0;
 

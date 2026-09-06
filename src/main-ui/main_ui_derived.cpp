@@ -131,6 +131,13 @@ void DialogMainGui::updateBoatPosition(double lat, double lon)
 {
     m_boatLatitude = lat;
     m_boatLongitude = lon;
+
+    // Use the first valid boat position as the initial AIS search position.
+    if (!m_initialBoatPositionSet)
+    {
+        m_initialBoatPositionSet = true;
+        updateSearchPosition(lat, lon);
+    }
 }
 
 
