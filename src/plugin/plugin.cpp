@@ -170,6 +170,8 @@ void Plugin::LoadSettings()
     configSettings->Read("WindowPosY", &g_windowPosY, 0);
 
     configSettings->Read("KeepWindowActive", &g_keepWindowActive, 0);
+
+    configSettings->Read("LastSearchBoxSize", &g_lastSearchBoxSize, 1);
   }
 }
 
@@ -185,6 +187,8 @@ void Plugin::SaveSettings()
     wxPoint pos = myGUI->GetPosition();
     g_windowPosX = pos.x;
     g_windowPosY = pos.y;
+
+    g_lastSearchBoxSize = myGUI->getSearchBoxSize();
   }
 
   if (configSettings)
@@ -200,8 +204,11 @@ void Plugin::SaveSettings()
     configSettings->Write("WindowPosY", g_windowPosY);
 
     configSettings->Write("KeepWindowActive", g_keepWindowActive);
+
+    configSettings->Write("LastSearchBoxSize", g_lastSearchBoxSize);
   }
 }
+
 
 
 /////////////////////////////
@@ -257,6 +264,8 @@ void Plugin::OnToolbarToolCallback(int id)
       myGUI->SetSize(g_windowWidth, g_windowHeight);
     if(g_restoreWindowPos)
       myGUI->Move(wxPoint(g_windowPosX, g_windowPosY));
+    if(g_lastSearchBoxSize)
+        myGUI->updateSearchBoxSize(g_lastSearchBoxSize);
   }
 
   //Toggle UI & toolbar icon state
@@ -315,6 +324,7 @@ void Plugin::OnContextMenuItemCallback(int id)
 }
 
 
+
 ////////////////////
 /// wxGUI Events ///
 ////////////////////
@@ -330,7 +340,6 @@ void Plugin::OnGuiClosed()
   //Refresh screen
   RequestRefresh(parentWindow);
 }
-
 
 void Plugin::sendNmeaSentence(wxString sentence)
 {

@@ -23,4 +23,6 @@ extern int g_windowPosY;
 
 extern bool g_keepWindowActive;
 
+extern double g_lastSearchBoxSize;
+
 #endif //GLOBAL_SETTINGS_H

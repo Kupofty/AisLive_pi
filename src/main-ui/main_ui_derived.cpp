@@ -119,6 +119,8 @@ void DialogMainGui::updateSearchPosition(double lat, double lon)
 
 void DialogMainGui::updateSearchBoxSize(double degrees)
 {
+    m_slider_searchBoxSize->SetValue(degrees);
+
     m_searchBoxSize = degrees;
     m_staticText_searchBoxSize->SetLabel(
         wxString::Format("%.0f° x %.0f°", degrees, degrees)
@@ -138,6 +140,16 @@ void DialogMainGui::updateBoatPosition(double lat, double lon)
         m_initialBoatPositionSet = true;
         updateSearchPosition(lat, lon);
     }
+}
+
+
+
+///////////////
+/// Getters ///
+///////////////
+double DialogMainGui::getSearchBoxSize()
+{
+    return m_searchBoxSize;
 }
 
 

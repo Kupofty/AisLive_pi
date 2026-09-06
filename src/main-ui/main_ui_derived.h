@@ -19,9 +19,12 @@ public:
     ~DialogMainGui();
 
     Plugin* plugin = nullptr;
+
     void updateSearchPosition(double lat, double lon);
     void updateBoatPosition(double lat, double lon);
+
     void updateSearchBoxSize(double degrees);
+    double getSearchBoxSize();
 
 protected:
     void OnClose(wxCloseEvent& event) override;
