@@ -32,15 +32,15 @@ class DialogMenuEntryBase : public wxDialog
 	private:
 
 	protected:
-		wxButton* m_button_dummy;
+		wxButton* m_button_updateSearchPosition;
 
 		// Virtual event handlers, override them in your derived class
-		virtual void OnButtonClick_UpdateDummy( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_UpdateSearchPosition( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:
 
-        DialogMenuEntryBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("AisLive Plugin Menu"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 233,81 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER );
+		DialogMenuEntryBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("AisLive Plugin Menu"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 233,81 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER );
 
 		~DialogMenuEntryBase();
 

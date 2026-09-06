@@ -19,8 +19,8 @@ DialogMenuEntryBase::DialogMenuEntryBase( wxWindow* parent, wxWindowID id, const
 
 	bSizer1->Add( 0, 0, 1, wxEXPAND, 5 );
 
-	m_button_dummy = new wxButton( this, wxID_ANY, _("Dummy"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer1->Add( m_button_dummy, 0, wxALIGN_CENTER|wxALL, 5 );
+	m_button_updateSearchPosition = new wxButton( this, wxID_ANY, _("Update search position"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer1->Add( m_button_updateSearchPosition, 0, wxALIGN_CENTER|wxALL, 5 );
 
 
 	bSizer1->Add( 0, 0, 1, wxEXPAND, 5 );
@@ -32,7 +32,7 @@ DialogMenuEntryBase::DialogMenuEntryBase( wxWindow* parent, wxWindowID id, const
 	this->Centre( wxBOTH );
 
 	// Connect Events
-	m_button_dummy->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogMenuEntryBase::OnButtonClick_UpdateDummy ), NULL, this );
+	m_button_updateSearchPosition->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogMenuEntryBase::OnButtonClick_UpdateSearchPosition ), NULL, this );
 }
 
 DialogMenuEntryBase::~DialogMenuEntryBase()

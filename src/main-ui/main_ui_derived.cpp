@@ -91,6 +91,34 @@ DialogMainGui::~DialogMainGui()
 }
 
 
+/////////////////////
+/// Input updates ///
+/////////////////////
+void DialogMainGui::updateSearchPosition(double lat, double lon)
+{
+    const bool wasStreaming = m_streaming.load();
+
+    if (wasStreaming)
+    {
+        StopAisStream();
+    }
+
+    m_searchLatitude = lat;
+    m_searchLongitude = lon;
+
+    m_staticText_searchLatitude->SetLabel(
+        wxString::Format("%.6f", m_searchLatitude)
+        );
+
+    m_staticText_searchLongitude->SetLabel(
+        wxString::Format("%.6f", m_searchLongitude)
+        );
+
+    if (wasStreaming)
+    {
+        StartAisStream();
+    }
+}
 
 
 //////////////
@@ -189,10 +217,13 @@ void DialogMainGui::AisStreamThreadFunc()
 
         ws.handshake(host_header, kAisTarget);
 
-        // Default fixed area
+        // Search area
         const json sub_msg = {
             {"type", "subscribe"},
-            {"bbox", json::array({json::array({59, 10, 60, 11})})}
+            {"bbox", json::array({json::array({m_searchLatitude  - m_searchBoxSize/2.0,
+                                               m_searchLongitude - m_searchBoxSize/2.0,
+                                               m_searchLatitude  + m_searchBoxSize/2.0,
+                                               m_searchLongitude + m_searchBoxSize/2.0})})}
         };
         const std::string sub_str = sub_msg.dump();
         ws.write(net::buffer(sub_str));

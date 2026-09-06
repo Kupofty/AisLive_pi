@@ -203,6 +203,15 @@ void Plugin::SaveSettings()
 }
 
 
+/////////////////////////////
+/// OCPN Automatic Update ///
+/////////////////////////////
+void Plugin::SetCursorLatLon(double lat, double lon)
+{
+    m_cursor_lat = lat;
+    m_cursor_lon = lon;
+}
+
 
 
 /////////////////////////////////
@@ -276,11 +285,10 @@ void Plugin::OnContextMenuItemCallback(int id)
 
     if(dlg.ShowModal() == wxID_OK)
     {
-        //do something
+        myGUI->updateSearchPosition(m_cursor_lat, m_cursor_lon);
     }
   }
 }
-
 
 
 ////////////////////

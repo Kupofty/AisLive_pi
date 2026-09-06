@@ -19,6 +19,7 @@ public:
     ~DialogMainGui();
 
     Plugin* plugin = nullptr;
+    void updateSearchPosition(double lat, double lon);
 
 protected:
     void OnClose(wxCloseEvent& event) override;
@@ -35,6 +36,10 @@ private:
     void StartAisStream();
     void StopAisStream();
     void AisStreamThreadFunc();
+
+    double m_searchLatitude = 59.5;
+    double m_searchLongitude = 10.5;
+    double m_searchBoxSize = 1.0;
 };
 
 #endif //DIALOG_MAIN_GUI

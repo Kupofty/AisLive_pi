@@ -5,7 +5,7 @@ DialogMenuEntry::DialogMenuEntry(wxWindow* parent): DialogMenuEntryBase(parent)
 
 }
 
-void DialogMenuEntry::OnButtonClick_UpdateDummy( wxCommandEvent& event )
+void DialogMenuEntry::OnButtonClick_UpdateSearchPosition( wxCommandEvent& event )
 {
   EndModal(wxID_OK);
 }
