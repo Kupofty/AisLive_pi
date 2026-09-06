@@ -117,6 +117,9 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 
 	bSizer2->Add( bSizer6, 1, wxEXPAND, 5 );
 
+	m_slider_searchBoxSize = new wxSlider( this, wxID_ANY, 1, 1, 10, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL );
+	bSizer2->Add( m_slider_searchBoxSize, 0, wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
+
 
 	bSizer2->Add( 0, 0, 1, wxEXPAND, 5 );
 
@@ -130,6 +133,15 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( DialogMainGuiBase::OnClose ) );
 	m_button_start->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogMainGuiBase::OnButtonClick_startStream ), NULL, this );
 	m_button_stop->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogMainGuiBase::OnButtonClick_stopStream ), NULL, this );
+	m_slider_searchBoxSize->Connect( wxEVT_SCROLL_TOP, wxScrollEventHandler( DialogMainGuiBase::OnScroll_UpdateSearchBoxSize ), NULL, this );
+	m_slider_searchBoxSize->Connect( wxEVT_SCROLL_BOTTOM, wxScrollEventHandler( DialogMainGuiBase::OnScroll_UpdateSearchBoxSize ), NULL, this );
+	m_slider_searchBoxSize->Connect( wxEVT_SCROLL_LINEUP, wxScrollEventHandler( DialogMainGuiBase::OnScroll_UpdateSearchBoxSize ), NULL, this );
+	m_slider_searchBoxSize->Connect( wxEVT_SCROLL_LINEDOWN, wxScrollEventHandler( DialogMainGuiBase::OnScroll_UpdateSearchBoxSize ), NULL, this );
+	m_slider_searchBoxSize->Connect( wxEVT_SCROLL_PAGEUP, wxScrollEventHandler( DialogMainGuiBase::OnScroll_UpdateSearchBoxSize ), NULL, this );
+	m_slider_searchBoxSize->Connect( wxEVT_SCROLL_PAGEDOWN, wxScrollEventHandler( DialogMainGuiBase::OnScroll_UpdateSearchBoxSize ), NULL, this );
+	m_slider_searchBoxSize->Connect( wxEVT_SCROLL_THUMBTRACK, wxScrollEventHandler( DialogMainGuiBase::OnScroll_UpdateSearchBoxSize ), NULL, this );
+	m_slider_searchBoxSize->Connect( wxEVT_SCROLL_THUMBRELEASE, wxScrollEventHandler( DialogMainGuiBase::OnScroll_UpdateSearchBoxSize ), NULL, this );
+	m_slider_searchBoxSize->Connect( wxEVT_SCROLL_CHANGED, wxScrollEventHandler( DialogMainGuiBase::OnScroll_UpdateSearchBoxSize ), NULL, this );
 }
 
 DialogMainGuiBase::~DialogMainGuiBase()

@@ -22,6 +22,7 @@
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 #include <wx/statline.h>
+#include <wx/slider.h>
 #include <wx/dialog.h>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -45,16 +46,18 @@ class DialogMainGuiBase : public wxDialog
 		wxStaticText* m_staticText_searchLongitude;
 		wxStaticText* m_staticText8;
 		wxStaticText* m_staticText_searchBoxSize;
+		wxSlider* m_slider_searchBoxSize;
 
 		// Virtual event handlers, override them in your derived class
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_startStream( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_stopStream( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnScroll_UpdateSearchBoxSize( wxScrollEvent& event ) { event.Skip(); }
 
 
 	public:
 
-		DialogMainGuiBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("AisLive Plugin"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 286,208 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER );
+		DialogMainGuiBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("AisLive Plugin"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 388,208 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER );
 
 		~DialogMainGuiBase();
 

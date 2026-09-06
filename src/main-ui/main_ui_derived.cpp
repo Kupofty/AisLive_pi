@@ -87,8 +87,9 @@ DialogMainGui::DialogMainGui(wxWindow* parent, wxWindowID id, const wxString& ti
 
 DialogMainGui::~DialogMainGui()
 {
-
+    StopAisStream();
 }
+
 
 
 /////////////////////
@@ -96,13 +97,6 @@ DialogMainGui::~DialogMainGui()
 /////////////////////
 void DialogMainGui::updateSearchPosition(double lat, double lon)
 {
-    const bool wasStreaming = m_streaming.load();
-
-    if (wasStreaming)
-    {
-        StopAisStream();
-    }
-
     m_searchLatitude = lat;
     m_searchLongitude = lon;
 
@@ -114,16 +108,24 @@ void DialogMainGui::updateSearchPosition(double lat, double lon)
         wxString::Format("%.6f", m_searchLongitude)
         );
 
-    if (wasStreaming)
-    {
-        StartAisStream();
-    }
+    RestartAisStream();
+}
+
+void DialogMainGui::updateSearchBoxSize(double degrees)
+{
+    m_searchBoxSize = degrees;
+    m_staticText_searchBoxSize->SetLabel(
+        wxString::Format("%.0f° x %.0f°", degrees, degrees)
+        );
+
+    RestartAisStream();
 }
 
 
-//////////////
-/// Others ///
-//////////////
+
+/////////////////
+/// UI events ///
+/////////////////
 void DialogMainGui::OnClose(wxCloseEvent& event)
 {
     StopAisStream();
@@ -143,6 +145,12 @@ void DialogMainGui::OnButtonClick_startStream(wxCommandEvent& event)
 void DialogMainGui::OnButtonClick_stopStream(wxCommandEvent& event)
 {
     StopAisStream();
+}
+
+void DialogMainGui::OnScroll_UpdateSearchBoxSize(wxScrollEvent& event)
+{
+    double degrees = m_slider_searchBoxSize->GetValue();
+    updateSearchBoxSize(degrees);
 }
 
 
@@ -186,6 +194,17 @@ void DialogMainGui::StopAisStream()
     if (m_streamThread.joinable())
     {
         m_streamThread.join();
+    }
+}
+
+void DialogMainGui::RestartAisStream()
+{
+    const bool wasStreaming = m_streaming.load();
+
+    if (wasStreaming)
+    {
+        StopAisStream();
+        StartAisStream();
     }
 }
 

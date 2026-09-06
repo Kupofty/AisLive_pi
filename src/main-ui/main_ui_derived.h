@@ -20,11 +20,13 @@ public:
 
     Plugin* plugin = nullptr;
     void updateSearchPosition(double lat, double lon);
+    void updateSearchBoxSize(double degrees);
 
 protected:
     void OnClose(wxCloseEvent& event) override;
     void OnButtonClick_startStream(wxCommandEvent& event) override;
     void OnButtonClick_stopStream(wxCommandEvent& event) override;
+    void OnScroll_UpdateSearchBoxSize(wxScrollEvent& event) override;
 
 private:
     struct AisStreamSession;
@@ -35,6 +37,7 @@ private:
 
     void StartAisStream();
     void StopAisStream();
+    void RestartAisStream();
     void AisStreamThreadFunc();
 
     double m_searchLatitude = 59.5;

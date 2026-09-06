@@ -19,7 +19,7 @@ DialogMenuEntryBase::DialogMenuEntryBase( wxWindow* parent, wxWindowID id, const
 
 	bSizer1->Add( 0, 0, 1, wxEXPAND, 5 );
 
-	m_button_updateSearchPosition = new wxButton( this, wxID_ANY, _("Update search position"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button_updateSearchPosition = new wxButton( this, wxID_ANY, _("Update search position to cursor"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer1->Add( m_button_updateSearchPosition, 0, wxALIGN_CENTER|wxALL, 5 );
 
 
