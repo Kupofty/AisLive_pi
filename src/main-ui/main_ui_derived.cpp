@@ -3,10 +3,6 @@
 #include <functional>
 #include <string>
 
-#include <wx/hyperlink.h>
-#include <wx/clipbrd.h>
-#include <wx/log.h>
-
 #include <boost/asio/connect.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl/context.hpp>
