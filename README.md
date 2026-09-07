@@ -1,12 +1,9 @@
 # AisLive_pi
-
-AisLive_pi is an OpenCPN plugin.
+AisLive_pi is an OpenCPN plugin that connects to the OpenWaters.io AIS stream and fetches live AIS targets over the internet for display in OpenCPN"
 
 
 ## Documentation
-
 Available in the online [User Manual](PUT_YOUR_URL_HERE).
-
 
 
 ## Installation

@@ -78,3 +78,9 @@ endif ()
 find_package(wxWidgets REQUIRED ${WX_COMPONENTS})
 include(${wxWidgets_USE_FILE})
 target_link_libraries(${PACKAGE_NAME} ${wxWidgets_LIBRARIES})
+
+#
+# OpenSSL (TLS transport for the AIS websocket client
+#
+find_package(OpenSSL REQUIRED)
+target_link_libraries(${PACKAGE_NAME} OpenSSL::SSL OpenSSL::Crypto)

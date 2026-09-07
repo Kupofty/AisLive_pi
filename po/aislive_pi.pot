@@ -1,0 +1,119 @@
+# Translation of AisLive plugin
+# Copyright (C) 2026 Kupofty
+# This file is distributed under the same license as the aislive_pi package.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-06 22:45+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/main-ui/main_ui_base.cpp:28
+msgid "Start"
+msgstr ""
+
+#: src/main-ui/main_ui_base.cpp:31
+msgid "Stop"
+msgstr ""
+
+#: src/main-ui/main_ui_base.cpp:46
+msgid "Stream:"
+msgstr ""
+
+#: src/main-ui/main_ui_base.cpp:50
+msgid "Not running"
+msgstr ""
+
+#: src/main-ui/main_ui_base.cpp:75 src/main-ui/main_ui_base.cpp:86
+msgid "Latitude:"
+msgstr ""
+
+#: src/main-ui/main_ui_base.cpp:79 src/main-ui/main_ui_base.cpp:90
+msgid "0°"
+msgstr ""
+
+#: src/main-ui/main_ui_base.cpp:106
+msgid "Search box size:"
+msgstr ""
+
+#: src/main-ui/main_ui_base.cpp:110
+msgid "1° x 1°"
+msgstr ""
+
+#: src/main-ui/main_ui_base.h:60
+msgid "AisLive Plugin"
+msgstr ""
+
+#: src/main-ui/main_ui_derived.cpp:196
+msgid "Running"
+msgstr ""
+
+#: src/main-ui/main_ui_derived.cpp:207
+msgid "Stopped"
+msgstr ""
+
+#: src/main-ui/main_ui_derived.h:17
+msgid "AisLive Plugin GUI"
+msgstr ""
+
+#: src/menu-entry/menuDialog_ui_base.cpp:23
+msgid "Update search position"
+msgstr ""
+
+#: src/menu-entry/menuDialog_ui_base.cpp:25
+msgid "On boat"
+msgstr ""
+
+#: src/menu-entry/menuDialog_ui_base.cpp:28
+msgid "On cursor"
+msgstr ""
+
+#: src/menu-entry/menuDialog_ui_base.h:46
+msgid "AisLive Plugin Menu"
+msgstr ""
+
+#: src/plugin/plugin.cpp:69
+msgid "AisLive..."
+msgstr ""
+
+#: src/plugin/plugin.cpp:242
+msgid "AisLive Preferences"
+msgstr ""
+
+#: src/settings/settings_ui_base.cpp:33
+msgid "Keep plugin active when window is closed"
+msgstr ""
+
+#: src/settings/settings_ui_base.cpp:50
+msgid "Options"
+msgstr ""
+
+#: src/settings/settings_ui_base.cpp:61
+msgid "Restore last window position"
+msgstr ""
+
+#: src/settings/settings_ui_base.cpp:77
+msgid "Restore last window size"
+msgstr ""
+
+#: src/settings/settings_ui_base.cpp:91
+msgid "Display"
+msgstr ""
+
+#: src/settings/settings_ui_base.cpp:101
+msgid "OK"
+msgstr ""
+
+#: src/settings/settings_ui_base.cpp:104
+msgid "Apply"
+msgstr ""
+
+#: src/settings/settings_ui_base.h:55 src/settings/settings_ui_derived.h:17
+msgid "AisLive Plugin Preferences"
+msgstr ""

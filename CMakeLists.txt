@@ -100,6 +100,14 @@ if (NOT ${BUILD_TYPE} STREQUAL "flatpak")
   else ()
     include(PluginLibs)
   endif ()
+
+  # ocpn::jsonlib (bundled JsonCpp, opencpn-libs/jsonlib) - used by the AIS
+  # websocket client to encode/decode stream payloads. Must come after
+  # AndroidLibs/PluginLibs since jsonlib's own CMakeLists.txt reads
+  # wxWidgets_INCLUDE_DIRS, which those set up.
+  add_subdirectory("opencpn-libs/jsonlib")
+  target_link_libraries(${CMAKE_PROJECT_NAME} ocpn::jsonlib)
+
   include(PluginLocalization)
 
   include_directories(BEFORE ${CMAKE_BINARY_DIR}/include)

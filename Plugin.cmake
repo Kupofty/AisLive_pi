@@ -29,7 +29,7 @@ set(OCPN_RELEASE_REPO
 
 # ------- Plugin setup --------
 set(PKG_NAME aislive_pi)
-set(PKG_VERSION  0.0.1)
+set(PKG_VERSION  1.0.0)
 set(PKG_PRERELEASE "") # Empty, or a tag like 'beta'
 
 set(DISPLAY_NAME AisLive)    # Dialogs, installer artifacts, ...
@@ -68,6 +68,10 @@ set(SRC
     ${CMAKE_SOURCE_DIR}/src/menu-entry/menuDialog_ui_base.cpp
     ${CMAKE_SOURCE_DIR}/src/menu-entry/menuDialog_ui_derived.h
     ${CMAKE_SOURCE_DIR}/src/menu-entry/menuDialog_ui_derived.cpp
+
+    # AIS stream client
+    ${CMAKE_SOURCE_DIR}/src/ais-stream/ais_stream_client.h
+    ${CMAKE_SOURCE_DIR}/src/ais-stream/ais_stream_client.cpp
 )
 set (SOURCE_FILES ${SRC})
 
@@ -84,12 +88,3 @@ macro(late_init)
     target_compile_definitions(${PACKAGE_NAME} PUBLIC OCPN_GHC_FILESYSTEM)
   endif ()
 endmacro ()
-
-
-# ------- Libraries --------
-
-# Add plugin libraries
-#macro(add_plugin_libraries)
-    #add_subdirectory(opencpn-libs/nmea0183)
-    #target_link_libraries(${PACKAGE_NAME} ocpn::nmea0183)
-#endmacro ()
