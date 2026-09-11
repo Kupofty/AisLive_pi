@@ -407,6 +407,10 @@ void AisStreamClient::ThreadFunc(double latitude, double longitude, double boxSi
         Session* sessionPtr = nullptr;
         {
             std::lock_guard<std::mutex> lock(m_sessionMutex);
+            if (!m_streaming.load())
+            {
+                return; // Stop() already ran; don't open a socket nobody can close
+            }
             m_session = std::make_unique<Session>();
             sessionPtr = m_session.get();
         }
@@ -415,6 +419,11 @@ void AisStreamClient::ThreadFunc(double latitude, double longitude, double boxSi
         if (!TlsConnect(session, kAisHost, kAisPort))
         {
             throw std::runtime_error("TLS connect failed");
+        }
+
+        if (!m_streaming.load())
+        {
+            throw std::runtime_error("stopped during connect");
         }
 
         if (!WsHandshake(session, kAisHost, kAisTarget))
