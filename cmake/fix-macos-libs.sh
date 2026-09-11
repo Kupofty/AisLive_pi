@@ -8,7 +8,7 @@ readonly RUNTIME_PATH="@executable_path/../Frameworks/"
 
 plugin=$(find app/files -name '*.dylib')
 
-for lib in $(otool -L "$plugin" | awk ' /wx/ {print $1}'); do
+for lib in $(otool -L "$plugin" | awk ' /wx|libssl|libcrypto/ {print $1}'); do
     libdir=${lib%/*}
     if [ "$libdir" = "$lib" ]; then
         continue
@@ -18,4 +18,4 @@ for lib in $(otool -L "$plugin" | awk ' /wx/ {print $1}'); do
     fi
 done
 echo "fix-macos-libs.sh: Revised library paths:"
-otool -L "$plugin" | grep wx
+otool -L "$plugin" | grep -E 'wx|libssl|libcrypto'
