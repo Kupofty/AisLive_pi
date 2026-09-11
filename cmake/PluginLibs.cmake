@@ -114,16 +114,6 @@ target_link_libraries(${PACKAGE_NAME} OpenSSL::SSL OpenSSL::Crypto)
 # resolving to nothing.
 #
 if (WIN32)
-  if (EXISTS "${PROJECT_SOURCE_DIR}/opencpn-libs/WindowsHeaders")
-    add_subdirectory("${PROJECT_SOURCE_DIR}/opencpn-libs/WindowsHeaders")
-    target_link_libraries(${PACKAGE_NAME} windows::headers)
-  else ()
-    message(STATUS
-      "WARNING: WindowsHeaders library is missing, OpenGL unavailable"
-    )
-  endif ()
-  target_link_libraries(${PACKAGE_NAME} ws2_32)
-
   if (NOT DEFINED OPENSSL_ROOT_DIR OR OPENSSL_ROOT_DIR STREQUAL "")
     get_filename_component(OPENSSL_ROOT_DIR "${OPENSSL_INCLUDE_DIR}/.." ABSOLUTE)
     message(STATUS "OPENSSL_ROOT_DIR not set by FindOpenSSL, derived as ${OPENSSL_ROOT_DIR}")
