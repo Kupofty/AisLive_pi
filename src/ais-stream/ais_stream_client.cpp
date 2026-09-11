@@ -365,9 +365,12 @@ void AisStreamClient::Stop()
     // underlying socket from this thread is the standard way to unblock a
     // synchronous read happening on another thread - the read call returns
     // with an error and the loop exits cleanly.
-    if (m_session)
     {
-        m_session->sock.Close();
+        std::lock_guard<std::mutex> lock(m_sessionMutex);
+        if (m_session)
+        {
+            m_session->sock.Close();
+        }
     }
 
     if (m_thread.joinable())
@@ -396,8 +399,13 @@ void AisStreamClient::ThreadFunc(double latitude, double longitude, double boxSi
 {
     try
     {
-        m_session = std::make_unique<Session>();
-        auto& session = *m_session;
+        Session* sessionPtr = nullptr;
+        {
+            std::lock_guard<std::mutex> lock(m_sessionMutex);
+            m_session = std::make_unique<Session>();
+            sessionPtr = m_session.get();
+        }
+        auto& session = *sessionPtr;
 
         if (!TlsConnect(session, kAisHost, kAisPort))
         {
@@ -483,5 +491,16 @@ void AisStreamClient::ThreadFunc(double latitude, double longitude, double boxSi
     }
 
     m_streaming = false;
-    m_session.reset();
+
+    // Tear down unlocked: ~Session's SSL_shutdown blocks, and Stop() must never wait on it.
+    std::unique_ptr<Session> session_out;
+    {
+        std::lock_guard<std::mutex> lock(m_sessionMutex);
+        session_out = std::move(m_session);
+    }
+    if (session_out)
+    {
+        // Close first so SSL_shutdown fails fast instead of writing to a dead peer.
+        session_out->sock.Close();
+    }
 }

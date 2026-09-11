@@ -4,6 +4,7 @@
 #include <atomic>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <thread>
 
@@ -61,6 +62,8 @@ class AisStreamClient
         bool WsSendFrame(Session& s, WsOpcode opcode, const std::string& payload);
         bool WsReadFrame(Session& s, std::string& payloadOut, WsOpcode& opcodeOut);
 
+        // Guards the m_session pointer against Stop()/ThreadFunc() races.
+        std::mutex m_sessionMutex;
         std::unique_ptr<Session> m_session;
         std::thread m_thread;
         std::atomic<bool> m_streaming{false};
