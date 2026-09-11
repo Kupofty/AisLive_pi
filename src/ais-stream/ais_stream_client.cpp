@@ -347,6 +347,14 @@ void AisStreamClient::Start(double latitude, double longitude, double boxSizeDeg
         return; // already running
     }
 
+    // The previous worker may have exited on its own (dropped connection)
+    // without anyone joining it; assigning to a still-joinable std::thread
+    // calls std::terminate.
+    if (m_thread.joinable())
+    {
+        m_thread.join();
+    }
+
     m_onSentence = std::move(onSentence);
     m_streaming = true;
     m_thread = std::thread(&AisStreamClient::ThreadFunc, this, latitude, longitude, boxSizeDegrees);
@@ -354,11 +362,8 @@ void AisStreamClient::Start(double latitude, double longitude, double boxSizeDeg
 
 void AisStreamClient::Stop()
 {
-    if (!m_streaming.load())
-    {
-        return;
-    }
-
+    // No early-out on m_streaming: the worker clears that flag itself when
+    // the connection drops, but the thread still needs joining.
     m_streaming = false;
 
     // The worker thread is blocked in a synchronous SSL_read(). Closing the
