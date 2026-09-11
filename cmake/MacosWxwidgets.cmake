@@ -31,8 +31,10 @@ if(IGNORE_SYSTEM_WX)
 else()
   find_program(
     WX_CONFIG_PROG
-    NAMES wx-config osx_cocoa-unicode-3.2
-    HINTS ${PROJECT_SOURCE_DIR}/cache/lib/wx/config /usr/local/lib/wx/config)
+    NAMES wx-config wx-config-3.2 osx_cocoa-unicode-3.2
+    HINTS ${PROJECT_SOURCE_DIR}/cache/lib/wx/config /usr/local/lib/wx/config
+          /opt/homebrew/opt/wxwidgets@3.2/bin /opt/homebrew/bin
+          /usr/local/opt/wxwidgets@3.2/bin)
 endif()
 if(WX_CONFIG_PROG)
   execute_process(
@@ -78,7 +80,7 @@ execute_process(
     --enable-macosx_arch=arm64,x86_64 --enable-universal_binary=arm64,x86_64
     --without-subdirs --prefix=${cache_dir}
   WORKING_DIRECTORY ${wxwidgets_src_dir})
-math(_nproc ${OCPN_NPROC} * 2) # Assuming two threads/cpu
+math(EXPR _nproc "${OCPN_NPROC} * 2") # Assuming two threads/cpu
 execute_process(COMMAND make -j${_nproc} WORKING_DIRECTORY ${wxwidgets_src_dir})
 execute_process(COMMAND sudo make install
                 WORKING_DIRECTORY ${wxwidgets_src_dir})

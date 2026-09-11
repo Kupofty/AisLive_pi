@@ -79,7 +79,18 @@ By default, these builds are enabled
 
 #### Building for MacOS
 
-The macos build uses a quite aggressive caching scheme. In case of problems
+For a local build, install the dependencies with Homebrew and use the standard cmake workflow:
+
+    $ brew install cmake wxwidgets openssl
+    $ mkdir build && cd build
+    $ cmake ..
+    $ make tarball
+
+The build finds Homebrew's wxWidgets automatically (including the `wx-config-3.2` name used by the versioned `wxwidgets@3.2` formula on both Intel and Apple Silicon prefixes). If no usable wx-config is found, the build falls back to compiling wxWidgets from source into _cache/_, which takes much longer.
+
+`make tarball` produces an installable tarball; load it into OpenCPN via Options → Plugins → Import plugin.
+
+The CI macos build uses a quite aggressive caching scheme. In case of problems
 it might be necessary to invalidate the cache so new dependencies are
 downloaded and built from source. This is done in the file
 _build-deps/macos-cache-stamp_, see comments in that file.
