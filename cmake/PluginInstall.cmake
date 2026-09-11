@@ -36,6 +36,20 @@ elseif (WIN32)
     install(DIRECTORY data DESTINATION "plugins/${PACKAGE_NAME}")
   endif ()
 
+  # Bundle the OpenSSL runtime DLLs next to the plugin so end users
+  # don't need OpenSSL installed system-wide (see PluginLibs.cmake).
+  if (DEFINED OPENSSL_ROOT_DIR)
+    file(GLOB _openssl_dlls "${OPENSSL_ROOT_DIR}/bin/libssl-*.dll" "${OPENSSL_ROOT_DIR}/bin/libcrypto-*.dll")
+    if (_openssl_dlls)
+      install(FILES ${_openssl_dlls} DESTINATION "plugins")
+    else ()
+      message(WARNING "OpenSSL DLLs not found under ${OPENSSL_ROOT_DIR}/bin - plugin may fail to load on end-user machines")
+    endif ()
+  else ()
+    message(WARNING "OPENSSL_ROOT_DIR not set - cannot bundle OpenSSL DLLs for plugin")
+  endif ()
+
+
 elseif (UNIX)
   install(
     TARGETS ${PACKAGE_NAME}
