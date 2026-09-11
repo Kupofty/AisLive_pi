@@ -82,5 +82,6 @@ target_link_libraries(${PACKAGE_NAME} ${wxWidgets_LIBRARIES})
 #
 # OpenSSL (TLS transport for the AIS websocket client
 #
+set(OPENSSL_USE_STATIC_LIBS TRUE)
 find_package(OpenSSL REQUIRED)
 target_link_libraries(${PACKAGE_NAME} OpenSSL::SSL OpenSSL::Crypto)
