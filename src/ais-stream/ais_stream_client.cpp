@@ -1,10 +1,11 @@
 #include "ais_stream_client.h"
 
 #include <cstdint>
+#include <cstring>
+#include <mutex>
 #include <vector>
 
 #include <wx/base64.h>
-#include <wx/socket.h>
 
 #include <openssl/err.h>
 #include <openssl/rand.h>
@@ -22,6 +23,40 @@ constexpr char kAisTarget[] = "/v1/stream";
 
 // RFC 6455 magic GUID used when validating the Sec-WebSocket-Accept header.
 constexpr char kWebSocketGuid[] = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+
+#ifdef _WIN32
+// Winsock requires an explicit WSAStartup() before any socket call and a
+// matching WSACleanup(). wxSocketClient used to do this for us implicitly;
+// now that we talk to Winsock directly we own this ourselves. Guarded so it
+// only runs once per process regardless of how many AisStreamClient
+// instances/threads are created.
+void EnsureWinsockInitialized()
+{
+    static std::once_flag flag;
+    std::call_once(flag, []()
+                   {
+                       WSADATA wsaData;
+                       WSAStartup(MAKEWORD(2, 2), &wsaData);
+                       // Deliberately never call WSACleanup(): other plugins/OpenCPN core
+                       // may also be using Winsock in the same process, and there is no
+                       // reliable single point at which we know we're the last user.
+                       // Leaving it initialized for the lifetime of the process is the
+                       // standard, safe approach for a plugin.
+                   });
+}
+
+void CloseSocket(socket_t s)
+{
+    shutdown(s, SD_BOTH);
+    closesocket(s);
+}
+#else
+void CloseSocket(socket_t s)
+{
+    shutdown(s, SHUT_RDWR);
+    close(s);
+}
+#endif
 
 void ProcessAisEvent(const Json::Value& ev, const std::function<void(const wxString&)>& sendSentence)
 {
@@ -116,7 +151,7 @@ bool SslReadHttpHeaders(SSL* ssl, std::string& headersOut)
 
 struct AisStreamClient::Session
 {
-    wxSocketClient sock;
+    socket_t rawSocket = kInvalidSocket;
     SSL_CTX* sslCtx = nullptr;
     SSL* ssl = nullptr;
 
@@ -130,6 +165,10 @@ struct AisStreamClient::Session
         if (sslCtx)
         {
             SSL_CTX_free(sslCtx);
+        }
+        if (rawSocket != kInvalidSocket)
+        {
+            CloseSocket(rawSocket);
         }
     }
 };
@@ -148,14 +187,38 @@ AisStreamClient::~AisStreamClient()
 /////////////////////////////
 bool AisStreamClient::TlsConnect(Session& s, const std::string& host, int port)
 {
-    wxIPV4address addr;
-    addr.Hostname(host);
-    addr.Service(port);
+#ifdef _WIN32
+    EnsureWinsockInitialized();
+#endif
 
-    // Blocking flags: safe for use off the GUI thread, and lets us reuse the
-    // "close the socket from another thread to unblock" shutdown strategy.
-    s.sock.SetFlags(wxSOCKET_BLOCK | wxSOCKET_WAITALL);
-    if (!s.sock.Connect(addr, true /*wait*/))
+    addrinfo hints{};
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+
+    addrinfo* addrResult = nullptr;
+    const std::string portStr = std::to_string(port);
+    if (getaddrinfo(host.c_str(), portStr.c_str(), &hints, &addrResult) != 0)
+    {
+        return false;
+    }
+
+    for (addrinfo* p = addrResult; p != nullptr; p = p->ai_next)
+    {
+        s.rawSocket = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+        if (s.rawSocket == kInvalidSocket)
+        {
+            continue;
+        }
+        if (connect(s.rawSocket, p->ai_addr, static_cast<int>(p->ai_addrlen)) == 0)
+        {
+            break; // connected
+        }
+        CloseSocket(s.rawSocket);
+        s.rawSocket = kInvalidSocket;
+    }
+    freeaddrinfo(addrResult);
+
+    if (s.rawSocket == kInvalidSocket)
     {
         return false;
     }
@@ -179,7 +242,7 @@ bool AisStreamClient::TlsConnect(Session& s, const std::string& host, int port)
     // Hostname verification against the presented certificate.
     SSL_set1_host(s.ssl, host.c_str());
 
-    if (SSL_set_fd(s.ssl, static_cast<int>(s.sock.GetSocket())) != 1)
+    if (SSL_set_fd(s.ssl, static_cast<int>(s.rawSocket)) != 1)
     {
         return false;
     }
@@ -366,15 +429,17 @@ void AisStreamClient::Stop()
     // the connection drops, but the thread still needs joining.
     m_streaming = false;
 
-    // The worker thread is blocked in a synchronous SSL_read(). Closing the
-    // underlying socket from this thread is the standard way to unblock a
-    // synchronous read happening on another thread - the read call returns
-    // with an error and the loop exits cleanly.
+    // The worker thread is blocked in a synchronous SSL_read(). shutdown()
+    // followed by closesocket()/close() from this thread is the standard,
+    // thread-safe way to unblock a synchronous read happening on another
+    // thread - the read call returns with an error and the loop exits
+    // cleanly. Unlike wxSocketClient, a raw socket handle has no thread
+    // affinity, so this is safe to call from any thread.
     {
         std::lock_guard<std::mutex> lock(m_sessionMutex);
-        if (m_session)
+        if (m_session && m_session->rawSocket != kInvalidSocket)
         {
-            m_session->sock.Close();
+            CloseSocket(m_session->rawSocket);
         }
     }
 
@@ -512,9 +577,9 @@ void AisStreamClient::ThreadFunc(double latitude, double longitude, double boxSi
         std::lock_guard<std::mutex> lock(m_sessionMutex);
         session_out = std::move(m_session);
     }
-    if (session_out)
+    if (session_out && session_out->rawSocket != kInvalidSocket)
     {
         // Close first so SSL_shutdown fails fast instead of writing to a dead peer.
-        session_out->sock.Close();
+        CloseSocket(session_out->rawSocket);
     }
 }
