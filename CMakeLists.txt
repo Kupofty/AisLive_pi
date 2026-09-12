@@ -130,7 +130,8 @@ if (NOT ${BUILD_TYPE} STREQUAL "flatpak")
   function(ais_add_ixwebsocket)
     set(BUILD_SHARED_LIBS OFF)
     set(USE_TLS ON)
-    set(USE_WS OFF) # skip building the ws CLI tool
+    set(USE_WS OFF)   # skip building the ws CLI tool
+    set(USE_ZLIB OFF) # we don't use permessage-deflate; avoids needing zlib on Windows
     if (NOT APPLE)
       set(USE_OPEN_SSL ON)
     endif ()
