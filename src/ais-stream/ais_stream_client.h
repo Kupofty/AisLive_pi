@@ -75,10 +75,18 @@ class AisStreamClient
 
         void ThreadFunc(double latitude, double longitude, double boxSizeDegrees);
 
-        // Runs one connect/subscribe/read session. Returns true if the
-        // session reached Running before ending (resets the reconnect
-        // backoff); on failure, errOut carries a short reason.
-        bool RunSession(double latitude, double longitude, double boxSizeDegrees, wxString& errOut);
+        // How one connect/subscribe/read session ended; drives the
+        // reconnect backoff.
+        enum class SessionOutcome
+        {
+            ConnectFailed, // never reached Running (also: stopped mid-connect)
+            Dropped,       // was Running, then the connection ended
+            ServerError    // server sent a type:"error" frame (e.g. stream limit)
+        };
+
+        // Runs one connect/subscribe/read session. On failure, errOut
+        // carries a short reason.
+        SessionOutcome RunSession(double latitude, double longitude, double boxSizeDegrees, wxString& errOut);
 
         void EmitStatus(Status status, const wxString& detail = wxString());
 

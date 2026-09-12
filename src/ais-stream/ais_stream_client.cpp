@@ -420,7 +420,7 @@ void AisStreamClient::ThreadFunc(double latitude, double longitude, double boxSi
         EmitStatus(Status::Connecting);
 
         wxString err;
-        const bool wasRunning = RunSession(latitude, longitude, boxSizeDegrees, err);
+        const SessionOutcome outcome = RunSession(latitude, longitude, boxSizeDegrees, err);
 
         if (!m_streaming.load())
         {
@@ -429,9 +429,16 @@ void AisStreamClient::ThreadFunc(double latitude, double longitude, double boxSi
 
         EmitStatus(Status::Error, err);
 
-        if (wasRunning)
+        switch (outcome)
         {
-            backoffSeconds = kInitialBackoffSeconds;
+            case SessionOutcome::Dropped:
+                backoffSeconds = kInitialBackoffSeconds; // had a good session; retry soon
+                break;
+            case SessionOutcome::ServerError:
+                backoffSeconds = kMaxBackoffSeconds; // explicit rejection; don't hammer the server
+                break;
+            case SessionOutcome::ConnectFailed:
+                break; // keep doubling
         }
         SleepWhileStreaming(backoffSeconds);
         backoffSeconds = std::min(backoffSeconds * 2, kMaxBackoffSeconds);
@@ -457,16 +464,16 @@ void AisStreamClient::SleepWhileStreaming(int seconds)
     }
 }
 
-bool AisStreamClient::RunSession(double latitude, double longitude, double boxSizeDegrees, wxString& errOut)
+AisStreamClient::SessionOutcome AisStreamClient::RunSession(double latitude, double longitude, double boxSizeDegrees, wxString& errOut)
 {
-    bool reachedRunning = false;
+    SessionOutcome outcome = SessionOutcome::ConnectFailed;
 
     Session* sessionPtr = nullptr;
     {
         std::lock_guard<std::mutex> lock(m_sessionMutex);
         if (!m_streaming.load())
         {
-            return false; // Stop() already ran; don't open a socket nobody can close
+            return outcome; // Stop() already ran; don't open a socket nobody can close
         }
         m_session = std::make_unique<Session>();
         sessionPtr = m_session.get();
@@ -520,7 +527,7 @@ bool AisStreamClient::RunSession(double latitude, double longitude, double boxSi
         }
 
         EmitStatus(Status::Running);
-        reachedRunning = true;
+        outcome = SessionOutcome::Dropped;
 
         while (m_streaming.load())
         {
@@ -556,6 +563,18 @@ bool AisStreamClient::RunSession(double latitude, double longitude, double boxSi
             Json::Reader reader;
             if (reader.parse(payload, ev))
             {
+                // e.g. {"type":"error","error":"concurrent streams per
+                // address exceeded"}; the server closes the connection after
+                // sending it, so surface the reason and end the session.
+                if (ev.isMember("type") && ev["type"].asString() == "error")
+                {
+                    errOut = ev["error"].isString()
+                                 ? wxString::FromUTF8(ev["error"].asString().c_str())
+                                 : wxString("server error");
+                    outcome = SessionOutcome::ServerError;
+                    break;
+                }
+
                 if (m_onSentence)
                 {
                     ProcessAisEvent(ev, m_onSentence);
@@ -581,5 +600,5 @@ bool AisStreamClient::RunSession(double latitude, double longitude, double boxSi
         session_out->sock.Close();
     }
 
-    return reachedRunning;
+    return outcome;
 }
