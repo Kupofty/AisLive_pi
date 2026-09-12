@@ -32,6 +32,7 @@ class DialogMainGui : public DialogMainGuiBase
         void StartAisStream();
         void StopAisStream();
         void RestartAisStream();
+        void UpdateStreamStatusLabel(AisStreamClient::Status status, const wxString& detail);
 
         bool m_initialBoatPositionSet = false;
         double m_boatLatitude = 0;

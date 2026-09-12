@@ -1,5 +1,7 @@
 #include "ais_stream_client.h"
 
+#include <algorithm>
+#include <chrono>
 #include <cstdint>
 #include <vector>
 
@@ -22,6 +24,11 @@ constexpr char kAisTarget[] = "/v1/stream";
 
 // RFC 6455 magic GUID used when validating the Sec-WebSocket-Accept header.
 constexpr char kWebSocketGuid[] = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+
+// Reconnect backoff: wait this long after the first failure, double on each
+// consecutive failure up to the cap, reset once a connection succeeds.
+constexpr int kInitialBackoffSeconds = 2;
+constexpr int kMaxBackoffSeconds     = 30;
 
 void ProcessAisEvent(const Json::Value& ev, const std::function<void(const wxString&)>& sendSentence)
 {
@@ -340,6 +347,11 @@ bool AisStreamClient::WsReadFrame(Session& s, std::string& payloadOut, WsOpcode&
 ////////////////////////
 /// Public interface  ///
 ////////////////////////
+void AisStreamClient::SetStatusCallback(StatusCallback onStatus)
+{
+    m_onStatus = std::move(onStatus);
+}
+
 void AisStreamClient::Start(double latitude, double longitude, double boxSizeDegrees, SentenceCallback onSentence)
 {
     if (m_streaming.load())
@@ -347,9 +359,8 @@ void AisStreamClient::Start(double latitude, double longitude, double boxSizeDeg
         return; // already running
     }
 
-    // The previous worker may have exited on its own (dropped connection)
-    // without anyone joining it; assigning to a still-joinable std::thread
-    // calls std::terminate.
+    // Assigning to a still-joinable std::thread calls std::terminate; make
+    // sure any previous worker is fully reaped first.
     if (m_thread.joinable())
     {
         m_thread.join();
@@ -362,8 +373,8 @@ void AisStreamClient::Start(double latitude, double longitude, double boxSizeDeg
 
 void AisStreamClient::Stop()
 {
-    // No early-out on m_streaming: the worker clears that flag itself when
-    // the connection drops, but the thread still needs joining.
+    // m_streaming means "streaming wanted": clearing it ends the worker's
+    // reconnect loop and cuts any backoff sleep short.
     m_streaming = false;
 
     // The worker thread is blocked in a synchronous SSL_read(). Closing the
@@ -402,23 +413,72 @@ bool AisStreamClient::IsStreaming() const
 
 void AisStreamClient::ThreadFunc(double latitude, double longitude, double boxSizeDegrees)
 {
+    int backoffSeconds = kInitialBackoffSeconds;
+
+    while (m_streaming.load())
+    {
+        EmitStatus(Status::Connecting);
+
+        wxString err;
+        const bool wasRunning = RunSession(latitude, longitude, boxSizeDegrees, err);
+
+        if (!m_streaming.load())
+        {
+            break; // Stop() ran; not an error
+        }
+
+        EmitStatus(Status::Error, err);
+
+        if (wasRunning)
+        {
+            backoffSeconds = kInitialBackoffSeconds;
+        }
+        SleepWhileStreaming(backoffSeconds);
+        backoffSeconds = std::min(backoffSeconds * 2, kMaxBackoffSeconds);
+    }
+
+    EmitStatus(Status::Stopped);
+}
+
+void AisStreamClient::EmitStatus(Status status, const wxString& detail)
+{
+    if (m_onStatus)
+    {
+        m_onStatus(status, detail);
+    }
+}
+
+void AisStreamClient::SleepWhileStreaming(int seconds)
+{
+    // Chunked so Stop() never waits out a full backoff interval.
+    for (int i = 0; i < seconds * 10 && m_streaming.load(); ++i)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+}
+
+bool AisStreamClient::RunSession(double latitude, double longitude, double boxSizeDegrees, wxString& errOut)
+{
+    bool reachedRunning = false;
+
+    Session* sessionPtr = nullptr;
+    {
+        std::lock_guard<std::mutex> lock(m_sessionMutex);
+        if (!m_streaming.load())
+        {
+            return false; // Stop() already ran; don't open a socket nobody can close
+        }
+        m_session = std::make_unique<Session>();
+        sessionPtr = m_session.get();
+    }
+
     try
     {
-        Session* sessionPtr = nullptr;
-        {
-            std::lock_guard<std::mutex> lock(m_sessionMutex);
-            if (!m_streaming.load())
-            {
-                return; // Stop() already ran; don't open a socket nobody can close
-            }
-            m_session = std::make_unique<Session>();
-            sessionPtr = m_session.get();
-        }
         auto& session = *sessionPtr;
 
         if (!TlsConnect(session, kAisHost, kAisPort))
         {
-            throw std::runtime_error("TLS connect failed");
+            throw std::runtime_error("connection failed");
         }
 
         if (!m_streaming.load())
@@ -456,8 +516,11 @@ void AisStreamClient::ThreadFunc(double latitude, double longitude, double boxSi
 
         if (!WsSendFrame(session, WsOpcode::Text, sub_str))
         {
-            throw std::runtime_error("Failed to send subscribe message");
+            throw std::runtime_error("failed to subscribe");
         }
+
+        EmitStatus(Status::Running);
+        reachedRunning = true;
 
         while (m_streaming.load())
         {
@@ -467,11 +530,13 @@ void AisStreamClient::ThreadFunc(double latitude, double longitude, double boxSi
             {
                 // Either Stop() closed the socket, or the connection
                 // dropped. Either way, stop reading.
+                errOut = "connection lost";
                 break;
             }
 
             if (opcode == WsOpcode::Close)
             {
+                errOut = "connection closed by server";
                 break;
             }
 
@@ -499,12 +564,10 @@ void AisStreamClient::ThreadFunc(double latitude, double longitude, double boxSi
             // else: ignore malformed frames.
         }
     }
-    catch (const std::exception&)
+    catch (const std::exception& e)
     {
-        // Ignore
+        errOut = wxString::FromUTF8(e.what());
     }
-
-    m_streaming = false;
 
     // Tear down unlocked: ~Session's SSL_shutdown blocks, and Stop() must never wait on it.
     std::unique_ptr<Session> session_out;
@@ -517,4 +580,6 @@ void AisStreamClient::ThreadFunc(double latitude, double longitude, double boxSi
         // Close first so SSL_shutdown fails fast instead of writing to a dead peer.
         session_out->sock.Close();
     }
+
+    return reachedRunning;
 }
