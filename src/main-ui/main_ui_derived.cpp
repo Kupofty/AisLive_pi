@@ -122,17 +122,22 @@ void DialogMainGui::StartAisStream()
         return; // already running
     }
 
-    // NOTE: this callback runs on AisStreamClient's background thread, not
-    // the GUI thread - same as the previous implementation. If
-    // plugin->sendNmeaSentence() or anything downstream of it ever touches
-    // wx widgets directly, it should marshal back via wxTheApp->CallAfter().
+    // This callback runs on AisStreamClient's background thread; the OpenCPN
+    // plugin API is not thread-safe, so marshal the push to the GUI thread.
+    // Queue on this dialog (not wxTheApp) so pending events are discarded
+    // when the dialog is destroyed - Plugin::DeInit() deletes the dialog
+    // (joining the stream thread) before destroy_pi() frees the plugin, so
+    // a queued event can never run against a dead plugin.
     m_aisStream.Start(m_searchLatitude, m_searchLongitude, m_searchBoxSize,
         [this](const wxString& sentence)
         {
-            if (plugin)
+            CallAfter([this, sentence]()
             {
-                plugin->sendNmeaSentence(sentence);
-            }
+                if (plugin)
+                {
+                    plugin->sendNmeaSentence(sentence);
+                }
+            });
         });
 
     m_staticText_streamState->SetLabel(_("Running"));
@@ -156,12 +161,17 @@ void DialogMainGui::RestartAisStream()
         return;
     }
 
+    // Same marshaling as StartAisStream: the callback runs on the websocket
+    // thread and the plugin API must only be called from the GUI thread.
     m_aisStream.Restart(m_searchLatitude, m_searchLongitude, m_searchBoxSize,
         [this](const wxString& sentence)
         {
-            if (plugin)
+            CallAfter([this, sentence]()
             {
-                plugin->sendNmeaSentence(sentence);
-            }
+                if (plugin)
+                {
+                    plugin->sendNmeaSentence(sentence);
+                }
+            });
         });
 }
