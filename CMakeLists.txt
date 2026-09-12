@@ -93,16 +93,6 @@ if (NOT ${BUILD_TYPE} STREQUAL "flatpak")
   #
   if (APPLE)
     include(MacosWxwidgets)
-    # Homebrew's openssl is keg-only, so find_package(OpenSSL) in
-    # PluginLibs needs a root hint unless the user provides one.
-    if (NOT DEFINED OPENSSL_ROOT_DIR AND NOT DEFINED ENV{OPENSSL_ROOT_DIR})
-      foreach (_ssl_prefix /opt/homebrew/opt/openssl@3 /usr/local/opt/openssl@3)
-        if (EXISTS ${_ssl_prefix})
-          set(OPENSSL_ROOT_DIR ${_ssl_prefix})
-          break ()
-        endif ()
-      endforeach ()
-    endif ()
   endif ()
   include(PluginInstall)
   if (QT_ANDROID)
@@ -117,6 +107,41 @@ if (NOT ${BUILD_TYPE} STREQUAL "flatpak")
   # wxWidgets_INCLUDE_DIRS, which those set up.
   add_subdirectory("opencpn-libs/jsonlib")
   target_link_libraries(${CMAKE_PROJECT_NAME} ocpn::jsonlib)
+
+  # IXWebSocket (bundled submodule, third-party/IXWebSocket) - websocket +
+  # TLS transport used by the AIS websocket client.
+  #
+  # Build it static and link it straight into the plugin .so so we don't
+  # ship/depend on a separate libixwebsocket.so at runtime (OpenCPN plugins
+  # are expected to be self-contained). This has to happen inside a
+  # function(): a plain set(BUILD_SHARED_LIBS OFF) in directory scope can
+  # be shadowed by a normal variable of the same name set upstream, so it
+  # is not reliable. Variables set inside a function are strictly local to
+  # it (and to anything it calls, including add_subdirectory()), which is
+  # the only way to guarantee the override actually takes effect here.
+  # Targets created inside are still visible globally afterward.
+  #
+  # TLS backend: Apple gets Secure Transport automatically (IXWebSocket's
+  # own default once USE_TLS is on and no other backend is requested), so
+  # no OpenSSL dependency there. Windows and Linux have no such built-in,
+  # dependency-free backend in IXWebSocket (Windows would otherwise default
+  # to MbedTLS, a dependency we don't currently have set up), so both keep
+  # using OpenSSL, same as before this migration.
+  function(ais_add_ixwebsocket)
+    set(BUILD_SHARED_LIBS OFF)
+    set(USE_TLS ON)
+    set(USE_WS OFF) # skip building the ws CLI tool
+    if (NOT APPLE)
+      set(USE_OPEN_SSL ON)
+    endif ()
+    add_subdirectory("${CMAKE_SOURCE_DIR}/third-party/IXWebSocket" EXCLUDE_FROM_ALL)
+  endfunction()
+  ais_add_ixwebsocket()
+
+  # Static-lib objects must be position-independent to be linked into our
+  # shared plugin library.
+  set_target_properties(ixwebsocket PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  target_link_libraries(${CMAKE_PROJECT_NAME} ixwebsocket)
 
   include(PluginLocalization)
 

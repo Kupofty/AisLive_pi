@@ -79,8 +79,6 @@ find_package(wxWidgets REQUIRED ${WX_COMPONENTS})
 include(${wxWidgets_USE_FILE})
 target_link_libraries(${PACKAGE_NAME} ${wxWidgets_LIBRARIES})
 
-#
-# OpenSSL (TLS transport for the AIS websocket client
-#
-find_package(OpenSSL REQUIRED)
-target_link_libraries(${PACKAGE_NAME} OpenSSL::SSL OpenSSL::Crypto)
+# Note: TLS/websocket transport for the AIS client is provided by the
+# bundled IXWebSocket library, added as a subdirectory in the top-level
+# CMakeLists.txt (it manages its own TLS backend per platform).
