@@ -10,7 +10,19 @@
 ////////////////////////////
 DialogMainGui::DialogMainGui(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style) : DialogMainGuiBase( parent )
 {
-
+    // Runs on the stream's worker thread; CallAfter hops to the GUI thread.
+    // Queued on this window (not wxTheApp) so pending updates are discarded
+    // if the dialog is destroyed before they run; the destructor's Stop()
+    // joins the worker, so no new ones arrive after that.
+    m_aisStream.SetStatusCallback(
+        [this](AisStreamClient::Status status, const wxString& detail)
+        {
+            const wxString detailCopy = detail.Clone(); // deep copy: wxString is not thread-safe to share
+            CallAfter([this, status, detailCopy]()
+            {
+                UpdateStreamStatusLabel(status, detailCopy);
+            });
+        });
 }
 
 DialogMainGui::~DialogMainGui()
@@ -134,8 +146,6 @@ void DialogMainGui::StartAisStream()
                 plugin->sendNmeaSentence(sentence);
             }
         });
-
-    m_staticText_streamState->SetLabel(_("Running"));
 }
 
 void DialogMainGui::StopAisStream()
@@ -146,7 +156,28 @@ void DialogMainGui::StopAisStream()
     }
 
     m_aisStream.Stop();
-    m_staticText_streamState->SetLabel(_("Stopped"));
+}
+
+void DialogMainGui::UpdateStreamStatusLabel(AisStreamClient::Status status, const wxString& detail)
+{
+    wxString label;
+    switch (status)
+    {
+        case AisStreamClient::Status::Connecting:
+            label = _("Connecting...");
+            break;
+        case AisStreamClient::Status::Running:
+            label = _("Running");
+            break;
+        case AisStreamClient::Status::Error:
+            label = detail.empty() ? _("Error")
+                                   : wxString::Format(_("Error: %s"), detail);
+            break;
+        case AisStreamClient::Status::Stopped:
+            label = _("Stopped");
+            break;
+    }
+    m_staticText_streamState->SetLabel(label);
 }
 
 void DialogMainGui::RestartAisStream()
