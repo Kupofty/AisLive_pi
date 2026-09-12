@@ -1,7 +1,5 @@
 #include <cmath>
 
-#include <wx/app.h>
-
 #include "main_ui_derived.h"
 #include "settings/global_settings.h"
 #include "plugin/plugin.h"
@@ -126,12 +124,14 @@ void DialogMainGui::StartAisStream()
 
     // This callback runs on AisStreamClient's background thread; the OpenCPN
     // plugin API is not thread-safe, so marshal the push to the GUI thread.
-    // The plugin pointer and sentence are captured by value so the queued
-    // call stays valid even if this dialog is destroyed first.
+    // Queue on this dialog (not wxTheApp) so pending events are discarded
+    // when the dialog is destroyed - Plugin::DeInit() deletes the dialog
+    // (joining the stream thread) before destroy_pi() frees the plugin, so
+    // a queued event can never run against a dead plugin.
     m_aisStream.Start(m_searchLatitude, m_searchLongitude, m_searchBoxSize,
         [this](const wxString& sentence)
         {
-            wxTheApp->CallAfter([plugin = this->plugin, sentence]()
+            CallAfter([this, sentence]()
             {
                 if (plugin)
                 {
@@ -166,7 +166,7 @@ void DialogMainGui::RestartAisStream()
     m_aisStream.Restart(m_searchLatitude, m_searchLongitude, m_searchBoxSize,
         [this](const wxString& sentence)
         {
-            wxTheApp->CallAfter([plugin = this->plugin, sentence]()
+            CallAfter([this, sentence]()
             {
                 if (plugin)
                 {
