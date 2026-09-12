@@ -36,19 +36,30 @@ elseif (WIN32)
     install(DIRECTORY data DESTINATION "plugins/${PACKAGE_NAME}")
   endif ()
 
-  # Bundle the OpenSSL runtime DLLs next to the plugin so end users
-  # don't need OpenSSL installed system-wide (see PluginLibs.cmake).
-  if (DEFINED OPENSSL_ROOT_DIR)
-    file(GLOB _openssl_dlls "${OPENSSL_ROOT_DIR}/bin/libssl-*.dll" "${OPENSSL_ROOT_DIR}/bin/libcrypto-*.dll")
+  # OpenSSL is linked dynamically on Windows (IXWebSocket's TLS backend
+  # there); there's no system OpenSSL to rely on like on Linux, so the
+  # matching DLLs have to ship next to the plugin. OPENSSL_INCLUDE_DIR is
+  # a cache variable set by FindOpenSSL and stays visible here even though
+  # find_package(OpenSSL) itself ran deep inside IXWebSocket's CMakeLists.
+  if (DEFINED OPENSSL_INCLUDE_DIR)
+    if (DEFINED OPENSSL_ROOT_DIR)
+      set(_openssl_root "${OPENSSL_ROOT_DIR}")
+    else ()
+      get_filename_component(_openssl_root "${OPENSSL_INCLUDE_DIR}/.." ABSOLUTE)
+    endif ()
+    file(GLOB _openssl_dlls
+      "${_openssl_root}/bin/libcrypto*.dll"
+      "${_openssl_root}/bin/libssl*.dll"
+    )
     if (_openssl_dlls)
+      message(STATUS "Packaging OpenSSL DLLs: ${_openssl_dlls}")
       install(FILES ${_openssl_dlls} DESTINATION "plugins")
     else ()
-      message(WARNING "OpenSSL DLLs not found under ${OPENSSL_ROOT_DIR}/bin - plugin may fail to load on end-user machines")
+      message(WARNING "OpenSSL found at ${_openssl_root} but no DLLs matched "
+                       "${_openssl_root}/bin/lib{crypto,ssl}*.dll -- the "
+                       "plugin will fail to load without them at runtime.")
     endif ()
-  else ()
-    message(WARNING "OPENSSL_ROOT_DIR not set - cannot bundle OpenSSL DLLs for plugin")
   endif ()
-
 
 elseif (UNIX)
   install(
