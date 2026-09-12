@@ -79,60 +79,6 @@ find_package(wxWidgets REQUIRED ${WX_COMPONENTS})
 include(${wxWidgets_USE_FILE})
 target_link_libraries(${PACKAGE_NAME} ${wxWidgets_LIBRARIES})
 
-#
-# OpenSSL (TLS transport for the AIS websocket client)
-#
-# NOTE: OpenSSL is linked dynamically here (default FindOpenSSL behavior).
-# Do NOT switch this to OPENSSL_USE_STATIC_LIBS on Windows: OpenCPN plugins
-# are loaded/unloaded at runtime via LoadLibrary/FreeLibrary, and OpenSSL
-# 1.1.x keeps process-global state (RNG pool, locks, ENGINE tables). A
-# statically-linked copy inside plugin.dll creates a second, independent
-# copy of that global state alongside whatever OpenCPN core / other
-# plugins already loaded, which caused hard crashes in testing. Dynamic
-# linking keeps a single shared OpenSSL instance in the process, which is
-# the safe configuration - we just need to make sure the DLL is present
-# on the end user's machine (see the WIN32 install() block below).
-#
-find_package(OpenSSL REQUIRED)
-target_link_libraries(${PACKAGE_NAME} OpenSSL::SSL OpenSSL::Crypto)
-
-#
-# Bundle the OpenSSL runtime DLLs on Windows.
-#
-# find_package(OpenSSL) on the AppVeyor image resolves against a
-# pre-installed OpenSSL (currently C:/OpenSSL-Win32, version 1.1.1w) that
-# is NOT present on end-user machines. Since the plugin links dynamically
-# against it, libssl-*.dll / libcrypto-*.dll must ship next to the plugin
-# binary itself, in the same flat "plugins" destination used by
-# PluginInstall.cmake, or the plugin fails/crashes at load time on users'
-# systems that don't happen to already have a compatible OpenSSL DLL
-# elsewhere in the OpenCPN plugins search path.
-#
-# Globbing (rather than hardcoding libssl-1_1.dll / libcrypto-1_1.dll)
-# means a future OpenSSL version change on the CI image (e.g. a bump to
-# the 3.x series) is picked up automatically instead of silently
-# resolving to nothing.
-#
-if (WIN32)
-  target_link_libraries(${PACKAGE_NAME} ws2_32)
-
-  if (NOT DEFINED OPENSSL_ROOT_DIR OR OPENSSL_ROOT_DIR STREQUAL "")
-    get_filename_component(OPENSSL_ROOT_DIR "${OPENSSL_INCLUDE_DIR}/.." ABSOLUTE)
-    message(STATUS "OPENSSL_ROOT_DIR not set by FindOpenSSL, derived as ${OPENSSL_ROOT_DIR}")
-  endif ()
-
-  file(GLOB _openssl_dlls
-    "${OPENSSL_ROOT_DIR}/bin/libssl-*.dll"
-    "${OPENSSL_ROOT_DIR}/bin/libcrypto-*.dll"
-  )
-
-  if (NOT _openssl_dlls)
-    message(FATAL_ERROR
-      "OpenSSL runtime DLLs not found under ${OPENSSL_ROOT_DIR}/bin - "
-      "the plugin would fail/crash on end-user machines without them."
-    )
-  endif ()
-
-  message(STATUS "Bundling OpenSSL runtime DLLs: ${_openssl_dlls}")
-  install(FILES ${_openssl_dlls} DESTINATION "plugins")
-endif ()
+# Note: TLS/websocket transport for the AIS client is provided by the
+# bundled IXWebSocket library, added as a subdirectory in the top-level
+# CMakeLists.txt (it manages its own TLS backend per platform).
