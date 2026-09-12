@@ -3,9 +3,11 @@
 #include <cstdint>
 #include <cstring>
 #include <mutex>
+#include <sstream>
 #include <vector>
 
 #include <wx/base64.h>
+#include <wx/log.h>
 
 #include <openssl/err.h>
 #include <openssl/rand.h>
@@ -36,7 +38,8 @@ void EnsureWinsockInitialized()
     std::call_once(flag, []()
                    {
                        WSADATA wsaData;
-                       WSAStartup(MAKEWORD(2, 2), &wsaData);
+                       const int rc = WSAStartup(MAKEWORD(2, 2), &wsaData);
+                       wxLogMessage("AisStreamClient: WSAStartup rc=%d", rc);
                        // Deliberately never call WSACleanup(): other plugins/OpenCPN core
                        // may also be using Winsock in the same process, and there is no
                        // reliable single point at which we know we're the last user.
@@ -83,7 +86,9 @@ void ProcessAisEvent(const Json::Value& ev, const std::function<void(const wxStr
             nmea += "\r\n";
         }
 
+        wxLogMessage("AisStreamClient: dispatching sentence to callback: %s", nmea.Trim());
         sendSentence(nmea);
+        wxLogMessage("AisStreamClient: callback returned");
     }
 }
 
@@ -100,6 +105,8 @@ bool SslWriteAll(SSL* ssl, const char* data, size_t len)
         const int n = SSL_write(ssl, data + sent, static_cast<int>(len - sent));
         if (n <= 0)
         {
+            wxLogMessage("AisStreamClient: SSL_write failed, n=%d, SSL_get_error=%d",
+                         n, SSL_get_error(ssl, n));
             return false;
         }
         sent += static_cast<size_t>(n);
@@ -115,6 +122,8 @@ bool SslReadExact(SSL* ssl, char* buf, size_t len)
         const int n = SSL_read(ssl, buf + got, static_cast<int>(len - got));
         if (n <= 0)
         {
+            wxLogMessage("AisStreamClient: SSL_read failed, n=%d, SSL_get_error=%d",
+                         n, SSL_get_error(ssl, n));
             return false; // connection closed / error / unblocked by Stop()
         }
         got += static_cast<size_t>(n);
@@ -134,6 +143,8 @@ bool SslReadHttpHeaders(SSL* ssl, std::string& headersOut)
         const int n = SSL_read(ssl, &c, 1);
         if (n <= 0)
         {
+            wxLogMessage("AisStreamClient: SslReadHttpHeaders SSL_read failed, n=%d, SSL_get_error=%d",
+                         n, SSL_get_error(ssl, n));
             return false;
         }
         acc.push_back(c);
@@ -143,6 +154,7 @@ bool SslReadHttpHeaders(SSL* ssl, std::string& headersOut)
             return true;
         }
     }
+    wxLogMessage("AisStreamClient: SslReadHttpHeaders exceeded 8192 bytes without terminator");
     return false;
 }
 
@@ -157,6 +169,7 @@ struct AisStreamClient::Session
 
     ~Session()
     {
+        wxLogMessage("AisStreamClient: Session::~Session begin");
         if (ssl)
         {
             SSL_shutdown(ssl);
@@ -170,6 +183,7 @@ struct AisStreamClient::Session
         {
             CloseSocket(rawSocket);
         }
+        wxLogMessage("AisStreamClient: Session::~Session end");
     }
 };
 
@@ -178,6 +192,7 @@ AisStreamClient::AisStreamClient() = default;
 
 AisStreamClient::~AisStreamClient()
 {
+    wxLogMessage("AisStreamClient: ~AisStreamClient calling Stop()");
     Stop();
 }
 
@@ -187,6 +202,8 @@ AisStreamClient::~AisStreamClient()
 /////////////////////////////
 bool AisStreamClient::TlsConnect(Session& s, const std::string& host, int port)
 {
+    wxLogMessage("AisStreamClient: TlsConnect begin, host=%s port=%d", host.c_str(), port);
+
 #ifdef _WIN32
     EnsureWinsockInitialized();
 #endif
@@ -197,22 +214,31 @@ bool AisStreamClient::TlsConnect(Session& s, const std::string& host, int port)
 
     addrinfo* addrResult = nullptr;
     const std::string portStr = std::to_string(port);
-    if (getaddrinfo(host.c_str(), portStr.c_str(), &hints, &addrResult) != 0)
+
+    wxLogMessage("AisStreamClient: calling getaddrinfo");
+    const int gaiRc = getaddrinfo(host.c_str(), portStr.c_str(), &hints, &addrResult);
+    wxLogMessage("AisStreamClient: getaddrinfo returned %d", gaiRc);
+    if (gaiRc != 0)
     {
         return false;
     }
 
     for (addrinfo* p = addrResult; p != nullptr; p = p->ai_next)
     {
+        wxLogMessage("AisStreamClient: creating socket");
         s.rawSocket = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
         if (s.rawSocket == kInvalidSocket)
         {
+            wxLogMessage("AisStreamClient: socket() failed, trying next addrinfo entry");
             continue;
         }
+        wxLogMessage("AisStreamClient: calling connect");
         if (connect(s.rawSocket, p->ai_addr, static_cast<int>(p->ai_addrlen)) == 0)
         {
+            wxLogMessage("AisStreamClient: connect succeeded");
             break; // connected
         }
+        wxLogMessage("AisStreamClient: connect failed, trying next addrinfo entry");
         CloseSocket(s.rawSocket);
         s.rawSocket = kInvalidSocket;
     }
@@ -220,41 +246,59 @@ bool AisStreamClient::TlsConnect(Session& s, const std::string& host, int port)
 
     if (s.rawSocket == kInvalidSocket)
     {
+        wxLogMessage("AisStreamClient: no addrinfo entry connected successfully");
         return false;
     }
 
+    wxLogMessage("AisStreamClient: calling SSL_CTX_new");
     s.sslCtx = SSL_CTX_new(TLS_client_method());
     if (!s.sslCtx)
     {
+        wxLogMessage("AisStreamClient: SSL_CTX_new returned null");
         return false;
     }
+    wxLogMessage("AisStreamClient: SSL_CTX_new ok, calling SSL_CTX_set_default_verify_paths");
     SSL_CTX_set_default_verify_paths(s.sslCtx);
     SSL_CTX_set_verify(s.sslCtx, SSL_VERIFY_PEER, nullptr);
 
+    wxLogMessage("AisStreamClient: calling SSL_new");
     s.ssl = SSL_new(s.sslCtx);
     if (!s.ssl)
     {
+        wxLogMessage("AisStreamClient: SSL_new returned null");
         return false;
     }
 
     // SNI, required by many TLS-terminating hosts.
+    wxLogMessage("AisStreamClient: calling SSL_set_tlsext_host_name");
     SSL_set_tlsext_host_name(s.ssl, host.c_str());
     // Hostname verification against the presented certificate.
+    wxLogMessage("AisStreamClient: calling SSL_set1_host");
     SSL_set1_host(s.ssl, host.c_str());
 
+    wxLogMessage("AisStreamClient: calling SSL_set_fd");
     if (SSL_set_fd(s.ssl, static_cast<int>(s.rawSocket)) != 1)
     {
+        wxLogMessage("AisStreamClient: SSL_set_fd failed");
         return false;
     }
 
-    return SSL_connect(s.ssl) == 1;
+    wxLogMessage("AisStreamClient: calling SSL_connect");
+    const int connectRc = SSL_connect(s.ssl);
+    wxLogMessage("AisStreamClient: SSL_connect returned %d (SSL_get_error=%d)",
+                 connectRc, SSL_get_error(s.ssl, connectRc));
+
+    return connectRc == 1;
 }
 
 bool AisStreamClient::WsHandshake(Session& s, const std::string& host, const std::string& target)
 {
+    wxLogMessage("AisStreamClient: WsHandshake begin");
+
     unsigned char keyBytes[16];
     if (RAND_bytes(keyBytes, sizeof(keyBytes)) != 1)
     {
+        wxLogMessage("AisStreamClient: RAND_bytes failed");
         return false;
     }
     const wxString wsKey = wxBase64Encode(keyBytes, sizeof(keyBytes));
@@ -268,19 +312,25 @@ bool AisStreamClient::WsHandshake(Session& s, const std::string& host, const std
                                 "Sec-WebSocket-Version: 13\r\n"
                                 "\r\n";
 
+    wxLogMessage("AisStreamClient: sending WS handshake request");
     if (!SslWriteAll(s.ssl, req.data(), req.size()))
     {
+        wxLogMessage("AisStreamClient: WsHandshake write failed");
         return false;
     }
 
+    wxLogMessage("AisStreamClient: reading WS handshake response headers");
     std::string headers;
     if (!SslReadHttpHeaders(s.ssl, headers))
     {
+        wxLogMessage("AisStreamClient: WsHandshake header read failed");
         return false;
     }
+    wxLogMessage("AisStreamClient: received headers (%zu bytes)", headers.size());
 
     if (headers.find("HTTP/1.1 101") == std::string::npos)
     {
+        wxLogMessage("AisStreamClient: response missing 'HTTP/1.1 101' - handshake rejected");
         return false;
     }
 
@@ -290,7 +340,9 @@ bool AisStreamClient::WsHandshake(Session& s, const std::string& host, const std
     SHA1(reinterpret_cast<const unsigned char*>(acceptSrc.data()), acceptSrc.size(), digest);
     const wxString expectedAccept = wxBase64Encode(digest, sizeof(digest));
 
-    return headers.find(expectedAccept.ToStdString()) != std::string::npos;
+    const bool ok = headers.find(expectedAccept.ToStdString()) != std::string::npos;
+    wxLogMessage("AisStreamClient: WsHandshake Sec-WebSocket-Accept validation: %s", ok ? "OK" : "FAILED");
+    return ok;
 }
 
 bool AisStreamClient::WsSendFrame(Session& s, WsOpcode opcode, const std::string& payload)
@@ -330,6 +382,7 @@ bool AisStreamClient::WsSendFrame(Session& s, WsOpcode opcode, const std::string
         frame[headerSize + i] = static_cast<unsigned char>(payload[i]) ^ mask[i % 4];
     }
 
+    wxLogMessage("AisStreamClient: WsSendFrame opcode=%d payloadLen=%zu", static_cast<int>(opcode), len);
     return SslWriteAll(s.ssl, reinterpret_cast<const char*>(frame.data()), frame.size());
 }
 
@@ -371,6 +424,10 @@ bool AisStreamClient::WsReadFrame(Session& s, std::string& payloadOut, WsOpcode&
         }
     }
 
+    wxLogMessage("AisStreamClient: WsReadFrame opcode=%d masked=%d len=%llu",
+                 static_cast<int>(opcodeOut), masked ? 1 : 0,
+                 static_cast<unsigned long long>(len));
+
     unsigned char maskKey[4] = {0, 0, 0, 0};
     if (masked)
     {
@@ -396,6 +453,7 @@ bool AisStreamClient::WsReadFrame(Session& s, std::string& payloadOut, WsOpcode&
     }
 
     payloadOut = std::move(payload);
+    wxLogMessage("AisStreamClient: WsReadFrame payload received (%zu bytes)", payloadOut.size());
     return true;
 }
 
@@ -405,8 +463,12 @@ bool AisStreamClient::WsReadFrame(Session& s, std::string& payloadOut, WsOpcode&
 ////////////////////////
 void AisStreamClient::Start(double latitude, double longitude, double boxSizeDegrees, SentenceCallback onSentence)
 {
+    wxLogMessage("AisStreamClient: Start() called, lat=%f lon=%f box=%f",
+                 latitude, longitude, boxSizeDegrees);
+
     if (m_streaming.load())
     {
+        wxLogMessage("AisStreamClient: Start() no-op, already streaming");
         return; // already running
     }
 
@@ -415,16 +477,23 @@ void AisStreamClient::Start(double latitude, double longitude, double boxSizeDeg
     // calls std::terminate.
     if (m_thread.joinable())
     {
+        wxLogMessage("AisStreamClient: Start() joining previous worker thread");
         m_thread.join();
+        wxLogMessage("AisStreamClient: Start() previous worker thread joined");
     }
 
     m_onSentence = std::move(onSentence);
     m_streaming = true;
+    wxLogMessage("AisStreamClient: Start() spawning worker thread");
     m_thread = std::thread(&AisStreamClient::ThreadFunc, this, latitude, longitude, boxSizeDegrees);
+    wxLogMessage("AisStreamClient: Start() worker thread spawned, id=%s",
+                 [&]{ std::ostringstream ss; ss << m_thread.get_id(); return ss.str(); }().c_str());
 }
 
 void AisStreamClient::Stop()
 {
+    wxLogMessage("AisStreamClient: Stop() called");
+
     // No early-out on m_streaming: the worker clears that flag itself when
     // the connection drops, but the thread still needs joining.
     m_streaming = false;
@@ -439,20 +508,29 @@ void AisStreamClient::Stop()
         std::lock_guard<std::mutex> lock(m_sessionMutex);
         if (m_session && m_session->rawSocket != kInvalidSocket)
         {
+            wxLogMessage("AisStreamClient: Stop() closing socket to unblock worker");
             CloseSocket(m_session->rawSocket);
+        }
+        else
+        {
+            wxLogMessage("AisStreamClient: Stop() no active session/socket to close");
         }
     }
 
     if (m_thread.joinable())
     {
+        wxLogMessage("AisStreamClient: Stop() joining worker thread");
         m_thread.join();
+        wxLogMessage("AisStreamClient: Stop() worker thread joined");
     }
 }
 
 void AisStreamClient::Restart(double latitude, double longitude, double boxSizeDegrees, SentenceCallback onSentence)
 {
+    wxLogMessage("AisStreamClient: Restart() called");
     if (!m_streaming.load())
     {
+        wxLogMessage("AisStreamClient: Restart() no-op, not currently streaming");
         return;
     }
 
@@ -467,6 +545,7 @@ bool AisStreamClient::IsStreaming() const
 
 void AisStreamClient::ThreadFunc(double latitude, double longitude, double boxSizeDegrees)
 {
+    wxLogMessage("AisStreamClient: ThreadFunc begin");
     try
     {
         Session* sessionPtr = nullptr;
@@ -474,27 +553,33 @@ void AisStreamClient::ThreadFunc(double latitude, double longitude, double boxSi
             std::lock_guard<std::mutex> lock(m_sessionMutex);
             if (!m_streaming.load())
             {
+                wxLogMessage("AisStreamClient: ThreadFunc aborting, Stop() already ran");
                 return; // Stop() already ran; don't open a socket nobody can close
             }
+            wxLogMessage("AisStreamClient: ThreadFunc constructing Session");
             m_session = std::make_unique<Session>();
             sessionPtr = m_session.get();
         }
         auto& session = *sessionPtr;
 
+        wxLogMessage("AisStreamClient: ThreadFunc calling TlsConnect");
         if (!TlsConnect(session, kAisHost, kAisPort))
         {
             throw std::runtime_error("TLS connect failed");
         }
+        wxLogMessage("AisStreamClient: ThreadFunc TlsConnect succeeded");
 
         if (!m_streaming.load())
         {
             throw std::runtime_error("stopped during connect");
         }
 
+        wxLogMessage("AisStreamClient: ThreadFunc calling WsHandshake");
         if (!WsHandshake(session, kAisHost, kAisTarget))
         {
             throw std::runtime_error("WebSocket handshake failed");
         }
+        wxLogMessage("AisStreamClient: ThreadFunc WsHandshake succeeded");
 
         // Search area
         Json::Value box(Json::arrayValue);
@@ -519,10 +604,12 @@ void AisStreamClient::ThreadFunc(double latitude, double longitude, double boxSi
             sub_str.pop_back();
         }
 
+        wxLogMessage("AisStreamClient: ThreadFunc sending subscribe message: %s", sub_str.c_str());
         if (!WsSendFrame(session, WsOpcode::Text, sub_str))
         {
             throw std::runtime_error("Failed to send subscribe message");
         }
+        wxLogMessage("AisStreamClient: ThreadFunc subscribe message sent, entering read loop");
 
         while (m_streaming.load())
         {
@@ -532,43 +619,54 @@ void AisStreamClient::ThreadFunc(double latitude, double longitude, double boxSi
             {
                 // Either Stop() closed the socket, or the connection
                 // dropped. Either way, stop reading.
+                wxLogMessage("AisStreamClient: ThreadFunc WsReadFrame failed, exiting read loop");
                 break;
             }
 
             if (opcode == WsOpcode::Close)
             {
+                wxLogMessage("AisStreamClient: ThreadFunc received Close frame, exiting read loop");
                 break;
             }
 
             if (opcode == WsOpcode::Ping)
             {
                 // Keep the connection alive.
+                wxLogMessage("AisStreamClient: ThreadFunc received Ping, sending Pong");
                 WsSendFrame(session, WsOpcode::Pong, payload);
                 continue;
             }
 
             if (opcode != WsOpcode::Text)
             {
+                wxLogMessage("AisStreamClient: ThreadFunc ignoring frame opcode=%d", static_cast<int>(opcode));
                 continue; // ignore binary/pong/continuation frames
             }
 
+            wxLogMessage("AisStreamClient: ThreadFunc parsing JSON payload (%zu bytes)", payload.size());
             Json::Value ev;
             Json::Reader reader;
             if (reader.parse(payload, ev))
             {
+                wxLogMessage("AisStreamClient: ThreadFunc JSON parsed ok, calling ProcessAisEvent");
                 if (m_onSentence)
                 {
                     ProcessAisEvent(ev, m_onSentence);
                 }
+                wxLogMessage("AisStreamClient: ThreadFunc ProcessAisEvent returned");
             }
-            // else: ignore malformed frames.
+            else
+            {
+                wxLogMessage("AisStreamClient: ThreadFunc JSON parse failed, ignoring malformed frame");
+            }
         }
     }
-    catch (const std::exception&)
+    catch (const std::exception& ex)
     {
-        // Ignore
+        wxLogMessage("AisStreamClient: ThreadFunc caught exception: %s", ex.what());
     }
 
+    wxLogMessage("AisStreamClient: ThreadFunc cleaning up session");
     m_streaming = false;
 
     // Tear down unlocked: ~Session's SSL_shutdown blocks, and Stop() must never wait on it.
@@ -580,6 +678,8 @@ void AisStreamClient::ThreadFunc(double latitude, double longitude, double boxSi
     if (session_out && session_out->rawSocket != kInvalidSocket)
     {
         // Close first so SSL_shutdown fails fast instead of writing to a dead peer.
+        wxLogMessage("AisStreamClient: ThreadFunc closing socket before Session teardown");
         CloseSocket(session_out->rawSocket);
     }
+    wxLogMessage("AisStreamClient: ThreadFunc end (session_out destructor runs next)");
 }
