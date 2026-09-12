@@ -93,7 +93,18 @@ if (NOT ${BUILD_TYPE} STREQUAL "flatpak")
   #
   if (APPLE)
     include(MacosWxwidgets)
+    # Homebrew's openssl is keg-only, so find_package(OpenSSL) in
+    # PluginLibs needs a root hint unless the user provides one.
+    if (NOT DEFINED OPENSSL_ROOT_DIR AND NOT DEFINED ENV{OPENSSL_ROOT_DIR})
+      foreach (_ssl_prefix /opt/homebrew/opt/openssl@3 /usr/local/opt/openssl@3)
+        if (EXISTS ${_ssl_prefix})
+          set(OPENSSL_ROOT_DIR ${_ssl_prefix})
+          break ()
+        endif ()
+      endforeach ()
+    endif ()
   endif ()
+
   include(PluginInstall)
   if (QT_ANDROID)
     include(AndroidLibs)
