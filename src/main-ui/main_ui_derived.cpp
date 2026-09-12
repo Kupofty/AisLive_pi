@@ -1,5 +1,7 @@
 #include <cmath>
 
+#include <wx/app.h>
+
 #include "main_ui_derived.h"
 #include "settings/global_settings.h"
 #include "plugin/plugin.h"
@@ -122,17 +124,20 @@ void DialogMainGui::StartAisStream()
         return; // already running
     }
 
-    // NOTE: this callback runs on AisStreamClient's background thread, not
-    // the GUI thread - same as the previous implementation. If
-    // plugin->sendNmeaSentence() or anything downstream of it ever touches
-    // wx widgets directly, it should marshal back via wxTheApp->CallAfter().
+    // This callback runs on AisStreamClient's background thread; the OpenCPN
+    // plugin API is not thread-safe, so marshal the push to the GUI thread.
+    // The plugin pointer and sentence are captured by value so the queued
+    // call stays valid even if this dialog is destroyed first.
     m_aisStream.Start(m_searchLatitude, m_searchLongitude, m_searchBoxSize,
         [this](const wxString& sentence)
         {
-            if (plugin)
+            wxTheApp->CallAfter([plugin = this->plugin, sentence]()
             {
-                plugin->sendNmeaSentence(sentence);
-            }
+                if (plugin)
+                {
+                    plugin->sendNmeaSentence(sentence);
+                }
+            });
         });
 
     m_staticText_streamState->SetLabel(_("Running"));
@@ -156,12 +161,17 @@ void DialogMainGui::RestartAisStream()
         return;
     }
 
+    // Same marshaling as StartAisStream: the callback runs on the websocket
+    // thread and the plugin API must only be called from the GUI thread.
     m_aisStream.Restart(m_searchLatitude, m_searchLongitude, m_searchBoxSize,
         [this](const wxString& sentence)
         {
-            if (plugin)
+            wxTheApp->CallAfter([plugin = this->plugin, sentence]()
             {
-                plugin->sendNmeaSentence(sentence);
-            }
+                if (plugin)
+                {
+                    plugin->sendNmeaSentence(sentence);
+                }
+            });
         });
 }
