@@ -104,7 +104,6 @@ if (NOT ${BUILD_TYPE} STREQUAL "flatpak")
       endforeach ()
     endif ()
   endif ()
-
   include(PluginInstall)
   if (QT_ANDROID)
     include(AndroidLibs)
@@ -149,6 +148,23 @@ if (NOT ${BUILD_TYPE} STREQUAL "flatpak")
     add_subdirectory("${CMAKE_SOURCE_DIR}/third-party/IXWebSocket" EXCLUDE_FROM_ALL)
   endfunction()
   ais_add_ixwebsocket()
+
+  # Guard against a CRT mismatch: force ixwebsocket to use the same MSVC
+  # runtime library selection as the rest of this target, rather than
+  # relying on it being correctly inherited through the function()/
+  # add_subdirectory() call above. A /MD vs /MT (or CRT version) mismatch
+  # between statically-linked object code and the rest of the binary is a
+  # classic cause of a crash on the very first heap allocation done by the
+  # mismatched code -- exactly the symptom seen with ix::WebSocket's
+  # constructor crashing on Windows.
+  if (MSVC)
+    get_target_property(_plugin_runtime_lib ${CMAKE_PROJECT_NAME} MSVC_RUNTIME_LIBRARY)
+    if (NOT _plugin_runtime_lib)
+      set(_plugin_runtime_lib "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+    endif ()
+    set_target_properties(ixwebsocket PROPERTIES MSVC_RUNTIME_LIBRARY "${_plugin_runtime_lib}")
+    message(STATUS "ixwebsocket MSVC_RUNTIME_LIBRARY forced to: ${_plugin_runtime_lib}")
+  endif ()
 
   # Static-lib objects must be position-independent to be linked into our
   # shared plugin library.
