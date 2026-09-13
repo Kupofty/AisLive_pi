@@ -110,6 +110,11 @@ void DialogMainGui::OnScroll_UpdateSearchBoxSize(wxScrollEvent& event)
     updateSearchBoxSize(degrees);
 }
 
+void DialogMainGui::OnButtonClick_UpdateSearchPositionOnBoat(wxCommandEvent& event)
+{
+    updateSearchPosition(m_boatLatitude, m_boatLongitude);
+}
+
 
 
 ////////////////////

@@ -26,6 +26,7 @@ class DialogMainGui : public DialogMainGuiBase
         void OnButtonClick_startStream(wxCommandEvent& event) override;
         void OnButtonClick_stopStream(wxCommandEvent& event) override;
         void OnScroll_UpdateSearchBoxSize(wxScrollEvent& event) override;
+        void OnButtonClick_UpdateSearchPositionOnBoat(wxCommandEvent& event) override;
 
     private:
         AisStreamClient m_aisStream;

@@ -40,6 +40,8 @@ class DialogMainGuiBase : public wxDialog
 		wxStaticText* m_staticText2;
 		wxStaticText* m_staticText_streamState;
 		wxStaticLine* m_staticline1;
+		wxButton* m_button_updateOnBoatPosition;
+		wxStaticLine* m_staticline2;
 		wxStaticText* m_staticText4;
 		wxStaticText* m_staticText_searchLatitude;
 		wxStaticText* m_staticText6;
@@ -52,6 +54,7 @@ class DialogMainGuiBase : public wxDialog
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_startStream( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_stopStream( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_UpdateSearchPositionOnBoat( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnScroll_UpdateSearchBoxSize( wxScrollEvent& event ) { event.Skip(); }
 
 

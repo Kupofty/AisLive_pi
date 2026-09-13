@@ -68,7 +68,7 @@ AisStreamClient::~AisStreamClient()
 ////////////////
 std::string AisStreamClient::BuildSubscribeMessage(double latitude, double longitude, double boxSizeDegrees) const
 {
-    // Search area
+    // Search area centered on search position
     Json::Value box(Json::arrayValue);
     box.append(latitude  - boxSizeDegrees / 2.0);
     box.append(longitude - boxSizeDegrees / 2.0);

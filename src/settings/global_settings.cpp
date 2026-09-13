@@ -14,4 +14,4 @@ int g_windowPosY = 0;
 bool g_keepWindowActive = 0;
 
 //Last search boxsize
-double g_lastSearchBoxSize = 1;
+double g_lastSearchBoxSize = 1; //degree

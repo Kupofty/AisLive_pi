@@ -66,6 +66,18 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 
 	bSizer2->Add( 0, 0, 1, wxEXPAND, 5 );
 
+	m_button_updateOnBoatPosition = new wxButton( this, wxID_ANY, _("Update search position on boat"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer2->Add( m_button_updateOnBoatPosition, 0, wxALIGN_CENTER|wxALL, 5 );
+
+
+	bSizer2->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_staticline2 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	bSizer2->Add( m_staticline2, 0, wxEXPAND | wxALL, 5 );
+
+
+	bSizer2->Add( 0, 0, 1, wxEXPAND, 5 );
+
 	wxBoxSizer* bSizer4;
 	bSizer4 = new wxBoxSizer( wxHORIZONTAL );
 
@@ -76,7 +88,7 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 	m_staticText4->Wrap( -1 );
 	bSizer4->Add( m_staticText4, 0, wxALL, 5 );
 
-	m_staticText_searchLatitude = new wxStaticText( this, wxID_ANY, _("0°"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText_searchLatitude = new wxStaticText( this, wxID_ANY, _("0"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText_searchLatitude->Wrap( -1 );
 	bSizer4->Add( m_staticText_searchLatitude, 0, wxALL, 5 );
 
@@ -87,7 +99,7 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 	m_staticText6->Wrap( -1 );
 	bSizer4->Add( m_staticText6, 0, wxALL, 5 );
 
-	m_staticText_searchLongitude = new wxStaticText( this, wxID_ANY, _("0°"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText_searchLongitude = new wxStaticText( this, wxID_ANY, _("0"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText_searchLongitude->Wrap( -1 );
 	bSizer4->Add( m_staticText_searchLongitude, 0, wxALL, 5 );
 
@@ -133,6 +145,7 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( DialogMainGuiBase::OnClose ) );
 	m_button_start->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogMainGuiBase::OnButtonClick_startStream ), NULL, this );
 	m_button_stop->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogMainGuiBase::OnButtonClick_stopStream ), NULL, this );
+	m_button_updateOnBoatPosition->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogMainGuiBase::OnButtonClick_UpdateSearchPositionOnBoat ), NULL, this );
 	m_slider_searchBoxSize->Connect( wxEVT_SCROLL_TOP, wxScrollEventHandler( DialogMainGuiBase::OnScroll_UpdateSearchBoxSize ), NULL, this );
 	m_slider_searchBoxSize->Connect( wxEVT_SCROLL_BOTTOM, wxScrollEventHandler( DialogMainGuiBase::OnScroll_UpdateSearchBoxSize ), NULL, this );
 	m_slider_searchBoxSize->Connect( wxEVT_SCROLL_LINEUP, wxScrollEventHandler( DialogMainGuiBase::OnScroll_UpdateSearchBoxSize ), NULL, this );
