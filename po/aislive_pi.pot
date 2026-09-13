@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 22:45+0200\n"
+"POT-Creation-Date: 2026-09-13 22:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,35 +30,51 @@ msgstr ""
 msgid "Not running"
 msgstr ""
 
-#: src/main-ui/main_ui_base.cpp:75 src/main-ui/main_ui_base.cpp:86
+#: src/main-ui/main_ui_base.cpp:69
+msgid "Update search position on boat"
+msgstr ""
+
+#: src/main-ui/main_ui_base.cpp:87 src/main-ui/main_ui_base.cpp:98
 msgid "Latitude:"
 msgstr ""
 
-#: src/main-ui/main_ui_base.cpp:79 src/main-ui/main_ui_base.cpp:90
-msgid "0°"
+#: src/main-ui/main_ui_base.cpp:91
+msgid "0° N"
 msgstr ""
 
-#: src/main-ui/main_ui_base.cpp:106
+#: src/main-ui/main_ui_base.cpp:102
+msgid "0° E"
+msgstr ""
+
+#: src/main-ui/main_ui_base.cpp:118
 msgid "Search box size:"
 msgstr ""
 
-#: src/main-ui/main_ui_base.cpp:110
+#: src/main-ui/main_ui_base.cpp:122
 msgid "1° x 1°"
 msgstr ""
 
-#: src/main-ui/main_ui_base.h:60
+#: src/main-ui/main_ui_base.h:63
 msgid "AisLive Plugin"
 msgstr ""
 
 #: src/main-ui/main_ui_derived.cpp:196
-msgid "Running"
-msgstr ""
-
-#: src/main-ui/main_ui_derived.cpp:207
 msgid "Stopped"
 msgstr ""
 
-#: src/main-ui/main_ui_derived.h:17
+#: src/main-ui/main_ui_derived.cpp:200
+msgid "Connecting..."
+msgstr ""
+
+#: src/main-ui/main_ui_derived.cpp:204
+msgid "Running"
+msgstr ""
+
+#: src/main-ui/main_ui_derived.cpp:208
+msgid "Error"
+msgstr ""
+
+#: src/main-ui/main_ui_derived.h:14
 msgid "AisLive Plugin GUI"
 msgstr ""
 

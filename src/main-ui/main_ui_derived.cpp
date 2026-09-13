@@ -47,12 +47,14 @@ void DialogMainGui::updateSearchPosition(double lat, double lon)
     const wxString latDir = lat >= 0.0 ? "N" : "S";
     const wxString lonDir = lon >= 0.0 ? "E" : "W";
 
+    const wxString degreeSymbol(wxUniChar(0x00B0));
+
     m_staticText_searchLatitude->SetLabel(
-        wxString::Format("%.6f %s", std::abs(lat), latDir)
+        wxString::Format("%.6f", std::abs(lat)) + degreeSymbol + " " + latDir
         );
 
     m_staticText_searchLongitude->SetLabel(
-        wxString::Format("%.6f %s", std::abs(lon), lonDir)
+        wxString::Format("%.6f", std::abs(lon)) + degreeSymbol + " " + lonDir
         );
 
     //Refresh stream with updated search location
@@ -64,8 +66,12 @@ void DialogMainGui::updateSearchBoxSize(double degrees)
     m_slider_searchBoxSize->SetValue(degrees);
 
     m_searchBoxSize = degrees;
+
+    const wxString degreeSymbol(wxUniChar(0x00B0));
     m_staticText_searchBoxSize->SetLabel(
-        wxString::Format("%.0fdeg x %.0fdeg", degrees, degrees)
+        wxString::Format("%.0f", degrees) + degreeSymbol +
+        " x " +
+        wxString::Format("%.0f", degrees) + degreeSymbol
         );
 
     RestartAisStream();

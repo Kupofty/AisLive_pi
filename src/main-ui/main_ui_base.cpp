@@ -88,7 +88,7 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 	m_staticText4->Wrap( -1 );
 	bSizer4->Add( m_staticText4, 0, wxALL, 5 );
 
-	m_staticText_searchLatitude = new wxStaticText( this, wxID_ANY, _("0"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText_searchLatitude = new wxStaticText( this, wxID_ANY, _("0° N"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText_searchLatitude->Wrap( -1 );
 	bSizer4->Add( m_staticText_searchLatitude, 0, wxALL, 5 );
 
@@ -99,7 +99,7 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 	m_staticText6->Wrap( -1 );
 	bSizer4->Add( m_staticText6, 0, wxALL, 5 );
 
-	m_staticText_searchLongitude = new wxStaticText( this, wxID_ANY, _("0"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText_searchLongitude = new wxStaticText( this, wxID_ANY, _("0° E"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText_searchLongitude->Wrap( -1 );
 	bSizer4->Add( m_staticText_searchLongitude, 0, wxALL, 5 );
 

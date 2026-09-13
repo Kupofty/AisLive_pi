@@ -1,3 +1,5 @@
+src/ais-stream/ais_stream_client.cpp
+src/ais-stream/ais_stream_client.h
 src/main-ui/main_ui_base.cpp
 src/main-ui/main_ui_base.h
 src/main-ui/main_ui_derived.cpp
