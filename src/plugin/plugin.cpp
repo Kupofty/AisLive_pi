@@ -284,6 +284,8 @@ void Plugin::OnToolbarToolCallback(int id)
 
     if(!g_keepWindowActive)
     {
+
+      myGUI->StopAisStream();
       SetCanvasContextMenuItemViz(menuID, false);
     }
   }
@@ -335,7 +337,10 @@ void Plugin::OnGuiClosed()
   myGUI->Hide();
 
   if(!g_keepWindowActive)
+  {
+    myGUI->StopAisStream();
     SetCanvasContextMenuItemViz(menuID, false);
+  }
 
   //Refresh screen
   RequestRefresh(parentWindow);

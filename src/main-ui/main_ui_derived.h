@@ -19,6 +19,7 @@ class DialogMainGui : public DialogMainGuiBase
         void updateBoatPosition(double lat, double lon);
         void updateSearchBoxSize(double degrees);
         double getSearchBoxSize();
+        void StopAisStream();
 
     protected:
         void OnClose(wxCloseEvent& event) override;
@@ -30,7 +31,6 @@ class DialogMainGui : public DialogMainGuiBase
         AisStreamClient m_aisStream;
 
         void StartAisStream();
-        void StopAisStream();
         void RestartAisStream();
 
         bool m_initialBoatPositionSet = false;
