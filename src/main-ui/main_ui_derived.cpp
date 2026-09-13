@@ -10,7 +10,21 @@
 ////////////////////////////
 DialogMainGui::DialogMainGui(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style) : DialogMainGuiBase( parent )
 {
-
+    // AisStreamClient may invoke this from its own background thread (e.g.
+    // an unexpected disconnect), so marshal back to the GUI thread. Using
+    // this->CallAfter() (rather than wxTheApp->CallAfter()) ties the
+    // pending call to this dialog's event handler: if the dialog is
+    // destroyed (see ~DialogMainGui -> StopAisStream()) before the call
+    // runs, wxWidgets drops it instead of invoking a lambda that captured
+    // a now-dangling `this`.
+    m_aisStream.SetStateCallback(
+        [this](AisStreamClient::State state)
+        {
+            this->CallAfter([this, state]()
+                             {
+                                 OnAisStreamStateChanged(state);
+                             });
+        });
 }
 
 DialogMainGui::~DialogMainGui()
@@ -139,8 +153,6 @@ void DialogMainGui::StartAisStream()
                 plugin->sendNmeaSentence(sentence);
             }
         });
-
-    m_staticText_streamState->SetLabel(_("Running"));
 }
 
 void DialogMainGui::StopAisStream()
@@ -151,7 +163,6 @@ void DialogMainGui::StopAisStream()
     }
 
     m_aisStream.Stop();
-    m_staticText_streamState->SetLabel(_("Stopped"));
 }
 
 void DialogMainGui::RestartAisStream()
@@ -169,4 +180,26 @@ void DialogMainGui::RestartAisStream()
                 plugin->sendNmeaSentence(sentence);
             }
         });
+}
+
+void DialogMainGui::OnAisStreamStateChanged(AisStreamClient::State state)
+{
+    switch (state)
+    {
+        case AisStreamClient::State::Stopped:
+            m_staticText_streamState->SetLabel(_("Stopped"));
+            break;
+
+        case AisStreamClient::State::Connecting:
+            m_staticText_streamState->SetLabel(_("Connecting..."));
+            break;
+
+        case AisStreamClient::State::Running:
+            m_staticText_streamState->SetLabel(_("Running"));
+            break;
+
+        case AisStreamClient::State::Error:
+            m_staticText_streamState->SetLabel(_("Error"));
+            break;
+    }
 }

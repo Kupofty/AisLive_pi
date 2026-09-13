@@ -33,6 +33,7 @@ class DialogMainGui : public DialogMainGuiBase
 
         void StartAisStream();
         void RestartAisStream();
+        void OnAisStreamStateChanged(AisStreamClient::State state);
 
         bool m_initialBoatPositionSet = false;
         double m_boatLatitude = 0;

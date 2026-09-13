@@ -109,6 +109,34 @@ void AisStreamClient::HandleMessage(const std::string& payload)
 
 
 
+///////////////
+/// State   ///
+///////////////
+void AisStreamClient::SetStateCallback(StateCallback onStateChanged)
+{
+    std::lock_guard<std::mutex> lock(m_stateCallbackMutex);
+    m_onStateChanged = std::move(onStateChanged);
+}
+
+void AisStreamClient::SetState(State state)
+{
+    // Copy the callback out under the lock rather than holding the lock
+    // while invoking it, so a SetStateCallback() call from another thread
+    // can't block on (or deadlock with) whatever the callback itself does.
+    StateCallback cb;
+    {
+        std::lock_guard<std::mutex> lock(m_stateCallbackMutex);
+        cb = m_onStateChanged;
+    }
+
+    if (cb)
+    {
+        cb(state);
+    }
+}
+
+
+
 /////////////////////////
 /// Public interface  ///
 /////////////////////////
@@ -137,11 +165,16 @@ void AisStreamClient::Start(double latitude, double longitude, double boxSizeDeg
                                      case ix::WebSocketMessageType::Open:
                                      {
                                          // Send the subscribe request once the connection is up.
-                                         std::lock_guard<std::mutex> lk(m_socketMutex);
-                                         if (m_socket)
+                                         // Scoped so the lock is released before SetState() below
+                                         // invokes the (user-supplied) state callback.
                                          {
-                                             m_socket->send(subscribeMsg);
+                                             std::lock_guard<std::mutex> lk(m_socketMutex);
+                                             if (m_socket)
+                                             {
+                                                 m_socket->send(subscribeMsg);
+                                             }
                                          }
+                                         SetState(State::Running);
                                          break;
                                      }
 
@@ -150,10 +183,16 @@ void AisStreamClient::Start(double latitude, double longitude, double boxSizeDeg
                                          break;
 
                                      case ix::WebSocketMessageType::Error:
-                                     case ix::WebSocketMessageType::Close:
-                                         // Connection dropped or failed; reflect that in IsStreaming()
-                                         // so the caller knows to Start() again if it wants to retry.
+                                         // Connection failed unexpectedly; reflect that in
+                                         // IsStreaming() so the caller knows to Start() again
+                                         // if it wants to retry.
                                          m_streaming = false;
+                                         SetState(State::Error);
+                                         break;
+
+                                     case ix::WebSocketMessageType::Close:
+                                         m_streaming = false;
+                                         SetState(State::Stopped);
                                          break;
 
                                      default:
@@ -171,6 +210,7 @@ void AisStreamClient::Start(double latitude, double longitude, double boxSizeDeg
     }
 
     m_streaming = true;
+    SetState(State::Connecting);
     m_socket->start();
 }
 
@@ -193,6 +233,8 @@ void AisStreamClient::Stop()
         // thread has fully exited.
         socket->stop();
     }
+
+    SetState(State::Stopped);
 }
 
 void AisStreamClient::Restart(double latitude, double longitude, double boxSizeDegrees, SentenceCallback onSentence)
