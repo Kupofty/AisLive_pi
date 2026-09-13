@@ -1,6 +1,6 @@
 ## Custom Install Process
 
-Follow instructions in the [plugin's manual](PUT_YOUR_URL_HERE).
+Follow instructions in the [plugin's manual](https://github.com/Kupofty/AisLive_pi/blob/main/manual/modules/ROOT/pages/index.adoc).
 
 
 ## Generic Install Process

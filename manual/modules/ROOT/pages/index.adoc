@@ -10,7 +10,7 @@ Plugin created by ©link:https://github.com/Kupofty[Kupofty] 2026
 //----------------------------------------------------------------------------------------------------
 == Manual Version
 
-This manual applies to **version x.y.z**.
+This manual applies to **version 1.0.0**.
 
 
 //----------------------------------------------------------------------------------------------------
@@ -31,7 +31,8 @@ AisLive is an https://opencpn.org[OpenCPN] plugin.
 
 //----------------------------------------------------------------------------------------------------
 == Links
-*Sources:*
+*AIS Stream Service:*
+https://openwaters.io/ais/
 
 
 
@@ -63,7 +64,7 @@ AisLive is an https://opencpn.org[OpenCPN] plugin.
 
 Clone the repository:
 ----
-git clone https://github.com/Kupofty/Template_pi
+git clone https://github.com/Kupofty/AisLive_pi.git
 ----
 
 Create the build directory:
@@ -92,6 +93,6 @@ For more information, see the INSTALL.md file in the GitHub repository.
 
 //----------------------------------------------------------------------------------------------------
 == User Interface
-To open the plugin, click on the toolbar icon :
+To open the plugin, click on the toolbar icon
 
 

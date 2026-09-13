@@ -1,7 +1,7 @@
 site:
   title: AisLive Plugin Manual
   url:  https://github.com/Kupofty/AisLive_pi
-  start_page: template_plugin:ROOT:index.adoc
+  start_page: aislive_plugin:ROOT:index.adoc
 
 content:
   sources:

@@ -34,11 +34,11 @@ void DialogMainGui::updateSearchPosition(double lat, double lon)
     const wxString lonDir = lon >= 0.0 ? "E" : "W";
 
     m_staticText_searchLatitude->SetLabel(
-        wxString::Format("%.6f°%s", std::abs(lat), latDir)
+        wxString::Format("%.6f %s", std::abs(lat), latDir)
         );
 
     m_staticText_searchLongitude->SetLabel(
-        wxString::Format("%.6f°%s", std::abs(lon), lonDir)
+        wxString::Format("%.6f %s", std::abs(lon), lonDir)
         );
 
     //Refresh stream with updated search location
@@ -51,7 +51,7 @@ void DialogMainGui::updateSearchBoxSize(double degrees)
 
     m_searchBoxSize = degrees;
     m_staticText_searchBoxSize->SetLabel(
-        wxString::Format("%.0f° x %.0f°", degrees, degrees)
+        wxString::Format("%.0fdeg x %.0fdeg", degrees, degrees)
         );
 
     RestartAisStream();
