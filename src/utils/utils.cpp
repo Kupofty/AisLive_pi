@@ -1,5 +1,6 @@
-#include "utils.h"
+#define _USE_MATH_DEFINES
 
+#include "utils.h"
 #include <cmath>
 
 namespace Utils {
