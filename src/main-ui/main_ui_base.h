@@ -22,6 +22,7 @@
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 #include <wx/statline.h>
+#include <wx/checkbox.h>
 #include <wx/slider.h>
 #include <wx/dialog.h>
 
@@ -40,7 +41,7 @@ class DialogMainGuiBase : public wxDialog
 		wxStaticText* m_staticText2;
 		wxStaticText* m_staticText_streamState;
 		wxStaticLine* m_staticline1;
-		wxButton* m_button_updateOnBoatPosition;
+		wxCheckBox* m_checkBox_followBoatMode;
 		wxStaticLine* m_staticline2;
 		wxStaticText* m_staticText9;
 		wxStaticText* m_staticText4;
@@ -56,7 +57,7 @@ class DialogMainGuiBase : public wxDialog
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_startStream( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_stopStream( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnButtonClick_UpdateSearchPositionOnBoat( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnCheckBox_FollowBoatMode( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnScroll_UpdateSearchBoxSize( wxScrollEvent& event ) { event.Skip(); }
 
 

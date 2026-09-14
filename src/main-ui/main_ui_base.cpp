@@ -72,8 +72,9 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 
 	bSizer61->Add( 0, 0, 1, wxEXPAND, 5 );
 
-	m_button_updateOnBoatPosition = new wxButton( this, wxID_ANY, _("Update search position on boat"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer61->Add( m_button_updateOnBoatPosition, 0, wxALIGN_CENTER|wxALL, 5 );
+	m_checkBox_followBoatMode = new wxCheckBox( this, wxID_ANY, _("Follow boat"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_checkBox_followBoatMode->SetValue(true);
+	bSizer61->Add( m_checkBox_followBoatMode, 0, wxALIGN_CENTER|wxALL, 5 );
 
 
 	bSizer61->Add( 0, 0, 1, wxEXPAND, 5 );
@@ -162,7 +163,7 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( DialogMainGuiBase::OnClose ) );
 	m_button_start->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogMainGuiBase::OnButtonClick_startStream ), NULL, this );
 	m_button_stop->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogMainGuiBase::OnButtonClick_stopStream ), NULL, this );
-	m_button_updateOnBoatPosition->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DialogMainGuiBase::OnButtonClick_UpdateSearchPositionOnBoat ), NULL, this );
+	m_checkBox_followBoatMode->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( DialogMainGuiBase::OnCheckBox_FollowBoatMode ), NULL, this );
 	m_slider_searchBoxSize->Connect( wxEVT_SCROLL_TOP, wxScrollEventHandler( DialogMainGuiBase::OnScroll_UpdateSearchBoxSize ), NULL, this );
 	m_slider_searchBoxSize->Connect( wxEVT_SCROLL_BOTTOM, wxScrollEventHandler( DialogMainGuiBase::OnScroll_UpdateSearchBoxSize ), NULL, this );
 	m_slider_searchBoxSize->Connect( wxEVT_SCROLL_LINEUP, wxScrollEventHandler( DialogMainGuiBase::OnScroll_UpdateSearchBoxSize ), NULL, this );

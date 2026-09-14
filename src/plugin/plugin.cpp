@@ -309,11 +309,11 @@ void Plugin::OnContextMenuItemCallback(int id)
         switch(dlg.m_action)
         {
             case DialogAction::UpdateToCursor:
-                myGUI->updateSearchPosition(m_cursor_lat, m_cursor_lon);
+                myGUI->manualUpdateSearchPosition(m_cursor_lat, m_cursor_lon);
                 break;
 
             case DialogAction::UpdateToBoat:
-                myGUI->updateSearchPosition(m_boat_lat, m_boat_lon);
+                myGUI->activateFollowBoatMode();
                 break;
 
             case DialogAction::None:

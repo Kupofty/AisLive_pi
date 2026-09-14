@@ -16,3 +16,5 @@ src/settings/settings_ui_base.cpp
 src/settings/settings_ui_base.h
 src/settings/settings_ui_derived.cpp
 src/settings/settings_ui_derived.h
+src/utils/utils.cpp
+src/utils/utils.h

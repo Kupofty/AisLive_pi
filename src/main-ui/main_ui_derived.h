@@ -15,7 +15,9 @@ class DialogMainGui : public DialogMainGuiBase
                       const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE);
         ~DialogMainGui();
         Plugin* plugin = nullptr;
-        void updateSearchPosition(double lat, double lon);
+
+        void activateFollowBoatMode();
+        void manualUpdateSearchPosition(double lat, double lon);
         void updateBoatPosition(double lat, double lon);
         void updateSearchBoxSize(double degrees);
         double getSearchBoxSize();
@@ -26,7 +28,7 @@ class DialogMainGui : public DialogMainGuiBase
         void OnButtonClick_startStream(wxCommandEvent& event) override;
         void OnButtonClick_stopStream(wxCommandEvent& event) override;
         void OnScroll_UpdateSearchBoxSize(wxScrollEvent& event) override;
-        void OnButtonClick_UpdateSearchPositionOnBoat(wxCommandEvent& event) override;
+        void OnCheckBox_FollowBoatMode(wxCommandEvent& event) override;
 
     private:
         AisStreamClient m_aisStream;
@@ -34,8 +36,11 @@ class DialogMainGui : public DialogMainGuiBase
         void StartAisStream();
         void RestartAisStream();
         void OnAisStreamStateChanged(AisStreamClient::State state);
+            void updateSearchPosition(double lat, double lon);
 
         bool m_initialBoatPositionSet = false;
+        bool m_followBoatMode = true;
+
         double m_boatLatitude = 0;
         double m_boatLongitude = 0;
         double m_searchLatitude = 0;

@@ -47,6 +47,10 @@ set(SRC
     ${CMAKE_SOURCE_DIR}/src/plugin/plugin.h
     ${CMAKE_SOURCE_DIR}/src/plugin/plugin.cpp
 
+    # Utils
+    ${CMAKE_SOURCE_DIR}/src/utils/utils.h
+    ${CMAKE_SOURCE_DIR}/src/utils/utils.cpp
+
     # Main UI
     ${CMAKE_SOURCE_DIR}/src/main-ui/main_ui_base.h
     ${CMAKE_SOURCE_DIR}/src/main-ui/main_ui_base.cpp

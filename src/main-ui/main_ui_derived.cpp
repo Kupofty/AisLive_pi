@@ -3,6 +3,10 @@
 #include "main_ui_derived.h"
 #include "settings/global_settings.h"
 #include "plugin/plugin.h"
+#include "utils/utils.h"
+
+
+constexpr double kFollowDistanceThresholdNm = 10.0; // re-center once boat drifts this far from search center
 
 
 ////////////////////////////
@@ -37,6 +41,23 @@ DialogMainGui::~DialogMainGui()
 /////////////////////
 /// Input updates ///
 /////////////////////
+void DialogMainGui::activateFollowBoatMode()
+{
+    m_followBoatMode = true;
+    m_checkBox_followBoatMode->SetValue(true);
+    updateSearchPosition(m_boatLatitude, m_boatLongitude);
+}
+
+void DialogMainGui::manualUpdateSearchPosition(double lat, double lon)
+{
+    //Deactivate follow boat mode
+    m_followBoatMode = false;
+    m_checkBox_followBoatMode->SetValue(false);
+
+    //Update to manually selected position
+    updateSearchPosition(lat, lon);
+}
+
 void DialogMainGui::updateSearchPosition(double lat, double lon)
 {
     //Update search position
@@ -88,6 +109,18 @@ void DialogMainGui::updateBoatPosition(double lat, double lon)
         m_initialBoatPositionSet = true;
         updateSearchPosition(lat, lon);
     }
+
+    //Update search position if boat moved far enough
+    if (m_followBoatMode)
+    {
+        double distanceNm = Utils::GreatCircleDistanceNm(m_searchLatitude, m_searchLongitude,
+                                                         m_boatLatitude, m_boatLongitude);
+
+        if (distanceNm >= kFollowDistanceThresholdNm)
+        {
+            updateSearchPosition(m_boatLatitude, m_boatLongitude);
+        }
+    }
 }
 
 
@@ -130,9 +163,15 @@ void DialogMainGui::OnScroll_UpdateSearchBoxSize(wxScrollEvent& event)
     updateSearchBoxSize(degrees);
 }
 
-void DialogMainGui::OnButtonClick_UpdateSearchPositionOnBoat(wxCommandEvent& event)
+void DialogMainGui::OnCheckBox_FollowBoatMode(wxCommandEvent& event)
 {
-    updateSearchPosition(m_boatLatitude, m_boatLongitude);
+    m_followBoatMode = event.IsChecked();
+
+    // Snap to the boat immediately when the user turns it on
+    if (m_followBoatMode)
+    {
+        updateSearchPosition(m_boatLatitude, m_boatLongitude);
+    }
 }
 
 
