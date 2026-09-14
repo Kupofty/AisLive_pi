@@ -31,16 +31,24 @@ void ProcessAisEvent(const Json::Value& ev, const std::function<void(const wxStr
         }
 
         wxString nmea = wxString::FromUTF8(sentence.asString().c_str());
+
+        // Only forward actual AIS VDM sentences.
+        if (!nmea.StartsWith("!AIVDM"))
+        {
+            continue;
+        }
+
         if (!nmea.EndsWith("\r\n"))
         {
             nmea += "\r\n";
         }
 
+        //Publish sentence to OpenCPN
         sendSentence(nmea);
     }
 }
 
-}
+} //end of namespace
 
 
 

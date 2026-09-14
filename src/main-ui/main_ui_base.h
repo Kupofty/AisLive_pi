@@ -42,8 +42,10 @@ class DialogMainGuiBase : public wxDialog
 		wxStaticLine* m_staticline1;
 		wxButton* m_button_updateOnBoatPosition;
 		wxStaticLine* m_staticline2;
+		wxStaticText* m_staticText9;
 		wxStaticText* m_staticText4;
 		wxStaticText* m_staticText_searchLatitude;
+		wxStaticText* m_staticText10;
 		wxStaticText* m_staticText6;
 		wxStaticText* m_staticText_searchLongitude;
 		wxStaticText* m_staticText8;
@@ -60,7 +62,7 @@ class DialogMainGuiBase : public wxDialog
 
 	public:
 
-		DialogMainGuiBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("AisLive Plugin"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 388,286 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER );
+		DialogMainGuiBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("AisLive Plugin"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 328,279 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER );
 
 		~DialogMainGuiBase();
 

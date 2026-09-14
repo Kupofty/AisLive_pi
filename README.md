@@ -15,7 +15,7 @@ To build from source, see [`INSTALL.md`](INSTALL.md).
 ## Windows temporary workaround
 > **Temporary fix** — This is required for the current Windows release.
 
-On Windows installations, OpenCPN may fail to load the plugin because of a conflict with `msvcp*.dll`.
+On Windows installations, OpenCPN may fail to load the plugin because of a conflict with `msvcp140.dll`.
 
 1. Close OpenCPN.
 2. Open the OpenCPN installation directory (typically `C:\Program Files\OpenCPN`).

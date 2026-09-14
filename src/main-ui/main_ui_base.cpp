@@ -43,7 +43,7 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 
 	bSizer3->Add( 0, 0, 1, wxEXPAND, 5 );
 
-	m_staticText2 = new wxStaticText( this, wxID_ANY, _("Stream:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText2 = new wxStaticText( this, wxID_ANY, _("AIS stream:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText2->Wrap( -1 );
 	bSizer3->Add( m_staticText2, 0, wxALIGN_CENTER|wxALL, 5 );
 
@@ -66,8 +66,20 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 
 	bSizer2->Add( 0, 0, 1, wxEXPAND, 5 );
 
+	wxBoxSizer* bSizer61;
+	bSizer61 = new wxBoxSizer( wxHORIZONTAL );
+
+
+	bSizer61->Add( 0, 0, 1, wxEXPAND, 5 );
+
 	m_button_updateOnBoatPosition = new wxButton( this, wxID_ANY, _("Update search position on boat"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer2->Add( m_button_updateOnBoatPosition, 0, wxALIGN_CENTER|wxALL, 5 );
+	bSizer61->Add( m_button_updateOnBoatPosition, 0, wxALIGN_CENTER|wxALL, 5 );
+
+
+	bSizer61->Add( 0, 0, 1, wxEXPAND, 5 );
+
+
+	bSizer2->Add( bSizer61, 1, wxEXPAND, 5 );
 
 
 	bSizer2->Add( 0, 0, 1, wxEXPAND, 5 );
@@ -84,7 +96,11 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 
 	bSizer4->Add( 0, 0, 1, wxEXPAND, 5 );
 
-	m_staticText4 = new wxStaticText( this, wxID_ANY, _("Latitude:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText9 = new wxStaticText( this, wxID_ANY, _("Search position: "), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText9->Wrap( -1 );
+	bSizer4->Add( m_staticText9, 0, wxALL, 5 );
+
+	m_staticText4 = new wxStaticText( this, wxID_ANY, _("Lat:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText4->Wrap( -1 );
 	bSizer4->Add( m_staticText4, 0, wxALL, 5 );
 
@@ -92,10 +108,11 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 	m_staticText_searchLatitude->Wrap( -1 );
 	bSizer4->Add( m_staticText_searchLatitude, 0, wxALL, 5 );
 
+	m_staticText10 = new wxStaticText( this, wxID_ANY, _("/"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText10->Wrap( -1 );
+	bSizer4->Add( m_staticText10, 0, wxALL, 5 );
 
-	bSizer4->Add( 0, 0, 1, wxEXPAND, 5 );
-
-	m_staticText6 = new wxStaticText( this, wxID_ANY, _("Latitude:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText6 = new wxStaticText( this, wxID_ANY, _("Lon:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText6->Wrap( -1 );
 	bSizer4->Add( m_staticText6, 0, wxALL, 5 );
 
