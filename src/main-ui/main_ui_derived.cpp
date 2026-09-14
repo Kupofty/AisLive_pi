@@ -1,4 +1,5 @@
 #include <cmath>
+#include <algorithm>
 
 #include "main_ui_derived.h"
 #include "settings/global_settings.h"
@@ -6,7 +7,24 @@
 #include "utils/utils.h"
 
 
-constexpr double kFollowDistanceThresholdNm = 10.0; // re-center once boat drifts this far from search center
+namespace {
+
+constexpr double kFollowThresholdFraction = 0.3;
+
+// Returns the re-center threshold in nm, based on the smaller (worst-case)
+// dimension of the search box at the given latitude — the longitude side
+// shrinks as cos(latitude), so it's the limiting factor away from the equator.
+double ComputeFollowThresholdNm(double searchBoxSizeDegrees, double latitude)
+{
+    double halfSideLatNm = (searchBoxSizeDegrees * Utils::kNmPerDegreeLatitude) / 2.0;
+    double halfSideLonNm = halfSideLatNm * std::cos(Utils::DegToRad(latitude));
+
+    double limitingHalfSideNm = std::min(halfSideLatNm, halfSideLonNm);
+
+    return limitingHalfSideNm * kFollowThresholdFraction;
+}
+
+} // namespace
 
 
 ////////////////////////////
@@ -116,7 +134,9 @@ void DialogMainGui::updateBoatPosition(double lat, double lon)
         double distanceNm = Utils::GreatCircleDistanceNm(m_searchLatitude, m_searchLongitude,
                                                          m_boatLatitude, m_boatLongitude);
 
-        if (distanceNm >= kFollowDistanceThresholdNm)
+        double thresholdNm = ComputeFollowThresholdNm(m_searchBoxSize, m_boatLatitude);
+
+        if (distanceNm >= thresholdNm)
         {
             updateSearchPosition(m_boatLatitude, m_boatLongitude);
         }

@@ -3,6 +3,8 @@
 
 namespace Utils {
 
+constexpr double kNmPerDegreeLatitude = 60.0;
+
 // Converts degrees to radians.
 double DegToRad(double deg);
 
