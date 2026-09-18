@@ -1,8 +1,10 @@
 :imagesdir: ../images/
 
+image::logo/banner.png[width=700]
 
 //----------------------------------------------------------------------------------------------------
 == Author
+
 Plugin created by ©link:https://github.com/Kupofty[Kupofty] 2026
 
 
@@ -10,33 +12,49 @@ Plugin created by ©link:https://github.com/Kupofty[Kupofty] 2026
 //----------------------------------------------------------------------------------------------------
 == Manual Version
 
-This manual applies to **version 1.0.0**.
+This manual applies to **version 1.0.0-alpha**.
+
+See what's changed in the https://github.com/Kupofty/AisLive_pi/blob/main/CHANGELOG.md[CHANGELOG].
+
 
 
 //----------------------------------------------------------------------------------------------------
 == Overview
 
-AisLive is an https://opencpn.org[OpenCPN] plugin.
+https://github.com/Kupofty/AisLive_pi[AisLive] is an https://opencpn.org[OpenCPN] plugin that streams live AIS targets from the https://openwaters.io/ais/[OpenWaters.io AIS Stream] service directly into OpenCPN.
 
-[underline]#*Capabilities*#
+The plugin retrieves AIS data for a configurable geographic area and forwards it to OpenCPN as standard AIS NMEA messages. The search area can automatically follow own ship or be manually positioned anywhere on the chart, with a configurable range.
 
-
-
-
-[underline]#*Use Cases*#
+AisLive provides a simple way to view online AIS traffic, monitor activity in different areas, and test AIS-related functionality within OpenCPN.
 
 
+[NOTE]
+====
+It requires an active internet connection.
+====
 
 
+[WARNING]
+====
+- This plugin is **not** a substitute for a real AIS receiver and must not be relied upon for safe navigation. It should be considered informational only and must not replace certified onboard navigation equipment.
+- The OpenWaters.io stream cannot guarantee that every AIS transmission is available or authentic.
+- Data may be delayed, incomplete, or inaccurate.
+====
 
 //----------------------------------------------------------------------------------------------------
 == Links
+
 *AIS Stream Service:*
-https://openwaters.io/ais/
 
+- link:https://openwaters.io/ais/[OpenWaters.io AIS Stream]
 
+*Source Code & Discussions:*
 
-*Discussions:*
+- link:https://github.com/Kupofty/AisLive_pi[GitHub Repository]
+
+*Community Discussions:*
+
+- Cruisers & Sailing forum thread (coming soon)
 
 
 
@@ -45,54 +63,190 @@ https://openwaters.io/ais/
 
 [underline]#*Method 1: Plugin Manager (Recommended)*#
 
-1. Open OpenCPN
-2. Go to *Options → Plugins*
-3. Update catalog and search for the *Template* plugin
-4. Click *Install* then *Enable*
-
+1. Open OpenCPN.
+2. Go to *Options → Plugins*.
+3. Update the catalog and search for the **AisLive** plugin.
+4. Click *Install* then *Enable*.
 
 [underline]#*Method 2: Manual Install (Cloudsmith)*#
 
-1. Go to Cloudsmith
-2. Select the correct tarball for your OS
-3. Download the `.tar.gz` archive (not the `.xml`)
-4. Click on *Options → Plugins → Import plugin...*
-5. Enable plugin in *Options → Plugins*
+1. Go to Cloudsmith.
+2. Select the correct package for your operating system.
+3. Download the `.tar.gz` archive (not the `.xml`).
+4. Open *Options → Plugins → Import plugin...*
+5. Enable the plugin.
 
-
-[underline]#*Method 3: Build from Source (Github)*#
+[underline]#*Method 3: Build from Source (GitHub)*#
 
 Clone the repository:
+
 ----
-git clone https://github.com/Kupofty/AisLive_pi.git
+git clone --recurse-submodules https://github.com/Kupofty/AisLive_pi.git
 ----
 
 Create the build directory:
+
 ----
 mkdir build
 cd build
 ----
 
 .Linux
+
 ----
 cmake ..
 make tarball
 ----
 
 .Windows
+
 ----
 cmake .. -A Win32
 cmake --build . --config Release --target tarball
 ----
 
-Import the tarball in OpenCPN via *Options → Plugins → Import plugin...* and enable it. +
-For more information, see the INSTALL.md file in the GitHub repository.
+Import the generated tarball using *Options → Plugins → Import plugin...* and enable it.
 
+For additional build information, see the https://github.com/Kupofty/AisLive_pi/blob/main/INSTALL.md[INSTALL.md] file in the GitHub repository.
 
 
 
 //----------------------------------------------------------------------------------------------------
 == User Interface
-To open the plugin, click on the toolbar icon
 
+To open the plugin, click the toolbar icon:
+
+image::logo/toolbar_icon.png[width=50]
+
+The main window contains the controls required to connect to the AIS stream, manage the search area, and monitor connection status.
+
+image::main_gui/main_gui.png[]
+
+'''
+
+=== Start Stream
+
+The **Start Stream** button connects to the OpenWaters.io AIS stream and begins receiving live AIS data.
+
+image::main_gui/start_stream.png[]
+
+[underline]#*Controls*#
+
+- **Start**: Connects to the AIS stream and begins transmitting received AIS messages to OpenCPN.
+- **Stop**: Disconnects from the stream and stops receiving new AIS data.
+- **Connection status**: Displays whether the plugin is connected or disconnected.
+
+
+[NOTE]
+====
+An active internet connection is required while using the plugin to stream AIS data.
+====
+
+'''
+
+=== Follow Boat Mode
+
+**Follow Boat** keeps the search area centered on the own ship while navigating.
+
+image::main_gui/follow_boat.png[]
+
+
+Instead of updating continuously, the search area recenters automatically when the own ship has moved roughly one-third of the current search area's width. This reduces unnecessary updates while keeping vessels ahead of the boat within the monitored area.
+
+[NOTE]
+====
+This mode is enabled by default.
+====
+
+'''
+
+=== Search Position
+
+The search position defines the geographic area requested from the AIS stream.
+
+The displayed latitude and longitude indicate the current center of the search area.
+
+- When **Follow Boat** is enabled, the position follows the own ship.
+- When a manual position is selected, the search area remains fixed until changed.
+
+The **Search Area** slider adjusts the monitored region from **1°×1°** up to **10°×10°**.
+
+image::ais_targets_on_map.png[width=600]
+
+[NOTE]
+====
+Larger search areas may contain more AIS targets and require additional data to download and process.
+====
+
+//----------------------------------------------------------------------------------------------------
+== Context Menu
+
+Right-click anywhere on the chart and select **AisLive...**.
+
+image::right_click_menu.png[]
+
+The context menu provides quick access to search position controls without reopening the main window.
+
+[underline]#*Available Actions*#
+
+- **On boat**: Centers the search area on the own ship and enables Follow Boat mode.
+- **On cursor**: Centers the search area on the selected chart location and disables Follow Boat mode.
+
+The second option is useful when monitoring traffic in another harbor or coastal area while remaining elsewhere on the chart.
+
+
+
+//----------------------------------------------------------------------------------------------------
+== Settings
+
+The plugin settings are available through *Options → Plugins → AisLive*.
+
+image::catalog.png[]
+
+Click **Preferences** to open the settings window.
+
+'''
+
+=== Options
+
+image::preferences/preferences_1.png[]
+
+[horizontal]
+Keep transmitting when window is closed:: Keeps the AIS stream active after closing the plugin window, allowing vessel traffic to continue updating while using other OpenCPN tools.
+
+Enabled by default.
+
+'''
+
+=== Display
+
+image::preferences/preferences_2.png[]
+
+[horizontal]
+Restore last window position:: Restores the previous window position when reopening the plugin.
+Restore last window size:: Restores the previous window size when reopening the plugin.
+
+
+
+//----------------------------------------------------------------------------------------------------
+== Notes
+
+=== Connections
+
+- AIS messages are injected into OpenCPN's internal NMEA data bus.
+- Any plugin or instrument listening to that bus can receive the streamed AIS targets.
+- The plugin does not create a serial or network output directly. Use OpenCPN connection settings if external forwarding is required.
+
+=== General
+
+- An active internet connection is required while streaming.
+- The selected search area determines which AIS targets are requested from the online service.
+- Larger search areas may increase bandwidth usage and update time.
+- Follow Boat mode automatically keeps the monitored area aligned with vessel movement.
+- Closing the plugin window stops streaming unless **Keep transmitting when window is closed** is enabled.
+- Received AIS messages can be viewed in the OpenCPN **Data Monitor** window.
+
+Plugin-generated AIS messages appear with the **virtual** tag, making them easy to identify.
+
+image::data_monitor.png[]
 

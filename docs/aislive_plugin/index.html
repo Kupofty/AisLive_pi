@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Untitled :: AisLive Plugin Manual</title>
+    <link rel="canonical" href="https://github.com/Kupofty/AisLive_pi/aislive_plugin/index.html">
+    <meta name="generator" content="Antora 3.1.14">
+    <link rel="stylesheet" href="../_/css/site.css">
+<link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
+    <script>var uiRootPath = '../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <div class="navbar">
+    <div class="navbar-brand">
+      <div class="ocpn-logo"> </div>
+      <a class="navbar-title"
+         href="https://github.com/Kupofty/AisLive_pi"
+      >
+        AisLive Plugin Manual
+        </a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="#">Home</a>
+       <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Resources</a>
+          <div class="navbar-dropdown">
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="aislive_plugin" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-explore is-active" data-panel="explore">
+  <div class="context">
+    <span class="title">AisLive</span>
+    <span class="version">default</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="index.html">AisLive</a>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link is-current"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+</nav>
+  <div class="edit-this-page"><a href="file:///home/mathis/Documents/GitHub/AisLive_pi//manual/modules/ROOT/pages/index.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<div class="imageblock">
+<div class="content">
+<img src="_images/logo/banner.png" alt="banner" width="700">
+</div>
+</div>
+<div class="sect1">
+<h2 id="_author"><a class="anchor" href="#_author"></a>Author</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Plugin created by ©<a href="https://github.com/Kupofty">Kupofty</a> 2026</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_manual_version"><a class="anchor" href="#_manual_version"></a>Manual Version</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This manual applies to <strong>version 1.0.0-alpha</strong>.</p>
+</div>
+<div class="paragraph">
+<p>See what&#8217;s changed in the <a href="https://github.com/Kupofty/AisLive_pi/blob/main/CHANGELOG.md">CHANGELOG</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_overview"><a class="anchor" href="#_overview"></a>Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://github.com/Kupofty/AisLive_pi">AisLive</a> is an <a href="https://opencpn.org">OpenCPN</a> plugin that streams live AIS targets from the <a href="https://openwaters.io/ais/">OpenWaters.io AIS Stream</a> service directly into OpenCPN.</p>
+</div>
+<div class="paragraph">
+<p>The plugin retrieves AIS data for a configurable geographic area and forwards it to OpenCPN as standard AIS NMEA messages. The search area can automatically follow own ship or be manually positioned anywhere on the chart, with a configurable range.</p>
+</div>
+<div class="paragraph">
+<p>AisLive provides a simple way to view online AIS traffic, monitor activity in different areas, and test AIS-related functionality within OpenCPN.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>It requires an active internet connection.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>This plugin is <strong>not</strong> a substitute for a real AIS receiver and must not be relied upon for safe navigation. It should be considered informational only and must not replace certified onboard navigation equipment.</p>
+</li>
+<li>
+<p>The OpenWaters.io stream cannot guarantee that every AIS transmission is available or authentic.</p>
+</li>
+<li>
+<p>Data may be delayed, incomplete, or inaccurate.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_links"><a class="anchor" href="#_links"></a>Links</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>AIS Stream Service:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://openwaters.io/ais/">OpenWaters.io AIS Stream</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Source Code &amp; Discussions:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/Kupofty/AisLive_pi">GitHub Repository</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Community Discussions:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Cruisers &amp; Sailing forum thread (coming soon)</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_installation"><a class="anchor" href="#_installation"></a>Installation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><span class="underline"><strong>Method 1: Plugin Manager (Recommended)</strong></span></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open OpenCPN.</p>
+</li>
+<li>
+<p>Go to <strong>Options → Plugins</strong>.</p>
+</li>
+<li>
+<p>Update the catalog and search for the <strong>AisLive</strong> plugin.</p>
+</li>
+<li>
+<p>Click <strong>Install</strong> then <strong>Enable</strong>.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><span class="underline"><strong>Method 2: Manual Install (Cloudsmith)</strong></span></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go to Cloudsmith.</p>
+</li>
+<li>
+<p>Select the correct package for your operating system.</p>
+</li>
+<li>
+<p>Download the <code>.tar.gz</code> archive (not the <code>.xml</code>).</p>
+</li>
+<li>
+<p>Open <strong>Options → Plugins → Import plugin&#8230;&#8203;</strong></p>
+</li>
+<li>
+<p>Enable the plugin.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><span class="underline"><strong>Method 3: Build from Source (GitHub)</strong></span></p>
+</div>
+<div class="paragraph">
+<p>Clone the repository:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>git clone --recurse-submodules https://github.com/Kupofty/AisLive_pi.git</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create the build directory:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mkdir build
+cd build</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Linux</div>
+<div class="content">
+<pre>cmake ..
+make tarball</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Windows</div>
+<div class="content">
+<pre>cmake .. -A Win32
+cmake --build . --config Release --target tarball</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Import the generated tarball using <strong>Options → Plugins → Import plugin&#8230;&#8203;</strong> and enable it.</p>
+</div>
+<div class="paragraph">
+<p>For additional build information, see the <a href="https://github.com/Kupofty/AisLive_pi/blob/main/INSTALL.md">INSTALL.md</a> file in the GitHub repository.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_user_interface"><a class="anchor" href="#_user_interface"></a>User Interface</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To open the plugin, click the toolbar icon:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/logo/toolbar_icon.png" alt="toolbar icon" width="50">
+</div>
+</div>
+<div class="paragraph">
+<p>The main window contains the controls required to connect to the AIS stream, manage the search area, and monitor connection status.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/main_gui/main_gui.png" alt="main gui">
+</div>
+</div>
+<hr>
+<div class="sect2">
+<h3 id="_start_stream"><a class="anchor" href="#_start_stream"></a>Start Stream</h3>
+<div class="paragraph">
+<p>The <strong>Start Stream</strong> button connects to the OpenWaters.io AIS stream and begins receiving live AIS data.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/main_gui/start_stream.png" alt="start stream">
+</div>
+</div>
+<div class="paragraph">
+<p><span class="underline"><strong>Controls</strong></span></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Start</strong>: Connects to the AIS stream and begins transmitting received AIS messages to OpenCPN.</p>
+</li>
+<li>
+<p><strong>Stop</strong>: Disconnects from the stream and stops receiving new AIS data.</p>
+</li>
+<li>
+<p><strong>Connection status</strong>: Displays whether the plugin is connected or disconnected.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>An active internet connection is required while using the plugin to stream AIS data.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_follow_boat_mode"><a class="anchor" href="#_follow_boat_mode"></a>Follow Boat Mode</h3>
+<div class="paragraph">
+<p><strong>Follow Boat</strong> keeps the search area centered on the own ship while navigating.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/main_gui/follow_boat.png" alt="follow boat">
+</div>
+</div>
+<div class="paragraph">
+<p>Instead of updating continuously, the search area recenters automatically when the own ship has moved roughly one-third of the current search area&#8217;s width. This reduces unnecessary updates while keeping vessels ahead of the boat within the monitored area.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>This mode is enabled by default.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_search_position"><a class="anchor" href="#_search_position"></a>Search Position</h3>
+<div class="paragraph">
+<p>The search position defines the geographic area requested from the AIS stream.</p>
+</div>
+<div class="paragraph">
+<p>The displayed latitude and longitude indicate the current center of the search area.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>When <strong>Follow Boat</strong> is enabled, the position follows the own ship.</p>
+</li>
+<li>
+<p>When a manual position is selected, the search area remains fixed until changed.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The <strong>Search Area</strong> slider adjusts the monitored region from <strong>1°×1°</strong> up to <strong>10°×10°</strong>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/ais_targets_on_map.png" alt="ais targets on map" width="600">
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Larger search areas may contain more AIS targets and require additional data to download and process.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_context_menu"><a class="anchor" href="#_context_menu"></a>Context Menu</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Right-click anywhere on the chart and select <strong>AisLive&#8230;&#8203;</strong>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/right_click_menu.png" alt="right click menu">
+</div>
+</div>
+<div class="paragraph">
+<p>The context menu provides quick access to search position controls without reopening the main window.</p>
+</div>
+<div class="paragraph">
+<p><span class="underline"><strong>Available Actions</strong></span></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>On boat</strong>: Centers the search area on the own ship and enables Follow Boat mode.</p>
+</li>
+<li>
+<p><strong>On cursor</strong>: Centers the search area on the selected chart location and disables Follow Boat mode.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The second option is useful when monitoring traffic in another harbor or coastal area while remaining elsewhere on the chart.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_settings"><a class="anchor" href="#_settings"></a>Settings</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The plugin settings are available through <strong>Options → Plugins → AisLive</strong>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/catalog.png" alt="catalog">
+</div>
+</div>
+<div class="paragraph">
+<p>Click <strong>Preferences</strong> to open the settings window.</p>
+</div>
+<hr>
+<div class="sect2">
+<h3 id="_options"><a class="anchor" href="#_options"></a>Options</h3>
+<div class="imageblock">
+<div class="content">
+<img src="_images/preferences/preferences_1.png" alt="preferences 1">
+</div>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Keep transmitting when window is closed
+</td>
+<td class="hdlist2">
+<p>Keeps the AIS stream active after closing the plugin window, allowing vessel traffic to continue updating while using other OpenCPN tools.</p>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Enabled by default.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_display"><a class="anchor" href="#_display"></a>Display</h3>
+<div class="imageblock">
+<div class="content">
+<img src="_images/preferences/preferences_2.png" alt="preferences 2">
+</div>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Restore last window position
+</td>
+<td class="hdlist2">
+<p>Restores the previous window position when reopening the plugin.</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Restore last window size
+</td>
+<td class="hdlist2">
+<p>Restores the previous window size when reopening the plugin.</p>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_notes"><a class="anchor" href="#_notes"></a>Notes</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_connections"><a class="anchor" href="#_connections"></a>Connections</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>AIS messages are injected into OpenCPN&#8217;s internal NMEA data bus.</p>
+</li>
+<li>
+<p>Any plugin or instrument listening to that bus can receive the streamed AIS targets.</p>
+</li>
+<li>
+<p>The plugin does not create a serial or network output directly. Use OpenCPN connection settings if external forwarding is required.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_general"><a class="anchor" href="#_general"></a>General</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>An active internet connection is required while streaming.</p>
+</li>
+<li>
+<p>The selected search area determines which AIS targets are requested from the online service.</p>
+</li>
+<li>
+<p>Larger search areas may increase bandwidth usage and update time.</p>
+</li>
+<li>
+<p>Follow Boat mode automatically keeps the monitored area aligned with vessel movement.</p>
+</li>
+<li>
+<p>Closing the plugin window stops streaming unless <strong>Keep transmitting when window is closed</strong> is enabled.</p>
+</li>
+<li>
+<p>Received AIS messages can be viewed in the OpenCPN <strong>Data Monitor</strong> window.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Plugin-generated AIS messages appear with the <strong>virtual</strong> tag, making them easy to identify.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/data_monitor.png" alt="data monitor">
+</div>
+</div>
+</div>
+</div>
+</div>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <p>The source code for this UI is licensed under the terms of the MPL-2.0 license.
+     Sources: https://gitlab.com/leamas/antora-ui-default
+  </p>
+</footer>
+<script src="../_/js/site.js"></script>
+<script async src="../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

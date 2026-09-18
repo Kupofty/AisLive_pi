@@ -30,7 +30,7 @@ DialogSettingsBase::DialogSettingsBase( wxWindow* parent, wxWindowID id, const w
 
 	bSizer91->Add( 0, 0, 1, wxEXPAND, 5 );
 
-	m_checkBox_keepWindowActive = new wxCheckBox( m_panel_options, wxID_ANY, _("Keep plugin active when window is closed"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_checkBox_keepWindowActive = new wxCheckBox( m_panel_options, wxID_ANY, _("Keep transmitting when window is closed"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_checkBox_keepWindowActive->SetValue(true);
 	bSizer91->Add( m_checkBox_keepWindowActive, 0, wxALIGN_CENTER|wxALL, 5 );
 

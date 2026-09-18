@@ -126,6 +126,7 @@ void DialogMainGui::updateBoatPosition(double lat, double lon)
     {
         m_initialBoatPositionSet = true;
         updateSearchPosition(lat, lon);
+        Layout();
     }
 
     //Update search position if boat moved far enough
