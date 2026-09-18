@@ -39,7 +39,7 @@ set(PKG_DESCRIPTION "Connects to the OpenWaters.io AIS stream and fetches live A
 set(PKG_AUTHOR "Kupofty")
 set(PKG_IS_OPEN_SOURCE "yes")
 set(PKG_HOMEPAGE https://github.com/Kupofty/AisLive_pi)
-set(PKG_INFO_URL https://github.com/Kupofty/AisLive_pi) #Used in the website button
+set(PKG_INFO_URL https://kupofty.github.io/AisLive_pi/aislive_plugin/index.html) #Used in the website button
 
 # ------- Code sources --------
 set(SRC
