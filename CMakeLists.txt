@@ -40,6 +40,12 @@ endif ()
 project(${PKG_NAME} VERSION ${PKG_VERSION})
 include(PluginCompiler)
 
+# Keep the plugin and all bundled libs compatible with older msvcp140.dll
+# (must come before any target is created / subdirectory is added)
+if (MSVC)
+  add_compile_definitions(_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
+endif ()
+
 add_library(${CMAKE_PROJECT_NAME} SHARED EXCLUDE_FROM_ALL cmake/dummy.cpp) #do not remove
 include_directories(BEFORE ${CMAKE_BINARY_DIR}/include)
 target_include_directories(${CMAKE_PROJECT_NAME}
@@ -154,6 +160,11 @@ if (NOT ${BUILD_TYPE} STREQUAL "flatpak")
   # shared plugin library.
   set_target_properties(ixwebsocket PROPERTIES POSITION_INDEPENDENT_CODE ON)
   target_link_libraries(${CMAKE_PROJECT_NAME} ixwebsocket)
+
+  if (MSVC)
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
+    target_compile_definitions(ixwebsocket PRIVATE _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
+  endif ()
 
   include(PluginLocalization)
 

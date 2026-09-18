@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-14 22:30+0200\n"
+"POT-Creation-Date: 2026-09-18 23:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -70,19 +70,19 @@ msgstr ""
 msgid "AisLive Plugin"
 msgstr ""
 
-#: src/main-ui/main_ui_derived.cpp:245
+#: src/main-ui/main_ui_derived.cpp:266
 msgid "Stopped"
 msgstr ""
 
-#: src/main-ui/main_ui_derived.cpp:249
+#: src/main-ui/main_ui_derived.cpp:270
 msgid "Connecting..."
 msgstr ""
 
-#: src/main-ui/main_ui_derived.cpp:253
+#: src/main-ui/main_ui_derived.cpp:274
 msgid "Running"
 msgstr ""
 
-#: src/main-ui/main_ui_derived.cpp:257
+#: src/main-ui/main_ui_derived.cpp:278
 msgid "Error"
 msgstr ""
 
@@ -115,7 +115,7 @@ msgid "AisLive Preferences"
 msgstr ""
 
 #: src/settings/settings_ui_base.cpp:33
-msgid "Keep plugin active when window is closed"
+msgid "Keep transmitting when window is closed"
 msgstr ""
 
 #: src/settings/settings_ui_base.cpp:50
