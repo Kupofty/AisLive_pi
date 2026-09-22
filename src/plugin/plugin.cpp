@@ -270,21 +270,26 @@ void Plugin::OnToolbarToolCallback(int id)
 
   //Toggle UI & toolbar icon state
   isToolbarActive = !isToolbarActive;
-  SetToolbarItemState(id, isToolbarActive);
+
   if (isToolbarActive)
   {
+    SetToolbarItemState(id, true);
+    SetCanvasContextMenuItemViz(menuID, true);
+
     myGUI->Show();
     myGUI->Raise();
     myGUI->SetFocus();
-    SetCanvasContextMenuItemViz(menuID, true);
   }
   else
   {
     myGUI->Hide();
 
+    // Keep toolbar highlighted if still streaming and allowed
+    bool isDataStreaming = myGUI->isStreamingData();
+    SetToolbarItemState(id, isDataStreaming && g_keepWindowActive);
+
     if(!g_keepWindowActive)
     {
-
       myGUI->StopAisStream();
       SetCanvasContextMenuItemViz(menuID, false);
     }
@@ -333,14 +338,20 @@ void Plugin::OnContextMenuItemCallback(int id)
 void Plugin::OnGuiClosed()
 {
   isToolbarActive = false;
-  SetToolbarItemState(toolbarId, false);
-  myGUI->Hide();
 
+  //Keep icon toolbar highlighted if still transmitting data & g_sendDataAfterWindowClose is true
+  bool isDataStreaming = myGUI->isStreamingData();
+  SetToolbarItemState(toolbarId, isDataStreaming && g_keepWindowActive);
+
+  //Deactivate right-click menu if g_sendDataAfterWindowClose is false
   if(!g_keepWindowActive)
   {
     myGUI->StopAisStream();
     SetCanvasContextMenuItemViz(menuID, false);
   }
+
+  //Hide GUI
+  myGUI->Hide();
 
   //Refresh screen
   RequestRefresh(parentWindow);
@@ -348,6 +359,6 @@ void Plugin::OnGuiClosed()
 
 void Plugin::sendNmeaSentence(wxString sentence)
 {
-    PushNMEABuffer(sentence); //using old API
+    PushNMEABuffer(sentence);
 }
 

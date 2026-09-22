@@ -54,8 +54,7 @@ It requires an active internet connection.
 
 *Community Discussions:*
 
-- Cruisers & Sailing forum thread (coming soon)
-
+- link:https://www.cruisersforum.com/forums/f134/aislive-plugin-online-ais-stream-in-ocpn-302089.html[Cruisers & Sailing forum thread]
 
 
 //----------------------------------------------------------------------------------------------------
@@ -215,6 +214,11 @@ image::preferences/preferences_1.png[]
 Keep transmitting when window is closed:: Keeps the AIS stream active after closing the plugin window, allowing vessel traffic to continue updating while using other OpenCPN tools.
 
 Enabled by default.
+
+[NOTE]
+====
+Toolbar icon stays highlighted when the window is closed but data is still streaming
+====
 
 '''
 

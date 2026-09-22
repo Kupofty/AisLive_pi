@@ -154,6 +154,11 @@ double DialogMainGui::getSearchBoxSize()
     return m_searchBoxSize;
 }
 
+bool DialogMainGui::isStreamingData()
+{
+    return m_aisStream.IsStreaming();
+}
+
 
 
 /////////////////

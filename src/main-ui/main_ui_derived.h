@@ -22,6 +22,7 @@ class DialogMainGui : public DialogMainGuiBase
         void updateSearchBoxSize(double degrees);
         double getSearchBoxSize();
         void StopAisStream();
+        bool isStreamingData();
 
     protected:
         void OnClose(wxCloseEvent& event) override;
@@ -36,7 +37,7 @@ class DialogMainGui : public DialogMainGuiBase
         void StartAisStream();
         void RestartAisStream();
         void OnAisStreamStateChanged(AisStreamClient::State state);
-            void updateSearchPosition(double lat, double lon);
+        void updateSearchPosition(double lat, double lon);
 
         bool m_initialBoatPositionSet = false;
         bool m_followBoatMode = true;

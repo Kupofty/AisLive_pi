@@ -3,7 +3,7 @@ AisLive_pi is an OpenCPN plugin that connects to the OpenWaters.io AIS stream an
 
 
 ## Documentation
-Available in the online [User Manual](https://github.com/Kupofty/AisLive_pi/blob/main/manual/modules/ROOT/pages/index.adoc).
+Available in the online [User Manual](https://kupofty.github.io/AisLive_pi/aislive_plugin/index.html).
 
 
 ## Installation
