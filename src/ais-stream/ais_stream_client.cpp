@@ -1,5 +1,8 @@
 #include "ais_stream_client.h"
 
+#include <algorithm>
+#include <chrono>
+
 #include <ixwebsocket/IXNetSystem.h>
 #include <ixwebsocket/IXWebSocket.h>
 #include <ixwebsocket/IXWebSocketMessageType.h>
@@ -10,6 +13,13 @@
 namespace {
 
 constexpr char kAisUrl[] = "wss://ais.openwaters.io/v1/stream";
+
+// Reconnect backoff: wait kInitialBackoffSeconds after the first failure,
+// double on each consecutive failure up to the cap, reset once a session
+// reaches Running. A server rejection (type:"error" frame) jumps straight
+// to the cap so a locked-out client doesn't hammer the server.
+constexpr int kInitialBackoffSeconds = 2;
+constexpr int kMaxBackoffSeconds     = 30;
 
 void ProcessAisEvent(const Json::Value& ev, const std::function<void(const wxString&)>& sendSentence)
 {
@@ -101,18 +111,31 @@ std::string AisStreamClient::BuildSubscribeMessage(double latitude, double longi
     return sub_str;
 }
 
-void AisStreamClient::HandleMessage(const std::string& payload)
+bool AisStreamClient::HandleMessage(const std::string& payload)
 {
     Json::Value ev;
     Json::Reader reader;
     if (reader.parse(payload, ev))
     {
+        // e.g. {"type":"error","error":"concurrent streams per address
+        // exceeded"}; the server closes the connection after sending it, so
+        // surface the reason and let the caller pace the retry.
+        if (ev.isMember("type") && ev["type"].asString() == "error")
+        {
+            const wxString reason = ev["error"].isString()
+                                        ? wxString::FromUTF8(ev["error"].asString().c_str())
+                                        : wxString("server error");
+            SetState(State::Error, reason);
+            return true;
+        }
+
         if (m_onSentence)
         {
             ProcessAisEvent(ev, m_onSentence);
         }
     }
     // else: ignore malformed frames.
+    return false;
 }
 
 
@@ -126,7 +149,7 @@ void AisStreamClient::SetStateCallback(StateCallback onStateChanged)
     m_onStateChanged = std::move(onStateChanged);
 }
 
-void AisStreamClient::SetState(State state)
+void AisStreamClient::SetState(State state, const wxString& detail)
 {
     // Copy the callback out under the lock rather than holding the lock
     // while invoking it, so a SetStateCallback() call from another thread
@@ -139,7 +162,7 @@ void AisStreamClient::SetState(State state)
 
     if (cb)
     {
-        cb(state);
+        cb(state, detail);
     }
 }
 
@@ -155,94 +178,175 @@ void AisStreamClient::Start(double latitude, double longitude, double boxSizeDeg
         return; // already running
     }
 
-    m_onSentence = std::move(onSentence);
-
-    auto socket = std::make_unique<ix::WebSocket>();
-    socket->setUrl(kAisUrl);
-
-    // We manage our own Start/Stop/Restart lifecycle explicitly; don't let
-    // the library reconnect behind our back.
-    socket->disableAutomaticReconnection();
-
-    const std::string subscribeMsg = BuildSubscribeMessage(latitude, longitude, boxSizeDegrees);
-
-    socket->setOnMessageCallback([this, subscribeMsg](const ix::WebSocketMessagePtr& msg)
-                                 {
-                                     switch (msg->type)
-                                     {
-                                     case ix::WebSocketMessageType::Open:
-                                     {
-                                         // Send the subscribe request once the connection is up.
-                                         // Scoped so the lock is released before SetState() below
-                                         // invokes the (user-supplied) state callback.
-                                         {
-                                             std::lock_guard<std::mutex> lk(m_socketMutex);
-                                             if (m_socket)
-                                             {
-                                                 m_socket->send(subscribeMsg);
-                                             }
-                                         }
-                                         SetState(State::Running);
-                                         break;
-                                     }
-
-                                     case ix::WebSocketMessageType::Message:
-                                         HandleMessage(msg->str);
-                                         break;
-
-                                     case ix::WebSocketMessageType::Error:
-                                         // Connection failed unexpectedly; reflect that in
-                                         // IsStreaming() so the caller knows to Start() again
-                                         // if it wants to retry.
-                                         m_streaming = false;
-                                         SetState(State::Error);
-                                         break;
-
-                                     case ix::WebSocketMessageType::Close:
-                                         m_streaming = false;
-                                         SetState(State::Stopped);
-                                         break;
-
-                                     default:
-                                         break; // Ping/Pong/Fragment are handled internally by the library.
-                                     }
-                                 });
-
+    // Stop() always joins, but assigning to a still-joinable std::thread
+    // calls std::terminate; make sure any previous supervisor is reaped.
+    if (m_thread.joinable())
     {
-        // Publish m_socket only briefly under the lock, so the Open/Message
-        // callback above (which can in principle fire from the background
-        // thread before socket->start() below returns) can never block on a
-        // mutex still held by this thread while it's inside socket->start().
-        std::lock_guard<std::mutex> lock(m_socketMutex);
-        m_socket = std::move(socket);
+        m_thread.join();
     }
 
+    m_onSentence = std::move(onSentence);
     m_streaming = true;
-    SetState(State::Connecting);
-    m_socket->start();
+    m_thread = std::thread(&AisStreamClient::SupervisorFunc, this,
+                           BuildSubscribeMessage(latitude, longitude, boxSizeDegrees));
+}
+
+void AisStreamClient::SupervisorFunc(std::string subscribeMsg)
+{
+    int backoffSeconds = kInitialBackoffSeconds;
+
+    while (m_streaming.load())
+    {
+        SetState(State::Connecting);
+
+        // Per-session flags. Only this thread touches them: the socket's
+        // read loop runs on it (run() below), so the message callback does
+        // too.
+        bool reachedRunning = false;
+        bool serverRejected = false;
+        bool errorReported  = false;
+
+        auto socket = std::make_unique<ix::WebSocket>();
+        socket->setUrl(kAisUrl);
+
+        // This loop owns retry pacing. The library's automatic reconnection
+        // is no help here: it only backs off between consecutive failed
+        // handshakes and reconnects instantly after a session that connected
+        // and then dropped - which is exactly what a rejected subscribe
+        // looks like (the server completes the handshake, sends a
+        // type:"error" frame, and closes).
+        socket->disableAutomaticReconnection();
+
+        socket->setOnMessageCallback(
+            [this, &subscribeMsg, &reachedRunning, &serverRejected, &errorReported](const ix::WebSocketMessagePtr& msg)
+            {
+                switch (msg->type)
+                {
+                case ix::WebSocketMessageType::Open:
+                {
+                    // Send the subscribe request once the connection is up.
+                    // Scoped so the lock is released before SetState() below
+                    // invokes the (user-supplied) state callback.
+                    {
+                        std::lock_guard<std::mutex> lk(m_socketMutex);
+                        if (m_socket)
+                        {
+                            m_socket->send(subscribeMsg);
+                        }
+                    }
+                    reachedRunning = true;
+                    SetState(State::Running);
+                    break;
+                }
+
+                case ix::WebSocketMessageType::Message:
+                    if (HandleMessage(msg->str))
+                    {
+                        // Server rejected the subscribe (type:"error" frame,
+                        // already surfaced by HandleMessage); it closes the
+                        // connection right after.
+                        serverRejected = true;
+                        errorReported = true;
+                    }
+                    break;
+
+                case ix::WebSocketMessageType::Error:
+                    errorReported = true;
+                    SetState(State::Error, wxString::FromUTF8(msg->errorInfo.reason.c_str()));
+                    break;
+
+                case ix::WebSocketMessageType::Close:
+                    // A close from our own Stop()/Restart() arrives with
+                    // m_streaming already false; the supervisor reports
+                    // Stopped when it exits. Don't overwrite a more specific
+                    // reason already shown for this session.
+                    if (m_streaming.load() && !errorReported)
+                    {
+                        SetState(State::Error, wxString("connection lost"));
+                    }
+                    break;
+
+                default:
+                    break; // Ping/Pong/Fragment are handled internally by the library.
+                }
+            });
+
+        ix::WebSocket* raw = nullptr;
+        {
+            // Publish the socket so Stop() can close() it from another
+            // thread. Recheck the flag under the same lock so the socket can
+            // never appear after Stop() has already looked for one to close.
+            std::lock_guard<std::mutex> lock(m_socketMutex);
+            if (!m_streaming.load())
+            {
+                break;
+            }
+            m_socket = std::move(socket);
+            raw = m_socket.get();
+        }
+
+        // Blocks on this thread until the session ends: connect failure,
+        // drop, server close, or Stop() closing the socket (close() also
+        // cancels an in-flight handshake).
+        raw->run();
+
+        // Tear down unlocked so Stop() never waits on the destructor.
+        std::unique_ptr<ix::WebSocket> finished;
+        {
+            std::lock_guard<std::mutex> lock(m_socketMutex);
+            finished = std::move(m_socket);
+        }
+        finished.reset();
+
+        if (!m_streaming.load())
+        {
+            break;
+        }
+
+        if (serverRejected)
+        {
+            backoffSeconds = kMaxBackoffSeconds; // explicit rejection; don't hammer the server
+        }
+        else if (reachedRunning)
+        {
+            backoffSeconds = kInitialBackoffSeconds; // had a good session; retry soon
+        }
+        SleepWhileStreaming(backoffSeconds);
+        backoffSeconds = std::min(backoffSeconds * 2, kMaxBackoffSeconds);
+    }
+
+    SetState(State::Stopped);
+}
+
+void AisStreamClient::SleepWhileStreaming(int seconds)
+{
+    // Chunked so Stop() never waits out a full backoff interval.
+    for (int i = 0; i < seconds * 10 && m_streaming.load(); ++i)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
 }
 
 void AisStreamClient::Stop()
 {
-    // No early-out on m_streaming: the message callback clears that flag
-    // itself when the connection drops, but the socket still needs to be
-    // torn down and its thread joined.
+    // m_streaming means "streaming wanted": clearing it ends the supervisor
+    // loop, cuts any backoff sleep short, and tells the Close handler this
+    // teardown is deliberate, not a drop.
     m_streaming = false;
 
-    std::unique_ptr<ix::WebSocket> socket;
     {
         std::lock_guard<std::mutex> lock(m_socketMutex);
-        socket = std::move(m_socket);
+        if (m_socket)
+        {
+            // Unblocks the supervisor's run(); the supervisor owns teardown.
+            m_socket->close();
+        }
     }
 
-    if (socket)
+    if (m_thread.joinable())
     {
-        // Blocks until the connection is closed and IXWebSocket's background
-        // thread has fully exited.
-        socket->stop();
+        m_thread.join();
     }
-
-    SetState(State::Stopped);
 }
 
 void AisStreamClient::Restart(double latitude, double longitude, double boxSizeDegrees, SentenceCallback onSentence)

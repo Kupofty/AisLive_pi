@@ -36,7 +36,7 @@ class DialogMainGui : public DialogMainGuiBase
 
         void StartAisStream();
         void RestartAisStream();
-        void OnAisStreamStateChanged(AisStreamClient::State state);
+        void OnAisStreamStateChanged(AisStreamClient::State state, const wxString& detail);
         void updateSearchPosition(double lat, double lon);
 
         bool m_initialBoatPositionSet = false;
