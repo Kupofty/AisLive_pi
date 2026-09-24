@@ -40,11 +40,12 @@ DialogMainGui::DialogMainGui(wxWindow* parent, wxWindowID id, const wxString& ti
     // runs, wxWidgets drops it instead of invoking a lambda that captured
     // a now-dangling `this`.
     m_aisStream.SetStateCallback(
-        [this](AisStreamClient::State state)
+        [this](AisStreamClient::State state, const wxString& detail)
         {
-            this->CallAfter([this, state]()
+            const wxString detailCopy = detail.Clone(); // deep copy: wxString is not thread-safe to share
+            this->CallAfter([this, state, detailCopy]()
                              {
-                                 OnAisStreamStateChanged(state);
+                                 OnAisStreamStateChanged(state, detailCopy);
                              });
         });
 }
@@ -263,7 +264,7 @@ void DialogMainGui::RestartAisStream()
         });
 }
 
-void DialogMainGui::OnAisStreamStateChanged(AisStreamClient::State state)
+void DialogMainGui::OnAisStreamStateChanged(AisStreamClient::State state, const wxString& detail)
 {
     switch (state)
     {
@@ -280,7 +281,9 @@ void DialogMainGui::OnAisStreamStateChanged(AisStreamClient::State state)
             break;
 
         case AisStreamClient::State::Error:
-            m_staticText_streamState->SetLabel(_("Error"));
+            m_staticText_streamState->SetLabel(
+                detail.empty() ? _("Error")
+                               : wxString::Format(_("Error: %s"), detail));
             break;
     }
 }
