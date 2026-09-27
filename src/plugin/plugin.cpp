@@ -162,14 +162,14 @@ void Plugin::LoadSettings()
     configSettings->SetPath("/PlugIns/AisLivePlugin");
 
     configSettings->Read("RestoreWindowSize", &g_restoreWindowSize, 1);
-    configSettings->Read("WindowWidth", &g_windowWidth, 650);
-    configSettings->Read("WindowHeight", &g_windowHeight, 400);
+    configSettings->Read("WindowWidth", &g_windowWidth, 380);
+    configSettings->Read("WindowHeight", &g_windowHeight, 290);
 
     configSettings->Read("RestoreWindowPos", &g_restoreWindowPos, 1);
     configSettings->Read("WindowPosX", &g_windowPosX, 0);
     configSettings->Read("WindowPosY", &g_windowPosY, 0);
 
-    configSettings->Read("KeepWindowActive", &g_keepWindowActive, 0);
+    configSettings->Read("KeepWindowActive", &g_keepWindowActive, 1);
 
     configSettings->Read("LastSearchBoxSize", &g_lastSearchBoxSize, 1);
   }

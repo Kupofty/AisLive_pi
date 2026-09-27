@@ -11,7 +11,7 @@ int g_windowPosX = 0;
 int g_windowPosY = 0;
 
 //Keep streaming data when window is closed
-bool g_keepWindowActive = 0;
+bool g_keepWindowActive = 1;
 
 //Last search boxsize
 double g_lastSearchBoxSize = 1; //degree
