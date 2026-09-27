@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-18 23:57+0200\n"
+"POT-Creation-Date: 2026-09-27 19:09+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -70,19 +70,19 @@ msgstr ""
 msgid "AisLive Plugin"
 msgstr ""
 
-#: src/main-ui/main_ui_derived.cpp:266
+#: src/main-ui/main_ui_derived.cpp:272
 msgid "Stopped"
 msgstr ""
 
-#: src/main-ui/main_ui_derived.cpp:270
+#: src/main-ui/main_ui_derived.cpp:276
 msgid "Connecting..."
 msgstr ""
 
-#: src/main-ui/main_ui_derived.cpp:274
+#: src/main-ui/main_ui_derived.cpp:280
 msgid "Running"
 msgstr ""
 
-#: src/main-ui/main_ui_derived.cpp:278
+#: src/main-ui/main_ui_derived.cpp:286 src/main-ui/main_ui_derived.cpp:287
 msgid "Error"
 msgstr ""
 

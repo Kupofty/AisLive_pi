@@ -12,7 +12,7 @@ Plugin created by ©link:https://github.com/Kupofty[Kupofty] 2026
 //----------------------------------------------------------------------------------------------------
 == Manual Version
 
-This manual applies to **version 1.0.0-alpha**.
+This manual applies to **version 1.0.0**.
 
 See what's changed in the https://github.com/Kupofty/AisLive_pi/blob/main/CHANGELOG.md[CHANGELOG].
 
@@ -213,7 +213,11 @@ image::preferences/preferences_1.png[]
 [horizontal]
 Keep transmitting when window is closed:: Keeps the AIS stream active after closing the plugin window, allowing vessel traffic to continue updating while using other OpenCPN tools.
 
-Enabled by default.
+[NOTE]
+====
+This mode is enabled by default.
+====
+
 
 [NOTE]
 ====

@@ -12,3 +12,4 @@ plugins
 buildwin/*.7z
 *.user
 .qtcreator
+/.cache

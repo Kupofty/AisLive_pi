@@ -282,8 +282,9 @@ void DialogMainGui::OnAisStreamStateChanged(AisStreamClient::State state, const 
 
         case AisStreamClient::State::Error:
             m_staticText_streamState->SetLabel(
-                detail.empty() ? _("Error")
-                               : wxString::Format(_("Error: %s"), detail));
+                detail.empty()
+                    ? _("Error")
+                    : wxString(_("Error")) + ": " + detail);
             break;
     }
 }
