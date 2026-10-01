@@ -8,7 +8,8 @@ content:
     - url: ../
       start_path: manual
       branches: HEAD
-      edit_url: https://github.com/Kupofty/aislive_pi/edit/master/{path}
+      worktrees: false
+      edit_url: https://github.com/Kupofty/aislive_pi/edit/main/{path}
 
 ui:   
   bundle:
