@@ -1,0 +1,154 @@
+# Translation of AisLive plugin
+# Copyright (C) 2026 Kupofty
+# This file is distributed under the same license as the aislive_pi package.
+msgid ""
+msgstr ""
+"Project-Id-Version: kupofty-ocpn-plugins\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-27 19:09+0200\n"
+"PO-Revision-Date: 2026-10-04 11:05\n"
+"Last-Translator: \n"
+"Language-Team: Spanish\n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: kupofty-ocpn-plugins\n"
+"X-Crowdin-Project-ID: 935631\n"
+"X-Crowdin-Language: es-ES\n"
+"X-Crowdin-File: aislive_pi.pot\n"
+"X-Crowdin-File-ID: 15\n"
+
+#: src/main-ui/main_ui_base.cpp:28
+msgid "Start"
+msgstr "Inicio"
+
+#: src/main-ui/main_ui_base.cpp:31
+msgid "Stop"
+msgstr "Detener"
+
+#: src/main-ui/main_ui_base.cpp:46
+msgid "AIS stream:"
+msgstr "Flujo AIS:"
+
+#: src/main-ui/main_ui_base.cpp:50
+msgid "Not running"
+msgstr "No ejecutándose"
+
+#: src/main-ui/main_ui_base.cpp:75
+msgid "Follow boat"
+msgstr "Seguir barco"
+
+#: src/main-ui/main_ui_base.cpp:100
+msgid "Search position: "
+msgstr "Posición de búsqueda:"
+
+#: src/main-ui/main_ui_base.cpp:104
+msgid "Lat:"
+msgstr "Lat:"
+
+#: src/main-ui/main_ui_base.cpp:108
+msgid "0° N"
+msgstr "0° N"
+
+#: src/main-ui/main_ui_base.cpp:112
+msgid "/"
+msgstr "/"
+
+#: src/main-ui/main_ui_base.cpp:116
+msgid "Lon:"
+msgstr "Lon:"
+
+#: src/main-ui/main_ui_base.cpp:120
+msgid "0° E"
+msgstr "0° E"
+
+#: src/main-ui/main_ui_base.cpp:136
+msgid "Search box size:"
+msgstr "Tamaño area búsqueda:"
+
+#: src/main-ui/main_ui_base.cpp:140
+msgid "1° x 1°"
+msgstr "1° x 1°"
+
+#: src/main-ui/main_ui_base.h:66
+msgid "AisLive Plugin"
+msgstr "Plugin AisLive"
+
+#: src/main-ui/main_ui_derived.cpp:272
+msgid "Stopped"
+msgstr "Parado"
+
+#: src/main-ui/main_ui_derived.cpp:276
+msgid "Connecting..."
+msgstr "Conectando ..."
+
+#: src/main-ui/main_ui_derived.cpp:280
+msgid "Running"
+msgstr "En ejecución"
+
+#: src/main-ui/main_ui_derived.cpp:286 src/main-ui/main_ui_derived.cpp:287
+msgid "Error"
+msgstr "Error"
+
+#: src/main-ui/main_ui_derived.h:14
+msgid "AisLive Plugin GUI"
+msgstr "GUI plugin AisLive"
+
+#: src/menu-entry/menuDialog_ui_base.cpp:23
+msgid "Update search position"
+msgstr "Actualizar posición búsqueda"
+
+#: src/menu-entry/menuDialog_ui_base.cpp:25
+msgid "On boat"
+msgstr "En barco"
+
+#: src/menu-entry/menuDialog_ui_base.cpp:28
+msgid "On cursor"
+msgstr "en el cursor"
+
+#: src/menu-entry/menuDialog_ui_base.h:46
+msgid "AisLive Plugin Menu"
+msgstr "Menú de plugins AisLive"
+
+#: src/plugin/plugin.cpp:69
+msgid "AisLive..."
+msgstr "AisLive..."
+
+#: src/plugin/plugin.cpp:242
+msgid "AisLive Preferences"
+msgstr "Opciones AisLive"
+
+#: src/settings/settings_ui_base.cpp:33
+msgid "Keep transmitting when window is closed"
+msgstr "Sigue transmitiendo cuando la ventana está cerrada"
+
+#: src/settings/settings_ui_base.cpp:50
+msgid "Options"
+msgstr "Opciones"
+
+#: src/settings/settings_ui_base.cpp:61
+msgid "Restore last window position"
+msgstr "Restaurar posición de la última ventana"
+
+#: src/settings/settings_ui_base.cpp:77
+msgid "Restore last window size"
+msgstr "Restaurar tamaño de la última ventana"
+
+#: src/settings/settings_ui_base.cpp:91
+msgid "Display"
+msgstr "Pantalla"
+
+#: src/settings/settings_ui_base.cpp:101
+msgid "OK"
+msgstr "OK"
+
+#: src/settings/settings_ui_base.cpp:104
+msgid "Apply"
+msgstr "Aplicar"
+
+#: src/settings/settings_ui_base.h:55 src/settings/settings_ui_derived.h:17
+msgid "AisLive Plugin Preferences"
+msgstr "Opciones Plugin AisLive"
+
