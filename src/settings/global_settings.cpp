@@ -15,3 +15,6 @@ bool g_keepWindowActive = 1;
 
 //Last search boxsize
 double g_lastSearchBoxSize = 1; //degree
+
+//Token for bigger search zone
+wxString g_openWatersToken = "";

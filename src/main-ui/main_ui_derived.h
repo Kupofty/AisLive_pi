@@ -2,7 +2,7 @@
 #define DIALOG_MAIN_GUI
 
 #include "main_ui_base.h"
-#include "settings/global_settings.h"
+
 #include "ais-stream/ais_stream_client.h"
 
 class Plugin;
@@ -17,12 +17,13 @@ class DialogMainGui : public DialogMainGuiBase
         Plugin* plugin = nullptr;
 
         void activateFollowBoatMode();
-        void manualUpdateSearchPosition(double lat, double lon);
+        void updateSearchZoneOnCoord(double lat, double lon);
         void updateBoatPosition(double lat, double lon);
         void updateSearchBoxSize(double degrees);
         double getSearchBoxSize();
         void StopAisStream();
         bool isStreamingData();
+        void refreshTokenState();
 
     protected:
         void OnClose(wxCloseEvent& event) override;

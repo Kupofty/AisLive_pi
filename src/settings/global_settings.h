@@ -25,4 +25,6 @@ extern bool g_keepWindowActive;
 
 extern double g_lastSearchBoxSize;
 
+extern wxString g_openWatersToken;
+
 #endif //GLOBAL_SETTINGS_H

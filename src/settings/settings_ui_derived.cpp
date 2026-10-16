@@ -19,6 +19,7 @@ void DialogSettings::OnInit(wxInitDialogEvent& event)
   m_checkBox_restoreWindowPos->SetValue(g_restoreWindowPos);
   m_checkBox_restoreWindowSize->SetValue(g_restoreWindowSize);
   m_checkBox_keepWindowActive->SetValue(g_keepWindowActive);
+  m_textCtrl_token->SetValue(g_openWatersToken);
 
   Layout();
   Fit();
@@ -34,6 +35,7 @@ void DialogSettings::updateSettings()
   g_restoreWindowPos = m_checkBox_restoreWindowPos->IsChecked();
   g_restoreWindowSize = m_checkBox_restoreWindowSize->IsChecked();
   g_keepWindowActive = m_checkBox_keepWindowActive->IsChecked();
+  g_openWatersToken = m_textCtrl_token->GetValue();
 }
 
 

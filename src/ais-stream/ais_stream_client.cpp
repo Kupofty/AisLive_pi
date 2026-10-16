@@ -5,6 +5,7 @@
 
 #include <ixwebsocket/IXNetSystem.h>
 #include <ixwebsocket/IXWebSocket.h>
+#include <ixwebsocket/IXWebSocketHttpHeaders.h>
 #include <ixwebsocket/IXWebSocketMessageType.h>
 
 #include <json/json.h>
@@ -20,6 +21,13 @@ constexpr char kAisUrl[] = "wss://ais.openwaters.io/v1/stream";
 // to the cap so a locked-out client doesn't hammer the server.
 constexpr int kInitialBackoffSeconds = 2;
 constexpr int kMaxBackoffSeconds     = 30;
+
+// Subscription area size ceiling: the GUI slider picks the box size, but it
+// is capped by auth mode — 10x10 degrees standard, 20x20 once token auth
+// unlocks the larger area.
+constexpr double kStandardMaxBoxSizeDegrees = 10.0;
+constexpr double kTokenMaxBoxSizeDegrees    = 20.0;
+
 
 void ProcessAisEvent(const Json::Value& ev, const std::function<void(const wxString&)>& sendSentence)
 {
@@ -86,6 +94,10 @@ AisStreamClient::~AisStreamClient()
 ////////////////
 std::string AisStreamClient::BuildSubscribeMessage(double latitude, double longitude, double boxSizeDegrees) const
 {
+    // Clamp the GUI-selected box size to what the current auth mode allows.
+    const double maxBoxSizeDegrees = m_useToken ? kTokenMaxBoxSizeDegrees : kStandardMaxBoxSizeDegrees;
+    boxSizeDegrees = std::min(boxSizeDegrees, maxBoxSizeDegrees);
+
     // Search area centered on search position
     Json::Value box(Json::arrayValue);
     box.append(latitude  - boxSizeDegrees / 2.0);
@@ -171,11 +183,35 @@ void AisStreamClient::SetState(State state, const wxString& detail)
 /////////////////////////
 /// Public interface  ///
 /////////////////////////
+void AisStreamClient::SetTokenEnabled(bool enabled)
+{
+    m_useToken = enabled;
+}
+
+void AisStreamClient::SetToken(const wxString& token)
+{
+    m_token = token;
+}
+
 void AisStreamClient::Start(double latitude, double longitude, double boxSizeDegrees, SentenceCallback onSentence)
 {
     if (m_streaming.load())
     {
         return; // already running
+    }
+
+    // Token mode: authenticate and use the 20 x 20 degree zone. Refuse to
+    // connect without a token rather than silently falling back to
+    // anonymous access (the server would reject the oversized box anyway).
+    std::string authToken;
+    if (m_useToken)
+    {
+        if (m_token.empty())
+        {
+            SetState(State::Error, wxString("Token is missing"));
+            return;
+        }
+        authToken = m_token;
     }
 
     // Stop() always joins, but assigning to a still-joinable std::thread
@@ -188,10 +224,11 @@ void AisStreamClient::Start(double latitude, double longitude, double boxSizeDeg
     m_onSentence = std::move(onSentence);
     m_streaming = true;
     m_thread = std::thread(&AisStreamClient::SupervisorFunc, this,
-                           BuildSubscribeMessage(latitude, longitude, boxSizeDegrees));
+                           BuildSubscribeMessage(latitude, longitude, boxSizeDegrees),
+                           std::move(authToken));
 }
 
-void AisStreamClient::SupervisorFunc(std::string subscribeMsg)
+void AisStreamClient::SupervisorFunc(std::string subscribeMsg, std::string authToken)
 {
     int backoffSeconds = kInitialBackoffSeconds;
 
@@ -208,6 +245,15 @@ void AisStreamClient::SupervisorFunc(std::string subscribeMsg)
 
         auto socket = std::make_unique<ix::WebSocket>();
         socket->setUrl(kAisUrl);
+
+        if (!authToken.empty())
+        {
+            // Sent with the WebSocket handshake; the token is never put in
+            // the URL (it would end up in logs).
+            ix::WebSocketHttpHeaders headers;
+            headers["Authorization"] = "Bearer " + authToken;
+            socket->setExtraHeaders(headers);
+        }
 
         // This loop owns retry pacing. The library's automatic reconnection
         // is no help here: it only backs off between consecutive failed

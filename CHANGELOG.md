@@ -2,7 +2,10 @@
 
 
 --------------------------------------------------------------------------------------------
-## [v1.0.1] / 2026-xx-xx
+## [v1.1.0] / 2026-xx-xx
+
+### Added
+- Use token to unlock 20°x20° search zone
 
 ### Fixed
 - Update search box size request when slider is released

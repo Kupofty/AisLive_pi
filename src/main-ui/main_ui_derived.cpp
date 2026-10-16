@@ -24,6 +24,14 @@ double ComputeFollowThresholdNm(double searchBoxSizeDegrees, double latitude)
     return limitingHalfSideNm * kFollowThresholdFraction;
 }
 
+// True if a non-empty (after trimming) token is configured in the settings.
+bool HasToken()
+{
+    wxString token = g_openWatersToken;   // copy: Trim() modifies in place
+    token.Trim(true).Trim(false);
+    return !token.empty();
+}
+
 } // namespace
 
 
@@ -44,9 +52,9 @@ DialogMainGui::DialogMainGui(wxWindow* parent, wxWindowID id, const wxString& ti
         {
             const wxString detailCopy = detail.Clone(); // deep copy: wxString is not thread-safe to share
             this->CallAfter([this, state, detailCopy]()
-                             {
-                                 OnAisStreamStateChanged(state, detailCopy);
-                             });
+                            {
+                                OnAisStreamStateChanged(state, detailCopy);
+                            });
         });
 }
 
@@ -67,7 +75,21 @@ void DialogMainGui::activateFollowBoatMode()
     updateSearchPosition(m_boatLatitude, m_boatLongitude);
 }
 
-void DialogMainGui::manualUpdateSearchPosition(double lat, double lon)
+void DialogMainGui::refreshTokenState()
+{
+    m_aisStream.SetToken(g_openWatersToken);
+    m_aisStream.SetTokenEnabled(HasToken());
+
+    updateSearchBoxSize(m_slider_searchBoxSize->GetValue());
+}
+
+
+
+/////////////////////
+/// Input updates ///
+/////////////////////
+
+void DialogMainGui::updateSearchZoneOnCoord(double lat, double lon)
 {
     //Deactivate follow boat mode
     m_followBoatMode = false;
@@ -103,7 +125,12 @@ void DialogMainGui::updateSearchPosition(double lat, double lon)
 
 void DialogMainGui::updateSearchBoxSize(double degrees)
 {
-    m_slider_searchBoxSize->SetValue(degrees);
+    //Max range depends on whether a token is configured
+    const int maxValue = HasToken() ? 20 : 10;
+    m_slider_searchBoxSize->SetRange(1, maxValue);
+    degrees = std::clamp(degrees, 1.0, static_cast<double>(maxValue));
+
+    m_slider_searchBoxSize->SetValue(static_cast<int>(degrees));
 
     m_searchBoxSize = degrees;
 
@@ -116,6 +143,8 @@ void DialogMainGui::updateSearchBoxSize(double degrees)
 
     RestartAisStream();
 }
+
+// Call after the token changes (e.g. when the settings dialog is closed with OK)
 
 void DialogMainGui::updateBoatPosition(double lat, double lon)
 {
@@ -226,6 +255,10 @@ void DialogMainGui::StartAisStream()
         return; // already running
     }
 
+    //Update token
+    m_aisStream.SetToken(g_openWatersToken);
+    m_aisStream.SetTokenEnabled(HasToken());
+
     // This callback runs on AisStreamClient's background thread; the OpenCPN
     // plugin API is not thread-safe, so marshal the push to the GUI thread.
     // Queue on this dialog (not wxTheApp) so pending events are discarded
@@ -233,16 +266,16 @@ void DialogMainGui::StartAisStream()
     // (joining the stream thread) before destroy_pi() frees the plugin, so
     // a queued event can never run against a dead plugin.
     m_aisStream.Start(m_searchLatitude, m_searchLongitude, m_searchBoxSize,
-        [this](const wxString& sentence)
-        {
-            CallAfter([this, sentence]()
-            {
-                if (plugin)
-                {
-                    plugin->sendNmeaSentence(sentence);
-                }
-            });
-        });
+                      [this](const wxString& sentence)
+                      {
+                          CallAfter([this, sentence]()
+                                    {
+                                        if (plugin)
+                                        {
+                                            plugin->sendNmeaSentence(sentence);
+                                        }
+                                    });
+                      });
 }
 
 void DialogMainGui::StopAisStream()
@@ -265,39 +298,39 @@ void DialogMainGui::RestartAisStream()
     // Same marshaling as StartAisStream: the callback runs on the websocket
     // thread and the plugin API must only be called from the GUI thread.
     m_aisStream.Restart(m_searchLatitude, m_searchLongitude, m_searchBoxSize,
-        [this](const wxString& sentence)
-        {
-            CallAfter([this, sentence]()
-            {
-                if (plugin)
-                {
-                    plugin->sendNmeaSentence(sentence);
-                }
-            });
-        });
+                        [this](const wxString& sentence)
+                        {
+                            CallAfter([this, sentence]()
+                                      {
+                                          if (plugin)
+                                          {
+                                              plugin->sendNmeaSentence(sentence);
+                                          }
+                                      });
+                        });
 }
 
 void DialogMainGui::OnAisStreamStateChanged(AisStreamClient::State state, const wxString& detail)
 {
     switch (state)
     {
-        case AisStreamClient::State::Stopped:
-            m_staticText_streamState->SetLabel(_("Stopped"));
-            break;
+    case AisStreamClient::State::Stopped:
+        m_staticText_streamState->SetLabel(_("Stopped"));
+        break;
 
-        case AisStreamClient::State::Connecting:
-            m_staticText_streamState->SetLabel(_("Connecting..."));
-            break;
+    case AisStreamClient::State::Connecting:
+        m_staticText_streamState->SetLabel(_("Connecting..."));
+        break;
 
-        case AisStreamClient::State::Running:
-            m_staticText_streamState->SetLabel(_("Running"));
-            break;
+    case AisStreamClient::State::Running:
+        m_staticText_streamState->SetLabel(_("Running"));
+        break;
 
-        case AisStreamClient::State::Error:
-            m_staticText_streamState->SetLabel(
-                detail.empty()
-                    ? _("Error")
-                    : wxString(_("Error")) + ": " + detail);
-            break;
+    case AisStreamClient::State::Error:
+        m_staticText_streamState->SetLabel(
+            detail.empty()
+                ? _("Unknown error")
+                : wxString(_("Error")) + " (" + detail + ")");
+        break;
     }
 }

@@ -47,7 +47,38 @@ DialogSettingsBase::DialogSettingsBase( wxWindow* parent, wxWindowID id, const w
 	m_panel_options->SetSizer( bSizer12 );
 	m_panel_options->Layout();
 	bSizer12->Fit( m_panel_options );
-	m_notebook1->AddPage( m_panel_options, _("Options"), true );
+	m_notebook1->AddPage( m_panel_options, _("Options"), false );
+	m_panel_openwaters = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer92;
+	bSizer92 = new wxBoxSizer( wxVERTICAL );
+
+
+	bSizer92->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_hyperlink1 = new wxHyperlinkCtrl( m_panel_openwaters, wxID_ANY, _("Get your token here!"), wxT("https://openwaters.io/ais/token/"), wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
+	bSizer92->Add( m_hyperlink1, 0, wxALIGN_CENTER|wxALL, 5 );
+
+	wxBoxSizer* bSizer11;
+	bSizer11 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText4 = new wxStaticText( m_panel_openwaters, wxID_ANY, _("My token:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText4->Wrap( -1 );
+	bSizer11->Add( m_staticText4, 0, wxALIGN_CENTER|wxALL, 5 );
+
+	m_textCtrl_token = new wxTextCtrl( m_panel_openwaters, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), 0 );
+	bSizer11->Add( m_textCtrl_token, 1, wxALIGN_CENTER|wxALL, 5 );
+
+
+	bSizer92->Add( bSizer11, 1, wxEXPAND, 5 );
+
+
+	bSizer92->Add( 0, 0, 1, wxEXPAND, 5 );
+
+
+	m_panel_openwaters->SetSizer( bSizer92 );
+	m_panel_openwaters->Layout();
+	bSizer92->Fit( m_panel_openwaters );
+	m_notebook1->AddPage( m_panel_openwaters, _("AIS Stream"), true );
 	m_panel_display = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* sizerSettings;
 	sizerSettings = new wxBoxSizer( wxVERTICAL );

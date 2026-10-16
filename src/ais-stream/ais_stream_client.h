@@ -62,7 +62,17 @@ public:
     // transition; safe to call at any other time too.
     void SetStateCallback(StateCallback onStateChanged);
 
-    // Starts streaming for the given search area. No-op if already running.
+    // When enabled, the connection is authenticated with the personal token
+    // (Authorization: Bearer header) and the subscription area is unlocked to
+    // a maximum of 20° x 20° degrees (otherwise capped at the standard
+    // 10° x 10°). If enabled with an empty token, Start() does not connect
+    // and reports State::Error ("AIS token is missing").
+    void SetTokenEnabled(bool enabled);
+    void SetToken(const wxString& token);
+
+    // Starts streaming for the given search area. boxSizeDegrees (e.g. from
+    // a GUI slider) is clamped to the current auth mode's ceiling: 10° x 10°
+    // standard, 20° x 20° with token auth. No-op if already running.
     void Start(double latitude, double longitude, double boxSizeDegrees, SentenceCallback onSentence);
 
     // Stops streaming and blocks until the supervisor thread has exited.
@@ -78,7 +88,7 @@ public:
 
 private:
     // Connect/subscribe/read loop with reconnect pacing; runs on m_thread.
-    void SupervisorFunc(std::string subscribeMsg);
+    void SupervisorFunc(std::string subscribeMsg, std::string authToken);
 
     // Returns true if the payload was a server type:"error" frame (already
     // surfaced via the state callback).
@@ -97,6 +107,11 @@ private:
     std::thread m_thread;
     std::atomic<bool> m_streaming{false};
     SentenceCallback m_onSentence;
+
+    // Token mode settings; only touched from the caller's thread (read once
+    // in Start() and handed to the supervisor by value).
+    bool m_useToken{false};
+    std::string m_token;
 
     // Guards m_onStateChanged against SetStateCallback() racing with a
     // state transition fired from the background thread.

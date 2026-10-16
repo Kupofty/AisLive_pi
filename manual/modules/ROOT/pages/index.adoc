@@ -224,11 +224,23 @@ This mode is enabled by default.
 Toolbar icon stays highlighted when the window is closed but data is still streaming
 ====
 
+
+'''
+
+=== AIS Stream
+
+image::preferences/preferences_2.png[]
+
+By default, the search zone is limited to 10°x10°.
+To extend it to 20°x20°, generate a free token at https://openwaters.io/ais/token/ and paste it into the token field.
+
+The plugin detects the token automatically as soon as you confirm the preferences. The larger search zone is available on the main window's slider without any extra option to enable. If you later clear the token field, the slider returns to the 10°x10° limit.
+
 '''
 
 === Display
 
-image::preferences/preferences_2.png[]
+image::preferences/preferences_3.png[]
 
 [horizontal]
 Restore last window position:: Restores the previous window position when reopening the plugin.

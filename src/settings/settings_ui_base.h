@@ -21,6 +21,9 @@
 #include <wx/bitmap.h>
 #include <wx/image.h>
 #include <wx/icon.h>
+#include <wx/hyperlink.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
 #include <wx/notebook.h>
 #include <wx/button.h>
 #include <wx/dialog.h>
@@ -38,6 +41,10 @@ class DialogSettingsBase : public wxDialog
 		wxNotebook* m_notebook1;
 		wxPanel* m_panel_options;
 		wxCheckBox* m_checkBox_keepWindowActive;
+		wxPanel* m_panel_openwaters;
+		wxHyperlinkCtrl* m_hyperlink1;
+		wxStaticText* m_staticText4;
+		wxTextCtrl* m_textCtrl_token;
 		wxPanel* m_panel_display;
 		wxCheckBox* m_checkBox_restoreWindowPos;
 		wxCheckBox* m_checkBox_restoreWindowSize;

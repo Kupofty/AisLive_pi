@@ -18,11 +18,11 @@
 /// Class Factories ///
 ///////////////////////
 extern "C" DECL_EXP opencpn_plugin* create_pi(void *ppimgr) {
-  return new Plugin(ppimgr);
+    return new Plugin(ppimgr);
 }
 
 extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p) {
-  delete p;
+    delete p;
 }
 
 
@@ -32,12 +32,12 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p) {
 ////////////////////////////
 Plugin::Plugin(void* ppimgr) : opencpn_plugin_120(ppimgr), wxEvtHandler()
 {
-  //Logo for plugin catalog (SVG only)
-  wxString pluginFolder = GetPluginDataDir(PKG_NAME) + wxFileName::GetPathSeparator() + "data" + wxFileName::GetPathSeparator();
-  g_pluginBitmap = GetBitmapFromSVGFile(pluginFolder + "icon_catalog.svg", 32, 32);
+    //Logo for plugin catalog (SVG only)
+    wxString pluginFolder = GetPluginDataDir(PKG_NAME) + wxFileName::GetPathSeparator() + "data" + wxFileName::GetPathSeparator();
+    g_pluginBitmap = GetBitmapFromSVGFile(pluginFolder + "icon_catalog.svg", 32, 32);
 
-  // A flag used to indicate the toggled/untoggled state of the toolbar button
-  isToolbarActive = false;
+    // A flag used to indicate the toggled/untoggled state of the toolbar button
+    isToolbarActive = false;
 }
 
 Plugin::~Plugin()
@@ -46,52 +46,52 @@ Plugin::~Plugin()
 
 int Plugin::Init()
 {
-  //Load translations
-  AddLocaleCatalog("opencpn-aislive_pi");
+    //Load translations
+    AddLocaleCatalog("opencpn-aislive_pi");
 
-  //Init GUI
-  parentWindow = GetOCPNCanvasWindow();
-  configSettings = GetOCPNConfigObject();
-  myGUI = NULL;
+    //Init GUI
+    parentWindow = GetOCPNCanvasWindow();
+    configSettings = GetOCPNConfigObject();
+    myGUI = NULL;
 
-  //Settings
-  LoadSettings();
+    //Settings
+    LoadSettings();
 
-  //Add the toolbar button (SVG only)
-  wxString pluginFolder = GetPluginDataDir(PKG_NAME) + wxFileName::GetPathSeparator() + "data" + wxFileName::GetPathSeparator();
-  wxString normalIcon   = pluginFolder + "icon_toolbar_default.svg";
-  wxString rolloverIcon = pluginFolder + "icon_toolbar_toggled.svg"; //BUG : rollover state not working in OpenCPN
-  wxString toggledIcon  = pluginFolder + "icon_toolbar_toggled.svg";
-  toolbarId = InsertPlugInToolSVG("AisLive", normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK, "AisLive", "AisLive Plugin Toolbar", NULL, -1, 0, this);
+    //Add the toolbar button (SVG only)
+    wxString pluginFolder = GetPluginDataDir(PKG_NAME) + wxFileName::GetPathSeparator() + "data" + wxFileName::GetPathSeparator();
+    wxString normalIcon   = pluginFolder + "icon_toolbar_default.svg";
+    wxString rolloverIcon = pluginFolder + "icon_toolbar_toggled.svg"; //BUG : rollover state not working in OpenCPN
+    wxString toggledIcon  = pluginFolder + "icon_toolbar_toggled.svg";
+    toolbarId = InsertPlugInToolSVG("AisLive", normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK, "AisLive", "AisLive Plugin Toolbar", NULL, -1, 0, this);
 
-  //Right-click menu entry
-  wxMenu menu;
-  menuID = AddCanvasContextMenuItem(new wxMenuItem(&menu, -1, _("AisLive...")), this);
-  SetCanvasContextMenuItemViz(menuID, false);
+    //Right-click menu entry
+    wxMenu menu;
+    menuID = AddCanvasContextMenuItem(new wxMenuItem(&menu, -1, _("AisLive...")), this);
+    SetCanvasContextMenuItemViz(menuID, false);
 
-  //Inform OpenCPN about the plugin capabilities and requested callbacks
-  return  ( INSTALLS_TOOLBAR_TOOL  //Add toolbar icon
-          | WANTS_PREFERENCES      //Add "Preferences" button in plugin catalogue
-          | WANTS_CURSOR_LATLON    //Enable SetCursorLatLon()
-          | WANTS_NMEA_EVENTS);    //Enable SetPositionFix
+    //Inform OpenCPN about the plugin capabilities and requested callbacks
+    return  ( INSTALLS_TOOLBAR_TOOL  //Add toolbar icon
+            | WANTS_PREFERENCES      //Add "Preferences" button in plugin catalogue
+            | WANTS_CURSOR_LATLON    //Enable SetCursorLatLon()
+            | WANTS_NMEA_EVENTS);    //Enable SetPositionFix
 }
 
 bool Plugin::DeInit()
 {
-  SaveSettings();
+    SaveSettings();
 
-  if (myGUI != NULL)
-  {
-    myGUI->Close();
-    delete myGUI;
-    myGUI = NULL;
+    if (myGUI != NULL)
+    {
+        myGUI->Close();
+        delete myGUI;
+        myGUI = NULL;
 
-    isToolbarActive = false;
-    SetToolbarItemState(toolbarId, false);
-    SetCanvasContextMenuItemViz(menuID, false);
-  }
+        isToolbarActive = false;
+        SetToolbarItemState(toolbarId, false);
+        SetCanvasContextMenuItemViz(menuID, false);
+    }
 
-  return true;
+    return true;
 }
 
 
@@ -101,53 +101,53 @@ bool Plugin::DeInit()
 ////////////////////////////////////////
 int Plugin::GetAPIVersionMajor()
 {
-  return atoi(API_VERSION);
+    return atoi(API_VERSION);
 }
 
 int Plugin::GetAPIVersionMinor()
 {
-  std::string v(API_VERSION);
-  size_t dotpos = v.find('.');
-  return atoi(v.substr(dotpos + 1).c_str());
+    std::string v(API_VERSION);
+    size_t dotpos = v.find('.');
+    return atoi(v.substr(dotpos + 1).c_str());
 }
 
 int Plugin::GetPlugInVersionMajor()
 {
-  return PLUGIN_VERSION_MAJOR;
+    return PLUGIN_VERSION_MAJOR;
 }
 
 int Plugin::GetPlugInVersionMinor()
 {
-  return PLUGIN_VERSION_MINOR;
+    return PLUGIN_VERSION_MINOR;
 }
 
 int Plugin::GetPlugInVersionPatch()
 {
-  return PLUGIN_VERSION_PATCH;
+    return PLUGIN_VERSION_PATCH;
 }
 
 wxString Plugin::GetCommonName()
 {
-  return PLUGIN_API_NAME;
+    return PLUGIN_API_NAME;
 }
 
 wxString Plugin::GetShortDescription()
 {
-  return PKG_SUMMARY;
+    return PKG_SUMMARY;
 }
 
 wxString Plugin::GetLongDescription()
 {
-  return PKG_DESCRIPTION;
+    return PKG_DESCRIPTION;
 }
 
 wxBitmap* Plugin::GetPlugInBitmap()
 {
-  return &g_pluginBitmap;
+    return &g_pluginBitmap;
 }
 
 int Plugin::GetToolbarToolCount() {
-  return 1;
+    return 1;
 }
 
 
@@ -157,56 +157,60 @@ int Plugin::GetToolbarToolCount() {
 ////////////////
 void Plugin::LoadSettings()
 {
-  if (configSettings)
-  {
-    configSettings->SetPath("/PlugIns/AisLivePlugin");
+    if (configSettings)
+    {
+        configSettings->SetPath("/PlugIns/AisLivePlugin");
 
-    configSettings->Read("RestoreWindowSize", &g_restoreWindowSize, 1);
-    configSettings->Read("WindowWidth", &g_windowWidth, 380);
-    configSettings->Read("WindowHeight", &g_windowHeight, 290);
+        configSettings->Read("RestoreWindowSize", &g_restoreWindowSize, 1);
+        configSettings->Read("WindowWidth", &g_windowWidth, 380);
+        configSettings->Read("WindowHeight", &g_windowHeight, 290);
 
-    configSettings->Read("RestoreWindowPos", &g_restoreWindowPos, 1);
-    configSettings->Read("WindowPosX", &g_windowPosX, 0);
-    configSettings->Read("WindowPosY", &g_windowPosY, 0);
+        configSettings->Read("RestoreWindowPos", &g_restoreWindowPos, 1);
+        configSettings->Read("WindowPosX", &g_windowPosX, 0);
+        configSettings->Read("WindowPosY", &g_windowPosY, 0);
 
-    configSettings->Read("KeepWindowActive", &g_keepWindowActive, 1);
+        configSettings->Read("KeepWindowActive", &g_keepWindowActive, 1);
 
-    configSettings->Read("LastSearchBoxSize", &g_lastSearchBoxSize, 1);
-  }
+        configSettings->Read("LastSearchBoxSize", &g_lastSearchBoxSize, 1);
+
+        configSettings->Read("OpenWatersToken", &g_openWatersToken, wxString{});
+    }
 }
 
 void Plugin::SaveSettings()
 {
-  //Update settings variables
-  if (myGUI != NULL)
-  {
-    wxSize size = myGUI->GetSize();
-    g_windowWidth = size.GetWidth();
-    g_windowHeight = size.GetHeight();
+    //Update settings variables
+    if (myGUI != NULL)
+    {
+        wxSize size = myGUI->GetSize();
+        g_windowWidth = size.GetWidth();
+        g_windowHeight = size.GetHeight();
 
-    wxPoint pos = myGUI->GetPosition();
-    g_windowPosX = pos.x;
-    g_windowPosY = pos.y;
+        wxPoint pos = myGUI->GetPosition();
+        g_windowPosX = pos.x;
+        g_windowPosY = pos.y;
 
-    g_lastSearchBoxSize = myGUI->getSearchBoxSize();
-  }
+        g_lastSearchBoxSize = myGUI->getSearchBoxSize();
+    }
 
-  if (configSettings)
-  {
-    configSettings->SetPath("/PlugIns/AisLivePlugin");
+    if (configSettings)
+    {
+        configSettings->SetPath("/PlugIns/AisLivePlugin");
 
-    configSettings->Write("RestoreWindowSize", g_restoreWindowSize);
-    configSettings->Write("WindowWidth", g_windowWidth);
-    configSettings->Write("WindowHeight", g_windowHeight);
+        configSettings->Write("RestoreWindowSize", g_restoreWindowSize);
+        configSettings->Write("WindowWidth", g_windowWidth);
+        configSettings->Write("WindowHeight", g_windowHeight);
 
-    configSettings->Write("RestoreWindowPos", g_restoreWindowPos);
-    configSettings->Write("WindowPosX", g_windowPosX);
-    configSettings->Write("WindowPosY", g_windowPosY);
+        configSettings->Write("RestoreWindowPos", g_restoreWindowPos);
+        configSettings->Write("WindowPosX", g_windowPosX);
+        configSettings->Write("WindowPosY", g_windowPosY);
 
-    configSettings->Write("KeepWindowActive", g_keepWindowActive);
+        configSettings->Write("KeepWindowActive", g_keepWindowActive);
 
-    configSettings->Write("LastSearchBoxSize", g_lastSearchBoxSize);
-  }
+        configSettings->Write("LastSearchBoxSize", g_lastSearchBoxSize);
+
+        configSettings->Write("OpenWatersToken", g_openWatersToken);
+    }
 }
 
 
@@ -236,85 +240,92 @@ void Plugin::SetPositionFix(PlugIn_Position_Fix &pfix)
 /////////////////////////////////
 void Plugin::ShowPreferencesDialog(wxWindow* parent)
 {
-  auto dialogSettings = std::make_unique<DialogSettings>(
-    parent,
-    wxID_ANY,
-    _("AisLive Preferences"),
-    wxDefaultPosition,
-    wxDefaultSize,
-    wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER
-  );
+    auto dialogSettings = std::make_unique<DialogSettings>(
+        parent,
+        wxID_ANY,
+        _("AisLive Preferences"),
+        wxDefaultPosition,
+        wxDefaultSize,
+        wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER
+        );
 
-  if (wxID_OK == dialogSettings->ShowModal())
-    SaveSettings();
+    if (wxID_OK == dialogSettings->ShowModal())
+    {
+        SaveSettings();
+
+        // Token may have changed: update slider range and stream token
+        if (myGUI != NULL)
+            myGUI->refreshTokenState();
+    }
 }
 
 void Plugin::OnToolbarToolCallback(int id)
 {
-  if (id != toolbarId)
-    return;
+    if (id != toolbarId)
+        return;
 
-  //Create GUI first time
-  if(myGUI == NULL)
-  {
-    myGUI = new DialogMainGui(parentWindow);
-    myGUI->plugin = this;
-
-    if(g_restoreWindowSize)
-      myGUI->SetSize(g_windowWidth, g_windowHeight);
-    if(g_restoreWindowPos)
-      myGUI->Move(wxPoint(g_windowPosX, g_windowPosY));
-    if(g_lastSearchBoxSize)
-        myGUI->updateSearchBoxSize(g_lastSearchBoxSize);
-  }
-
-  //Toggle UI & toolbar icon state
-  isToolbarActive = !isToolbarActive;
-
-  if (isToolbarActive)
-  {
-    SetToolbarItemState(id, true);
-    SetCanvasContextMenuItemViz(menuID, true);
-
-    myGUI->Show();
-    myGUI->Raise();
-    myGUI->SetFocus();
-  }
-  else
-  {
-    myGUI->Hide();
-
-    // Keep toolbar highlighted if still streaming and allowed
-    bool isDataStreaming = myGUI->isStreamingData();
-    SetToolbarItemState(id, isDataStreaming && g_keepWindowActive);
-
-    if(!g_keepWindowActive)
+    //Create GUI first time
+    if(myGUI == NULL)
     {
-      myGUI->StopAisStream();
-      SetCanvasContextMenuItemViz(menuID, false);
-    }
-  }
+        myGUI = new DialogMainGui(parentWindow);
+        myGUI->plugin = this;
 
-  //Refresh screen
-  RequestRefresh(parentWindow);
+        if(g_restoreWindowSize)
+            myGUI->SetSize(g_windowWidth, g_windowHeight);
+        if(g_restoreWindowPos)
+            myGUI->Move(wxPoint(g_windowPosX, g_windowPosY));
+
+        // Initializes slider range
+        myGUI->updateSearchBoxSize(g_lastSearchBoxSize);
+    }
+
+    //Toggle UI & toolbar icon state
+    isToolbarActive = !isToolbarActive;
+
+    if (isToolbarActive)
+    {
+        SetToolbarItemState(id, true);
+        SetCanvasContextMenuItemViz(menuID, true);
+
+        myGUI->Show();
+        myGUI->Raise();
+        myGUI->SetFocus();
+    }
+    else
+    {
+        myGUI->Hide();
+
+        // Keep toolbar highlighted if still streaming and allowed
+        bool isDataStreaming = myGUI->isStreamingData();
+        SetToolbarItemState(id, isDataStreaming && g_keepWindowActive);
+
+        if(!g_keepWindowActive)
+        {
+            myGUI->StopAisStream();
+            SetCanvasContextMenuItemViz(menuID, false);
+        }
+    }
+
+    //Refresh screen
+    RequestRefresh(parentWindow);
 }
 
 void Plugin::OnContextMenuItemCallback(int id)
 {
-  if (myGUI == NULL)
-    return;
+    if (myGUI == NULL)
+        return;
 
-  //Entry in right-click menu
-  if(id == menuID)
-  {
-    DialogMenuEntry dlg(GetOCPNCanvasWindow());
-
-    if(dlg.ShowModal() == wxID_OK)
+    //Entry in right-click menu
+    if(id == menuID)
     {
-        switch(dlg.m_action)
+        DialogMenuEntry dlg(GetOCPNCanvasWindow());
+
+        if(dlg.ShowModal() == wxID_OK)
         {
+            switch(dlg.m_action)
+            {
             case DialogAction::UpdateToCursor:
-                myGUI->manualUpdateSearchPosition(m_cursor_lat, m_cursor_lon);
+                myGUI->updateSearchZoneOnCoord(m_cursor_lat, m_cursor_lon);
                 break;
 
             case DialogAction::UpdateToBoat:
@@ -323,11 +334,9 @@ void Plugin::OnContextMenuItemCallback(int id)
 
             case DialogAction::None:
                 break;
+            }
         }
-
-
     }
-  }
 }
 
 
@@ -337,28 +346,27 @@ void Plugin::OnContextMenuItemCallback(int id)
 ////////////////////
 void Plugin::OnGuiClosed()
 {
-  isToolbarActive = false;
+    isToolbarActive = false;
 
-  //Keep icon toolbar highlighted if still transmitting data & g_sendDataAfterWindowClose is true
-  bool isDataStreaming = myGUI->isStreamingData();
-  SetToolbarItemState(toolbarId, isDataStreaming && g_keepWindowActive);
+    //Keep icon toolbar highlighted if still transmitting data & g_sendDataAfterWindowClose is true
+    bool isDataStreaming = myGUI->isStreamingData();
+    SetToolbarItemState(toolbarId, isDataStreaming && g_keepWindowActive);
 
-  //Deactivate right-click menu if g_sendDataAfterWindowClose is false
-  if(!g_keepWindowActive)
-  {
-    myGUI->StopAisStream();
-    SetCanvasContextMenuItemViz(menuID, false);
-  }
+    //Deactivate right-click menu if g_sendDataAfterWindowClose is false
+    if(!g_keepWindowActive)
+    {
+        myGUI->StopAisStream();
+        SetCanvasContextMenuItemViz(menuID, false);
+    }
 
-  //Hide GUI
-  myGUI->Hide();
+    //Hide GUI
+    myGUI->Hide();
 
-  //Refresh screen
-  RequestRefresh(parentWindow);
+    //Refresh screen
+    RequestRefresh(parentWindow);
 }
 
 void Plugin::sendNmeaSentence(wxString sentence)
 {
     PushNMEABuffer(sentence);
 }
-

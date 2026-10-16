@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-27 19:09+0200\n"
+"POT-Creation-Date: 2026-10-16 23:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -66,23 +66,27 @@ msgstr ""
 msgid "1° x 1°"
 msgstr ""
 
-#: src/main-ui/main_ui_base.h:66
+#: src/main-ui/main_ui_base.h:67
 msgid "AisLive Plugin"
 msgstr ""
 
-#: src/main-ui/main_ui_derived.cpp:272
+#: src/main-ui/main_ui_derived.cpp:318
 msgid "Stopped"
 msgstr ""
 
-#: src/main-ui/main_ui_derived.cpp:276
+#: src/main-ui/main_ui_derived.cpp:322
 msgid "Connecting..."
 msgstr ""
 
-#: src/main-ui/main_ui_derived.cpp:280
+#: src/main-ui/main_ui_derived.cpp:326
 msgid "Running"
 msgstr ""
 
-#: src/main-ui/main_ui_derived.cpp:286 src/main-ui/main_ui_derived.cpp:287
+#: src/main-ui/main_ui_derived.cpp:332
+msgid "Unknown error"
+msgstr ""
+
+#: src/main-ui/main_ui_derived.cpp:333
 msgid "Error"
 msgstr ""
 
@@ -110,7 +114,7 @@ msgstr ""
 msgid "AisLive..."
 msgstr ""
 
-#: src/plugin/plugin.cpp:242
+#: src/plugin/plugin.cpp:246
 msgid "AisLive Preferences"
 msgstr ""
 
@@ -122,26 +126,38 @@ msgstr ""
 msgid "Options"
 msgstr ""
 
-#: src/settings/settings_ui_base.cpp:61
+#: src/settings/settings_ui_base.cpp:58
+msgid "Get your token here!"
+msgstr ""
+
+#: src/settings/settings_ui_base.cpp:64
+msgid "My token:"
+msgstr ""
+
+#: src/settings/settings_ui_base.cpp:81
+msgid "AIS Stream"
+msgstr ""
+
+#: src/settings/settings_ui_base.cpp:92
 msgid "Restore last window position"
 msgstr ""
 
-#: src/settings/settings_ui_base.cpp:77
+#: src/settings/settings_ui_base.cpp:108
 msgid "Restore last window size"
 msgstr ""
 
-#: src/settings/settings_ui_base.cpp:91
+#: src/settings/settings_ui_base.cpp:122
 msgid "Display"
 msgstr ""
 
-#: src/settings/settings_ui_base.cpp:101
+#: src/settings/settings_ui_base.cpp:132
 msgid "OK"
 msgstr ""
 
-#: src/settings/settings_ui_base.cpp:104
+#: src/settings/settings_ui_base.cpp:135
 msgid "Apply"
 msgstr ""
 
-#: src/settings/settings_ui_base.h:55 src/settings/settings_ui_derived.h:17
+#: src/settings/settings_ui_base.h:62 src/settings/settings_ui_derived.h:17
 msgid "AisLive Plugin Preferences"
 msgstr ""
