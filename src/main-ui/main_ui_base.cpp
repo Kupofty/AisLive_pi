@@ -173,6 +173,7 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 	m_slider_searchBoxSize->Connect( wxEVT_SCROLL_THUMBTRACK, wxScrollEventHandler( DialogMainGuiBase::OnScroll_UpdateSearchBoxSize ), NULL, this );
 	m_slider_searchBoxSize->Connect( wxEVT_SCROLL_THUMBRELEASE, wxScrollEventHandler( DialogMainGuiBase::OnScroll_UpdateSearchBoxSize ), NULL, this );
 	m_slider_searchBoxSize->Connect( wxEVT_SCROLL_CHANGED, wxScrollEventHandler( DialogMainGuiBase::OnScroll_UpdateSearchBoxSize ), NULL, this );
+	m_slider_searchBoxSize->Connect( wxEVT_SCROLL_THUMBRELEASE, wxScrollEventHandler( DialogMainGuiBase::OnScrollThumbRelease_UpdateSearchBoxSize ), NULL, this );
 }
 
 DialogMainGuiBase::~DialogMainGuiBase()

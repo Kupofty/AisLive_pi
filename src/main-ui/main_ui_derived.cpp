@@ -187,6 +187,19 @@ void DialogMainGui::OnButtonClick_stopStream(wxCommandEvent& event)
 void DialogMainGui::OnScroll_UpdateSearchBoxSize(wxScrollEvent& event)
 {
     double degrees = m_slider_searchBoxSize->GetValue();
+
+    const wxString degreeSymbol(wxUniChar(0x00B0));
+    m_staticText_searchBoxSize->SetLabel(
+        wxString::Format("%.0f", degrees) + degreeSymbol +
+        " x " +
+        wxString::Format("%.0f", degrees) + degreeSymbol
+        );
+
+}
+
+void DialogMainGui::OnScrollThumbRelease_UpdateSearchBoxSize(wxScrollEvent& event)
+{
+    double degrees = m_slider_searchBoxSize->GetValue();
     updateSearchBoxSize(degrees);
 }
 

@@ -2,6 +2,13 @@
 
 
 --------------------------------------------------------------------------------------------
+## [v1.0.1] / 2026-xx-xx
+
+### Fixed
+- Update search box size request when slider is released
+
+
+--------------------------------------------------------------------------------------------
 ## [v1.0.0] / 2026-10-04
 ### Initial release
 - Add basic AIS stream subscription to OpenWaters.io

@@ -29,6 +29,7 @@ class DialogMainGui : public DialogMainGuiBase
         void OnButtonClick_startStream(wxCommandEvent& event) override;
         void OnButtonClick_stopStream(wxCommandEvent& event) override;
         void OnScroll_UpdateSearchBoxSize(wxScrollEvent& event) override;
+        void OnScrollThumbRelease_UpdateSearchBoxSize(wxScrollEvent& event) override;
         void OnCheckBox_FollowBoatMode(wxCommandEvent& event) override;
 
     private:

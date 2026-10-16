@@ -59,6 +59,7 @@ class DialogMainGuiBase : public wxDialog
 		virtual void OnButtonClick_stopStream( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCheckBox_FollowBoatMode( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnScroll_UpdateSearchBoxSize( wxScrollEvent& event ) { event.Skip(); }
+		virtual void OnScrollThumbRelease_UpdateSearchBoxSize( wxScrollEvent& event ) { event.Skip(); }
 
 
 	public:
