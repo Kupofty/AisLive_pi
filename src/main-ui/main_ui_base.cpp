@@ -147,7 +147,7 @@ DialogMainGuiBase::DialogMainGuiBase( wxWindow* parent, wxWindowID id, const wxS
 
 	bSizer2->Add( bSizer6, 1, wxEXPAND, 5 );
 
-	m_slider_searchBoxSize = new wxSlider( this, wxID_ANY, 1, 1, 10, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL );
+	m_slider_searchBoxSize = new wxSlider( this, wxID_ANY, 1, 0, 10, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL );
 	bSizer2->Add( m_slider_searchBoxSize, 0, wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
 
 

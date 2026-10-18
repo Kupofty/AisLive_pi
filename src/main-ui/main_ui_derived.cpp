@@ -127,7 +127,7 @@ void DialogMainGui::updateSearchBoxSize(double degrees)
 {
     //Max range depends on whether a token is configured
     const int maxValue = HasToken() ? 20 : 10;
-    const int minValue = 1;
+    const int minValue = 0;
 
     m_slider_searchBoxSize->SetRange(minValue, maxValue);
     degrees = std::clamp(degrees, static_cast<double>(minValue), static_cast<double>(maxValue));
@@ -162,6 +162,9 @@ void DialogMainGui::updateBoatPosition(double lat, double lon)
     //Update search position if boat moved far enough
     if (m_followBoatMode)
     {
+        if(m_searchBoxSize == 0)
+            return;
+
         double distanceNm = Utils::GreatCircleDistanceNm(m_searchLatitude, m_searchLongitude,
                                                          m_boatLatitude, m_boatLongitude);
 
