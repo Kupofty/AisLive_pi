@@ -127,8 +127,10 @@ void DialogMainGui::updateSearchBoxSize(double degrees)
 {
     //Max range depends on whether a token is configured
     const int maxValue = HasToken() ? 20 : 10;
-    m_slider_searchBoxSize->SetRange(1, maxValue);
-    degrees = std::clamp(degrees, 1.0, static_cast<double>(maxValue));
+    const int minValue = 1;
+
+    m_slider_searchBoxSize->SetRange(minValue, maxValue);
+    degrees = std::clamp(degrees, static_cast<double>(minValue), static_cast<double>(maxValue));
 
     m_slider_searchBoxSize->SetValue(static_cast<int>(degrees));
 
@@ -143,8 +145,6 @@ void DialogMainGui::updateSearchBoxSize(double degrees)
 
     RestartAisStream();
 }
-
-// Call after the token changes (e.g. when the settings dialog is closed with OK)
 
 void DialogMainGui::updateBoatPosition(double lat, double lon)
 {
@@ -265,7 +265,7 @@ void DialogMainGui::StartAisStream()
     // when the dialog is destroyed - Plugin::DeInit() deletes the dialog
     // (joining the stream thread) before destroy_pi() frees the plugin, so
     // a queued event can never run against a dead plugin.
-    m_aisStream.Start(m_searchLatitude, m_searchLongitude, m_searchBoxSize,
+    m_aisStream.Start(m_searchLatitude, m_searchLongitude, m_searchBoxSize, m_mmsiList, m_getSnapshot,
                       [this](const wxString& sentence)
                       {
                           CallAfter([this, sentence]()
@@ -297,7 +297,7 @@ void DialogMainGui::RestartAisStream()
 
     // Same marshaling as StartAisStream: the callback runs on the websocket
     // thread and the plugin API must only be called from the GUI thread.
-    m_aisStream.Restart(m_searchLatitude, m_searchLongitude, m_searchBoxSize,
+    m_aisStream.Restart(m_searchLatitude, m_searchLongitude, m_searchBoxSize, m_mmsiList, m_getSnapshot,
                         [this](const wxString& sentence)
                         {
                             CallAfter([this, sentence]()

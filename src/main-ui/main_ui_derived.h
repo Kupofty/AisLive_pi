@@ -49,6 +49,8 @@ class DialogMainGui : public DialogMainGuiBase
         double m_searchLatitude = 0;
         double m_searchLongitude = 0;
         double m_searchBoxSize = 1.0;
+        std::vector<uint32_t> m_mmsiList = {};
+        bool m_getSnapshot = false;
 };
 
 #endif //DIALOG_MAIN_GUI

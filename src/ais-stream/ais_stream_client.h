@@ -73,7 +73,7 @@ public:
     // Starts streaming for the given search area. boxSizeDegrees (e.g. from
     // a GUI slider) is clamped to the current auth mode's ceiling: 10° x 10°
     // standard, 20° x 20° with token auth. No-op if already running.
-    void Start(double latitude, double longitude, double boxSizeDegrees, SentenceCallback onSentence);
+    void Start(double latitude, double longitude, double boxSizeDegrees, std::vector<uint32_t> mmsiList, bool snapshot, SentenceCallback onSentence);
 
     // Stops streaming and blocks until the supervisor thread has exited.
     // No-op if not running.
@@ -81,7 +81,7 @@ public:
 
     // Stop() + Start() with new parameters; no-op (does not start) if not
     // already streaming.
-    void Restart(double latitude, double longitude, double boxSizeDegrees, SentenceCallback onSentence);
+    void Restart(double latitude, double longitude, double boxSizeDegrees, std::vector<uint32_t> mmsiList, bool snapshot, SentenceCallback onSentence);
 
     // True from Start() until Stop(), including while reconnecting.
     bool IsStreaming() const;
@@ -94,7 +94,7 @@ private:
     // surfaced via the state callback).
     bool HandleMessage(const std::string& payload);
 
-    std::string BuildSubscribeMessage(double latitude, double longitude, double boxSizeDegrees) const;
+    std::string BuildSubscribeMessage(double latitude, double longitude, double boxSizeDegrees, std::vector<uint32_t> mmsiList, bool snapshot) const;
     void SetState(State state, const wxString& detail = wxString());
 
     // Sleeps up to the given duration, returning early once Stop() runs.
