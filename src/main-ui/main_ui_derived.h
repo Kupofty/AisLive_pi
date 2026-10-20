@@ -32,6 +32,11 @@ class DialogMainGui : public DialogMainGuiBase
         void OnScroll_UpdateSearchBoxSize(wxScrollEvent& event) override;
         void OnScrollThumbRelease_UpdateSearchBoxSize(wxScrollEvent& event) override;
         void OnCheckBox_FollowBoatMode(wxCommandEvent& event) override;
+        void OnButtonClick_AddMmsiToList(wxCommandEvent& event) override;
+        void OnButtonClick_ClearMmsiList(wxCommandEvent& event) override;
+        void OnButtonClick_DeleteMmsiFromList(wxCommandEvent& event) override;
+        void OnDataViewListCtrlItemValueChanged_updateMmsiList(wxDataViewEvent& event) override;
+        void m_checkBox_activateVesselFollowingOnCheckBox(wxCommandEvent& event) override;
 
     private:
         AisStreamClient m_aisStream;
@@ -49,7 +54,6 @@ class DialogMainGui : public DialogMainGuiBase
         double m_searchLatitude = 0;
         double m_searchLongitude = 0;
         double m_searchBoxSize = 1.0;
-        std::vector<uint32_t> m_mmsiList = {};
         bool m_getSnapshot = false;
 };
 

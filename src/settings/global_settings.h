@@ -3,6 +3,7 @@
 
 // wxWidgets Precompiled Headers
 #include "wx/wxprec.h"
+#include <cstdint>
 
 #ifndef  WX_PRECOMP
 #include "wx/wx.h"
@@ -26,5 +27,10 @@ extern bool g_keepWindowActive;
 extern double g_lastSearchBoxSize;
 
 extern wxString g_openWatersToken;
+
+extern std::vector<uint32_t> g_mmsiList;
+extern std::vector<wxString> g_mmsiListNames;
+extern bool g_activateVesselsFollowing;
+
 
 #endif //GLOBAL_SETTINGS_H

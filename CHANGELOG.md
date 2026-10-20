@@ -6,6 +6,7 @@
 
 ### Added
 - Use token to unlock 20°x20° search zone
+- Follow vessels by MMSI 
 
 ### Fixed
 - Update search box size request when slider is released

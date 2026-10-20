@@ -1,4 +1,5 @@
 #include "global_settings.h"
+#include <cstdint>
 
 
 //Windows size & pos
@@ -10,11 +11,12 @@ int g_windowHeight = 0;
 int g_windowPosX = 0;
 int g_windowPosY = 0;
 
-//Keep streaming data when window is closed
 bool g_keepWindowActive = 1;
 
-//Last search boxsize
 double g_lastSearchBoxSize = 1; //degree
 
-//Token for bigger search zone
 wxString g_openWatersToken = "";
+
+std::vector<uint32_t> g_mmsiList = {};
+std::vector<wxString> g_mmsiListNames = {};
+bool g_activateVesselsFollowing = 1;

@@ -11,7 +11,7 @@
 #include "plugin.h"
 #include "settings/global_settings.h"
 #include "settings/settings_ui_derived.h"
-
+#include <wx/tokenzr.h>
 
 
 ///////////////////////
@@ -155,28 +155,6 @@ int Plugin::GetToolbarToolCount() {
 ////////////////
 /// Settings ///
 ////////////////
-void Plugin::LoadSettings()
-{
-    if (configSettings)
-    {
-        configSettings->SetPath("/PlugIns/AisLivePlugin");
-
-        configSettings->Read("RestoreWindowSize", &g_restoreWindowSize, 1);
-        configSettings->Read("WindowWidth", &g_windowWidth, 380);
-        configSettings->Read("WindowHeight", &g_windowHeight, 290);
-
-        configSettings->Read("RestoreWindowPos", &g_restoreWindowPos, 1);
-        configSettings->Read("WindowPosX", &g_windowPosX, 0);
-        configSettings->Read("WindowPosY", &g_windowPosY, 0);
-
-        configSettings->Read("KeepWindowActive", &g_keepWindowActive, 1);
-
-        configSettings->Read("LastSearchBoxSize", &g_lastSearchBoxSize, 1);
-
-        configSettings->Read("OpenWatersToken", &g_openWatersToken, wxString{});
-    }
-}
-
 void Plugin::SaveSettings()
 {
     //Update settings variables
@@ -210,6 +188,89 @@ void Plugin::SaveSettings()
         configSettings->Write("LastSearchBoxSize", g_lastSearchBoxSize);
 
         configSettings->Write("OpenWatersToken", g_openWatersToken);
+
+        configSettings->Write("ActivateVesselsFollowing", g_activateVesselsFollowing);
+
+        // MMSI list
+        wxString mmsiString;
+        for (const uint32_t mmsi : g_mmsiList)
+        {
+            if (!mmsiString.empty())
+                mmsiString += ",";
+
+            mmsiString += wxString::Format("%u", static_cast<unsigned int>(mmsi));
+        }
+        configSettings->Write("MMSI_List", mmsiString);
+
+        // MMSI names/comments
+        wxString namesString;
+        for (size_t i = 0; i < g_mmsiList.size(); ++i)
+        {
+            if (i > 0)
+                namesString += ",";
+
+            if (i < g_mmsiListNames.size())
+                namesString += g_mmsiListNames[i];
+        }
+        configSettings->Write("MMSI_ListNames", namesString);
+    }
+}
+
+void Plugin::LoadSettings()
+{
+    if (configSettings)
+    {
+        configSettings->SetPath("/PlugIns/AisLivePlugin");
+
+        configSettings->Read("RestoreWindowSize", &g_restoreWindowSize, 1);
+        configSettings->Read("WindowWidth", &g_windowWidth, 380);
+        configSettings->Read("WindowHeight", &g_windowHeight, 290);
+
+        configSettings->Read("RestoreWindowPos", &g_restoreWindowPos, 1);
+        configSettings->Read("WindowPosX", &g_windowPosX, 0);
+        configSettings->Read("WindowPosY", &g_windowPosY, 0);
+
+        configSettings->Read("KeepWindowActive", &g_keepWindowActive, 1);
+
+        configSettings->Read("LastSearchBoxSize", &g_lastSearchBoxSize, 1);
+
+        configSettings->Read("OpenWatersToken", &g_openWatersToken, wxString{});
+
+        configSettings->Read("ActivateVesselsFollowing", &g_activateVesselsFollowing, 1);
+
+        // MMSI list
+        wxString mmsiString;
+        wxString namesString;
+
+        configSettings->Read("MMSI_List", &mmsiString);
+        configSettings->Read("MMSI_ListNames", &namesString);
+
+        g_mmsiList.clear();
+        g_mmsiListNames.clear();
+
+        const wxArrayString mmsiTokens =
+            wxStringTokenize(mmsiString, ",", wxTOKEN_RET_EMPTY_ALL);
+
+        const wxArrayString nameTokens =
+            wxStringTokenize(namesString, ",", wxTOKEN_RET_EMPTY_ALL);
+
+        for (size_t i = 0; i < mmsiTokens.size(); ++i)
+        {
+            unsigned long value;
+
+            if (!mmsiTokens[i].ToULong(&value)
+                || value < 100000000UL
+                || value > 999999999UL)
+            {
+                continue;
+            }
+
+            g_mmsiList.push_back(static_cast<uint32_t>(value));
+
+            // Use the same original token index for its comment
+            g_mmsiListNames.push_back(
+                i < nameTokens.size() ? nameTokens[i] : wxString(""));
+        }
     }
 }
 
@@ -274,9 +335,6 @@ void Plugin::OnToolbarToolCallback(int id)
             myGUI->SetSize(g_windowWidth, g_windowHeight);
         if(g_restoreWindowPos)
             myGUI->Move(wxPoint(g_windowPosX, g_windowPosY));
-
-        // Initializes slider range
-        myGUI->updateSearchBoxSize(g_lastSearchBoxSize);
     }
 
     //Toggle UI & toolbar icon state

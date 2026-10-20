@@ -1,5 +1,6 @@
 #include <cmath>
 #include <algorithm>
+#include <cstdint>
 
 #include "main_ui_derived.h"
 #include "settings/global_settings.h"
@@ -40,6 +41,38 @@ bool HasToken()
 ////////////////////////////
 DialogMainGui::DialogMainGui(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style) : DialogMainGuiBase( parent )
 {
+    //Always open on first tab
+    m_notebook->SetSelection(0);
+
+    // Init wx widgets
+    updateSearchBoxSize(g_lastSearchBoxSize);
+    m_checkBox_activateVesselFollowing->SetValue(g_activateVesselsFollowing);
+
+    // Configure columns &  Populate the MMSI list
+    m_dataViewListCtrl_followedVessels->AppendTextColumn(
+        "MMSI", wxDATAVIEW_CELL_EDITABLE, 90, wxALIGN_LEFT
+        );
+    m_dataViewListCtrl_followedVessels->AppendTextColumn(
+        "Name", wxDATAVIEW_CELL_EDITABLE, 130, wxALIGN_LEFT
+        );
+
+    for (size_t i = 0; i < g_mmsiList.size(); ++i)
+    {
+        wxVector<wxVariant> row;
+
+        //Load MMSI
+        const uint32_t mmsi = g_mmsiList[i];
+        row.push_back(wxVariant(wxString::Format("%09u", static_cast<unsigned int>(mmsi))));
+
+        // Load the corresponding comment if available
+        const wxString comment = (i < g_mmsiListNames.size()) ? g_mmsiListNames[i] : "";
+        row.push_back(wxVariant(comment));
+
+        m_dataViewListCtrl_followedVessels->AppendItem(row);
+    }
+
+    m_textCtrl_mmsiComment->SetHint("Vessel name...");
+
     // AisStreamClient may invoke this from its own background thread (e.g.
     // an unexpected disconnect), so marshal back to the GUI thread. Using
     // this->CallAfter() (rather than wxTheApp->CallAfter()) ties the
@@ -56,6 +89,8 @@ DialogMainGui::DialogMainGui(wxWindow* parent, wxWindowID id, const wxString& ti
                                 OnAisStreamStateChanged(state, detailCopy);
                             });
         });
+
+    Layout();
 }
 
 DialogMainGui::~DialogMainGui()
@@ -68,27 +103,6 @@ DialogMainGui::~DialogMainGui()
 /////////////////////
 /// Input updates ///
 /////////////////////
-void DialogMainGui::activateFollowBoatMode()
-{
-    m_followBoatMode = true;
-    m_checkBox_followBoatMode->SetValue(true);
-    updateSearchPosition(m_boatLatitude, m_boatLongitude);
-}
-
-void DialogMainGui::refreshTokenState()
-{
-    m_aisStream.SetToken(g_openWatersToken);
-    m_aisStream.SetTokenEnabled(HasToken());
-
-    updateSearchBoxSize(m_slider_searchBoxSize->GetValue());
-}
-
-
-
-/////////////////////
-/// Input updates ///
-/////////////////////
-
 void DialogMainGui::updateSearchZoneOnCoord(double lat, double lon)
 {
     //Deactivate follow boat mode
@@ -97,6 +111,13 @@ void DialogMainGui::updateSearchZoneOnCoord(double lat, double lon)
 
     //Update to manually selected position
     updateSearchPosition(lat, lon);
+}
+
+void DialogMainGui::activateFollowBoatMode()
+{
+    m_followBoatMode = true;
+    m_checkBox_followBoatMode->SetValue(true);
+    updateSearchPosition(m_boatLatitude, m_boatLongitude);
 }
 
 void DialogMainGui::updateSearchPosition(double lat, double lon)
@@ -246,6 +267,138 @@ void DialogMainGui::OnCheckBox_FollowBoatMode(wxCommandEvent& event)
     }
 }
 
+void DialogMainGui::OnButtonClick_AddMmsiToList(wxCommandEvent& event)
+{
+    const int value = m_spinCtrl_followedMMSI->GetValue();
+    const uint32_t mmsi = static_cast<uint32_t>(value);
+    const wxString comment = m_textCtrl_mmsiComment->GetValue();
+
+    // Prevent duplicates
+    if (std::find(g_mmsiList.begin(), g_mmsiList.end(), mmsi)
+        != g_mmsiList.end())
+    {
+        return;
+    }
+
+    // Update MMSI list
+    g_mmsiList.push_back(mmsi);
+    g_mmsiListNames.push_back(comment);
+
+    // Add MMSI and comment to the two-column widget
+    wxVector<wxVariant> row;
+    row.push_back(wxVariant(wxString::Format("%09u", static_cast<unsigned int>(mmsi))));
+    row.push_back(wxVariant(comment));
+    m_dataViewListCtrl_followedVessels->AppendItem(row);
+
+    //Clear comment/name for next one
+    m_textCtrl_mmsiComment->Clear();
+
+    Layout();
+
+    // Restart stream with newest MMSI list
+    RestartAisStream();
+}
+
+void DialogMainGui::OnButtonClick_DeleteMmsiFromList(wxCommandEvent& event)
+{
+    const int selectedIndex = m_dataViewListCtrl_followedVessels->GetSelectedRow();
+
+    // Ensure an item is selected
+    if (selectedIndex == wxNOT_FOUND)
+        return;
+
+    // Remove the corresponding MMSI & name from the vector
+    g_mmsiList.erase(g_mmsiList.begin() + selectedIndex);
+    g_mmsiListNames.erase(g_mmsiListNames.begin() + selectedIndex);
+
+    // Remove the selected row (MMSI and comment)
+    m_dataViewListCtrl_followedVessels->DeleteItem(selectedIndex);
+
+    Layout();
+
+    // Restart stream with updated MMSI list
+    RestartAisStream();
+}
+
+void DialogMainGui::OnButtonClick_ClearMmsiList(wxCommandEvent& event)
+{
+    // Clear MMSI data
+    g_mmsiList.clear();
+    g_mmsiListNames.clear();
+
+    // Clear the GUI (MMSI and comments)
+    m_dataViewListCtrl_followedVessels->DeleteAllItems();
+
+    Layout();
+
+    // Restart stream with empty MMSI list
+    RestartAisStream();
+}
+
+void DialogMainGui::OnDataViewListCtrlItemValueChanged_updateMmsiList(wxDataViewEvent& event)
+{
+    const int row = m_dataViewListCtrl_followedVessels->ItemToRow(event.GetItem());
+
+    if (row == wxNOT_FOUND)
+        return;
+
+    const int column = event.GetColumn();
+
+    wxVariant value;
+    m_dataViewListCtrl_followedVessels->GetValue(value, row, column);
+
+    // Column 0: MMSI
+    if (column == 0)
+    {
+        unsigned long parsedMmsi = 0;
+        const wxString text = value.GetString();
+
+        if (!text.ToULong(&parsedMmsi)
+            || parsedMmsi < 100000000UL
+            || parsedMmsi > 999999999UL)
+        {
+            goto restore_mmsi;
+        }
+
+        // Prevent duplicate MMSIs
+        for (size_t i = 0; i < g_mmsiList.size(); ++i)
+        {
+            if (i != static_cast<size_t>(row)
+                && g_mmsiList[i] == parsedMmsi)
+            {
+                goto restore_mmsi;
+            }
+        }
+
+        g_mmsiList[row] = static_cast<uint32_t>(parsedMmsi);
+        RestartAisStream();
+        return;
+
+    restore_mmsi:
+        m_dataViewListCtrl_followedVessels->SetValue(
+            wxVariant(wxString::Format(
+                "%09u",
+                static_cast<unsigned int>(g_mmsiList[row]))),
+            row,
+            column);
+    }
+    // Column 1: Name / Comment
+    else if (column == 1)
+    {
+        if (row >= static_cast<int>(g_mmsiListNames.size()))
+            g_mmsiListNames.resize(g_mmsiList.size());
+
+        g_mmsiListNames[row] = value.GetString();
+    }
+
+}
+
+void DialogMainGui::m_checkBox_activateVesselFollowingOnCheckBox(wxCommandEvent& event)
+{
+    g_activateVesselsFollowing = m_checkBox_activateVesselFollowing->GetValue();
+    RestartAisStream();
+}
+
 
 
 ////////////////////
@@ -268,7 +421,7 @@ void DialogMainGui::StartAisStream()
     // when the dialog is destroyed - Plugin::DeInit() deletes the dialog
     // (joining the stream thread) before destroy_pi() frees the plugin, so
     // a queued event can never run against a dead plugin.
-    m_aisStream.Start(m_searchLatitude, m_searchLongitude, m_searchBoxSize, m_mmsiList, m_getSnapshot,
+    m_aisStream.Start(m_searchLatitude, m_searchLongitude, m_searchBoxSize, g_activateVesselsFollowing, g_mmsiList, m_getSnapshot,
                       [this](const wxString& sentence)
                       {
                           CallAfter([this, sentence]()
@@ -300,7 +453,7 @@ void DialogMainGui::RestartAisStream()
 
     // Same marshaling as StartAisStream: the callback runs on the websocket
     // thread and the plugin API must only be called from the GUI thread.
-    m_aisStream.Restart(m_searchLatitude, m_searchLongitude, m_searchBoxSize, m_mmsiList, m_getSnapshot,
+    m_aisStream.Restart(m_searchLatitude, m_searchLongitude, m_searchBoxSize, g_activateVesselsFollowing, g_mmsiList, m_getSnapshot,
                         [this](const wxString& sentence)
                         {
                             CallAfter([this, sentence]()
@@ -336,4 +489,12 @@ void DialogMainGui::OnAisStreamStateChanged(AisStreamClient::State state, const 
                 : wxString(_("Error")) + " (" + detail + ")");
         break;
     }
+}
+
+void DialogMainGui::refreshTokenState()
+{
+    m_aisStream.SetToken(g_openWatersToken);
+    m_aisStream.SetTokenEnabled(HasToken());
+
+    updateSearchBoxSize(m_slider_searchBoxSize->GetValue());
 }

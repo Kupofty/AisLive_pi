@@ -93,7 +93,8 @@ AisStreamClient::~AisStreamClient()
 /// Messages ///
 ////////////////
 std::string AisStreamClient::BuildSubscribeMessage(double latitude, double longitude, double boxSizeDegrees,
-                                                   std::vector<uint32_t> mmsiList = {}, bool snapshot = true) const
+                                                   bool activateVesselsFollowing, std::vector<uint32_t> mmsiList = {},
+                                                   bool snapshot = true) const
 {
     // Clamp the GUI-selected box size to what the current auth mode allows.
     const double maxBoxSizeDegrees = m_useToken ? kTokenMaxBoxSizeDegrees : kStandardMaxBoxSizeDegrees;
@@ -119,9 +120,13 @@ std::string AisStreamClient::BuildSubscribeMessage(double latitude, double longi
     //Fill request message
     Json::Value sub_msg;
     sub_msg["type"] = "subscribe";
+
+    //if(boxSizeDegrees != 0) //if not bbox & no mmsi = subscribe to everything, need better tier
     sub_msg["bbox"] = bbox;
-    if (!mmsiList.empty())
+
+    if (!mmsiList.empty() && activateVesselsFollowing)
         sub_msg["mmsi"] = mmsiArray;
+
     sub_msg["snapshot"] = snapshot;
 
     Json::FastWriter writer;
@@ -140,6 +145,7 @@ bool AisStreamClient::HandleMessage(const std::string& payload)
 {
     Json::Value ev;
     Json::Reader reader;
+
     if (reader.parse(payload, ev))
     {
         // e.g. {"type":"error","error":"concurrent streams per address
@@ -159,7 +165,7 @@ bool AisStreamClient::HandleMessage(const std::string& payload)
             ProcessAisEvent(ev, m_onSentence);
         }
     }
-    // else: ignore malformed frames.
+
     return false;
 }
 
@@ -206,7 +212,12 @@ void AisStreamClient::SetToken(const wxString& token)
     m_token = token;
 }
 
-void AisStreamClient::Start(double latitude, double longitude, double boxSizeDegrees, std::vector<uint32_t> mmsiList, bool snapshot, SentenceCallback onSentence)
+bool AisStreamClient::IsStreaming() const
+{
+    return m_streaming.load();
+}
+
+void AisStreamClient::Start(double latitude, double longitude, double boxSizeDegrees, bool activateVesselsFollowing, std::vector<uint32_t> mmsiList, bool snapshot, SentenceCallback onSentence)
 {
     if (m_streaming.load())
     {
@@ -237,7 +248,7 @@ void AisStreamClient::Start(double latitude, double longitude, double boxSizeDeg
     m_onSentence = std::move(onSentence);
     m_streaming = true;
     m_thread = std::thread(&AisStreamClient::SupervisorFunc, this,
-                           BuildSubscribeMessage(latitude, longitude, boxSizeDegrees, mmsiList, snapshot),
+                           BuildSubscribeMessage(latitude, longitude, boxSizeDegrees, activateVesselsFollowing, mmsiList, snapshot),
                            std::move(authToken));
 }
 
@@ -408,7 +419,7 @@ void AisStreamClient::Stop()
     }
 }
 
-void AisStreamClient::Restart(double latitude, double longitude, double boxSizeDegrees, std::vector<uint32_t> mmsiList, bool snapshot, SentenceCallback onSentence)
+void AisStreamClient::Restart(double latitude, double longitude, double boxSizeDegrees, bool activateVesselsFollowing, std::vector<uint32_t> mmsiList, bool snapshot, SentenceCallback onSentence)
 {
     if (!m_streaming.load())
     {
@@ -416,10 +427,5 @@ void AisStreamClient::Restart(double latitude, double longitude, double boxSizeD
     }
 
     Stop();
-    Start(latitude, longitude, boxSizeDegrees, mmsiList, snapshot, std::move(onSentence));
-}
-
-bool AisStreamClient::IsStreaming() const
-{
-    return m_streaming.load();
+    Start(latitude, longitude, boxSizeDegrees, activateVesselsFollowing, mmsiList, snapshot, std::move(onSentence));
 }

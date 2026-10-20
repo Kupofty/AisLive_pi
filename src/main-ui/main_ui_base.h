@@ -24,6 +24,11 @@
 #include <wx/statline.h>
 #include <wx/checkbox.h>
 #include <wx/slider.h>
+#include <wx/panel.h>
+#include <wx/spinctrl.h>
+#include <wx/textctrl.h>
+#include <wx/dataview.h>
+#include <wx/notebook.h>
 #include <wx/dialog.h>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -36,6 +41,8 @@ class DialogMainGuiBase : public wxDialog
 	private:
 
 	protected:
+		wxNotebook* m_notebook;
+		wxPanel* m_panel_stream;
 		wxButton* m_button_start;
 		wxButton* m_button_stop;
 		wxStaticText* m_staticText2;
@@ -52,6 +59,15 @@ class DialogMainGuiBase : public wxDialog
 		wxStaticText* m_staticText8;
 		wxStaticText* m_staticText_searchBoxSize;
 		wxSlider* m_slider_searchBoxSize;
+		wxPanel* m_panel_mmsiList;
+		wxSpinCtrl* m_spinCtrl_followedMMSI;
+		wxTextCtrl* m_textCtrl_mmsiComment;
+		wxButton* m_button_addMmsiToList;
+		wxCheckBox* m_checkBox_activateVesselFollowing;
+		wxStaticText* m_staticText11;
+		wxDataViewListCtrl* m_dataViewListCtrl_followedVessels;
+		wxButton* m_button_deleteMmsiFromList;
+		wxButton* m_button_clearMmsiList;
 
 		// Virtual event handlers, override them in your derived class
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
@@ -60,11 +76,16 @@ class DialogMainGuiBase : public wxDialog
 		virtual void OnCheckBox_FollowBoatMode( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnScroll_UpdateSearchBoxSize( wxScrollEvent& event ) { event.Skip(); }
 		virtual void OnScrollThumbRelease_UpdateSearchBoxSize( wxScrollEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_AddMmsiToList( wxCommandEvent& event ) { event.Skip(); }
+		virtual void m_checkBox_activateVesselFollowingOnCheckBox( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnDataViewListCtrlItemValueChanged_updateMmsiList( wxDataViewEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_DeleteMmsiFromList( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_ClearMmsiList( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:
 
-		DialogMainGuiBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("AisLive Plugin"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 328,279 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER );
+		DialogMainGuiBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("AisLive Plugin"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 400,323 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER );
 
 		~DialogMainGuiBase();
 
