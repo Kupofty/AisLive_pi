@@ -78,7 +78,7 @@ DialogSettingsBase::DialogSettingsBase( wxWindow* parent, wxWindowID id, const w
 	m_panel_openwaters->SetSizer( bSizer92 );
 	m_panel_openwaters->Layout();
 	bSizer92->Fit( m_panel_openwaters );
-	m_notebook1->AddPage( m_panel_openwaters, _("AIS Stream"), true );
+	m_notebook1->AddPage( m_panel_openwaters, _("Token"), true );
 	m_panel_display = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* sizerSettings;
 	sizerSettings = new wxBoxSizer( wxVERTICAL );

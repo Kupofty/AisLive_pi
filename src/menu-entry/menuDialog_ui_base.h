@@ -43,7 +43,7 @@ class DialogMenuEntryBase : public wxDialog
 
 	public:
 
-		DialogMenuEntryBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("AisLive Plugin Menu"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 283,154 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER );
+		DialogMenuEntryBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("AisLive Plugin Menu"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 238,103 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER );
 
 		~DialogMenuEntryBase();
 

@@ -305,7 +305,7 @@
             </object>
             <object class="notebookpage" expanded="true">
               <property name="bitmap"></property>
-              <property name="label">AIS Stream</property>
+              <property name="label">Token</property>
               <property name="select">1</property>
               <object class="wxPanel" expanded="true">
                 <property name="BottomDockable">1</property>

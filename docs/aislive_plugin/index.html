@@ -86,10 +86,10 @@
 <h2 id="_manual_version"><a class="anchor" href="#_manual_version"></a>Manual Version</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This manual applies to <strong>version 1.0.0</strong>.</p>
+<p>This manual applies to <strong>version 1.1.0</strong>.</p>
 </div>
 <div class="paragraph">
-<p>See what&#8217;s changed in the <a href="https://github.com/Kupofty/AisLive_pi/blob/main/CHANGELOG.md">CHANGELOG</a>.</p>
+<p>See what&#8217;s changed in the <a href="https://github.com/Kupofty/AisLive_pi/blob/github-pages/CHANGELOG.md">CHANGELOG</a>.</p>
 </div>
 </div>
 </div>
@@ -97,13 +97,13 @@
 <h2 id="_overview"><a class="anchor" href="#_overview"></a>Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><a href="https://github.com/Kupofty/AisLive_pi">AisLive</a> is an <a href="https://opencpn.org">OpenCPN</a> plugin that streams live AIS targets from the <a href="https://openwaters.io/ais/">OpenWaters.io AIS Stream</a> service directly into OpenCPN.</p>
+<p><a href="https://github.com/Kupofty/AisLive_pi">AisLive</a> is an <a href="https://opencpn.org">OpenCPN</a> plugin that streams live AIS targets from the <a href="https://openwaters.io/ais/">OpenWaters.io AIS Stream</a> service directly into OpenCPN as standard AIS NMEA messages.</p>
 </div>
 <div class="paragraph">
-<p>The plugin retrieves AIS data for a configurable geographic area and forwards it to OpenCPN as standard AIS NMEA messages. The search area can automatically follow own ship or be manually positioned anywhere on the chart, with a configurable range.</p>
+<p>It can display AIS targets around your boat, monitor remote geographic areas, and track specific MMSIs anywhere in the world.</p>
 </div>
 <div class="paragraph">
-<p>AisLive provides a simple way to view online AIS traffic, monitor activity in different areas, and test AIS-related functionality within OpenCPN.</p>
+<p>AisLive provides a simple way to monitor live AIS traffic and test AIS-related functionality within OpenCPN.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -308,7 +308,7 @@ cmake --build . --config Release --target tarball</pre>
 <p><strong>Stop</strong>: Disconnects from the stream and stops receiving new AIS data.</p>
 </li>
 <li>
-<p><strong>Connection status</strong>: Displays whether the plugin is connected or disconnected.</p>
+<p><strong>Connection status</strong>: Displays the plugin status (connection state, error)</p>
 </li>
 </ul>
 </div>
@@ -376,22 +376,44 @@ cmake --build . --config Release --target tarball</pre>
 </ul>
 </div>
 <div class="paragraph">
-<p>The <strong>Search Area</strong> slider adjusts the monitored region from <strong>1°×1°</strong> up to <strong>10°×10°</strong>.</p>
+<p>The <strong>Search Area</strong> slider adjusts the monitored region from <strong>0° × 0° (deactivated)</strong> up to <strong>10° × 10°</strong> by default.
+With a valid AIS token, the maximum search area can be extended to <strong>20° × 20°</strong>.</p>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="_images/ais_targets_on_map.png" alt="ais targets on map" width="600">
 </div>
 </div>
-<div class="admonitionblock note">
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_folllowed_mmsi"><a class="anchor" href="#_folllowed_mmsi"></a>Folllowed MMSI</h3>
+<div class="imageblock">
+<div class="content">
+<img src="_images/main_gui/followed_vessels.png" alt="followed vessels">
+</div>
+</div>
+<div class="paragraph">
+<p>To follow a friend&#8217;s journey, add their MMSI to the tracking list. You can optionally provide a name to make the vessel easier to identify later.</p>
+</div>
+<div class="paragraph">
+<p>Check the "Activate" checkbox to enable MMSI tracking.
+Once activated, AIS targets matching the specified MMSIs are displayed whenever their positions are received by the network.
+Tracked vessels are displayed regardless of the current search area.</p>
+</div>
+<div class="paragraph">
+<p>Up to 10 vessels can be tracked simultaneously by default.
+With a valid AIS token, the limit increases to 50 vessels.</p>
+</div>
+<div class="admonitionblock tip">
 <table>
 <tr>
 <td class="icon">
-<i class="fa icon-note" title="Note"></i>
+<i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>Larger search areas may contain more AIS targets and require additional data to download and process.</p>
+<p>To display only followed vessels and hide other AIS targets around your boat, set the search area slider to 0°×0°.</p>
 </div>
 </td>
 </tr>
@@ -454,17 +476,8 @@ cmake --build . --config Release --target tarball</pre>
 <img src="_images/preferences/preferences_1.png" alt="preferences 1">
 </div>
 </div>
-<div class="hdlist">
-<table>
-<tr>
-<td class="hdlist1">
-Keep transmitting when window is closed
-</td>
-<td class="hdlist2">
-<p>Keeps the AIS stream active after closing the plugin window, allowing vessel traffic to continue updating while using other OpenCPN tools.</p>
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>This option keep he AIS stream active after closing the plugin window, allowing vessel traffic to continue updating while using other OpenCPN tools.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -497,18 +510,23 @@ Keep transmitting when window is closed
 <hr>
 </div>
 <div class="sect2">
-<h3 id="_ais_stream"><a class="anchor" href="#_ais_stream"></a>AIS Stream</h3>
+<h3 id="_token"><a class="anchor" href="#_token"></a>Token</h3>
 <div class="imageblock">
 <div class="content">
 <img src="_images/preferences/preferences_2.png" alt="preferences 2">
 </div>
 </div>
 <div class="paragraph">
-<p>By default, the search zone is limited to 10°x10°.
-To extend it to 20°x20°, generate a free token at <a href="https://openwaters.io/ais/token/" class="bare">https://openwaters.io/ais/token/</a> and paste it into the token field.</p>
+<p>To enable extended AIS search capabilities, generate a free token from <a href="https://openwaters.io/ais/token/">OpenWaters.io</a> and paste it into the token field.</p>
 </div>
 <div class="paragraph">
-<p>The plugin detects the token automatically as soon as you confirm the preferences. The larger search zone is available on the main window&#8217;s slider without any extra option to enable. If you later clear the token field, the slider returns to the 10°x10° limit.</p>
+<p>The plugin automatically detects and validates the token when you confirm the preferences.</p>
+</div>
+<div class="paragraph">
+<p>Once configured, the plugin unlocks extended AIS search and tracking capabilities.</p>
+</div>
+<div class="paragraph">
+<p>If you remove the token, the plugin automatically reverts to its default configuration.</p>
 </div>
 <hr>
 </div>
@@ -519,25 +537,18 @@ To extend it to 20°x20°, generate a free token at <a href="https://openwaters.
 <img src="_images/preferences/preferences_3.png" alt="preferences 3">
 </div>
 </div>
-<div class="hdlist">
-<table>
-<tr>
-<td class="hdlist1">
-Restore last window position
-</td>
-<td class="hdlist2">
-<p>Restores the previous window position when reopening the plugin.</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-Restore last window size
-</td>
-<td class="hdlist2">
-<p>Restores the previous window size when reopening the plugin.</p>
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>These options let you:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Restore the previous window position when reopening the plugin</p>
+</li>
+<li>
+<p>Restore the previous window size when reopening the plugin</p>
+</li>
+</ul>
 </div>
 </div>
 </div>

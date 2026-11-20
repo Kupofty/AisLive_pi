@@ -12,20 +12,20 @@ Plugin created by ©link:https://github.com/Kupofty[Kupofty] 2026
 //----------------------------------------------------------------------------------------------------
 == Manual Version
 
-This manual applies to **version 1.0.0**.
+This manual applies to **version 1.1.0**.
 
-See what's changed in the https://github.com/Kupofty/AisLive_pi/blob/main/CHANGELOG.md[CHANGELOG].
+See what's changed in the https://github.com/Kupofty/AisLive_pi/blob/github-pages/CHANGELOG.md[CHANGELOG].
 
 
 
 //----------------------------------------------------------------------------------------------------
 == Overview
 
-https://github.com/Kupofty/AisLive_pi[AisLive] is an https://opencpn.org[OpenCPN] plugin that streams live AIS targets from the https://openwaters.io/ais/[OpenWaters.io AIS Stream] service directly into OpenCPN.
+https://github.com/Kupofty/AisLive_pi[AisLive] is an https://opencpn.org[OpenCPN] plugin that streams live AIS targets from the https://openwaters.io/ais/[OpenWaters.io AIS Stream] service directly into OpenCPN as standard AIS NMEA messages.   
 
-The plugin retrieves AIS data for a configurable geographic area and forwards it to OpenCPN as standard AIS NMEA messages. The search area can automatically follow own ship or be manually positioned anywhere on the chart, with a configurable range.
+It can display AIS targets around your boat, monitor remote geographic areas, and track specific MMSIs anywhere in the world.
 
-AisLive provides a simple way to view online AIS traffic, monitor activity in different areas, and test AIS-related functionality within OpenCPN.
+AisLive provides a simple way to monitor live AIS traffic and test AIS-related functionality within OpenCPN.
 
 
 [NOTE]
@@ -133,7 +133,7 @@ image::main_gui/start_stream.png[]
 
 - **Start**: Connects to the AIS stream and begins transmitting received AIS messages to OpenCPN.
 - **Stop**: Disconnects from the stream and stops receiving new AIS data.
-- **Connection status**: Displays whether the plugin is connected or disconnected.
+- **Connection status**: Displays the plugin status (connection state, error)
 
 
 [NOTE]
@@ -168,13 +168,28 @@ The displayed latitude and longitude indicate the current center of the search a
 - When **Follow Boat** is enabled, the position follows the own ship.
 - When a manual position is selected, the search area remains fixed until changed.
 
-The **Search Area** slider adjusts the monitored region from **1°×1°** up to **10°×10°**.
+The **Search Area** slider adjusts the monitored region from **0° × 0° (deactivated)** up to **10° × 10°** by default.  
+With a valid AIS token, the maximum search area can be extended to **20° × 20°**.
 
 image::ais_targets_on_map.png[width=600]
 
-[NOTE]
+'''
+
+=== Folllowed MMSI
+image::/main_gui/followed_vessels.png[]
+
+To follow a friend's journey, add their MMSI to the tracking list. You can optionally provide a name to make the vessel easier to identify later.
+
+Check the "Activate" checkbox to enable MMSI tracking.
+Once activated, AIS targets matching the specified MMSIs are displayed whenever their positions are received by the network.
+Tracked vessels are displayed regardless of the current search area.  
+
+Up to 10 vessels can be tracked simultaneously by default.
+With a valid AIS token, the limit increases to 50 vessels.
+
+[TIP]
 ====
-Larger search areas may contain more AIS targets and require additional data to download and process.
+To display only followed vessels and hide other AIS targets around your boat, set the search area slider to 0°×0°.
 ====
 
 //----------------------------------------------------------------------------------------------------
@@ -210,8 +225,7 @@ Click **Preferences** to open the settings window.
 
 image::preferences/preferences_1.png[]
 
-[horizontal]
-Keep transmitting when window is closed:: Keeps the AIS stream active after closing the plugin window, allowing vessel traffic to continue updating while using other OpenCPN tools.
+This option keep he AIS stream active after closing the plugin window, allowing vessel traffic to continue updating while using other OpenCPN tools.
 
 [NOTE]
 ====
@@ -227,14 +241,17 @@ Toolbar icon stays highlighted when the window is closed but data is still strea
 
 '''
 
-=== AIS Stream
+=== Token
 
 image::preferences/preferences_2.png[]
 
-By default, the search zone is limited to 10°x10°.
-To extend it to 20°x20°, generate a free token at https://openwaters.io/ais/token/ and paste it into the token field.
+To enable extended AIS search capabilities, generate a free token from https://openwaters.io/ais/token/[OpenWaters.io] and paste it into the token field.
 
-The plugin detects the token automatically as soon as you confirm the preferences. The larger search zone is available on the main window's slider without any extra option to enable. If you later clear the token field, the slider returns to the 10°x10° limit.
+The plugin automatically detects and validates the token when you confirm the preferences.
+
+Once configured, the plugin unlocks extended AIS search and tracking capabilities.
+
+If you remove the token, the plugin automatically reverts to its default configuration.
 
 '''
 
@@ -242,9 +259,11 @@ The plugin detects the token automatically as soon as you confirm the preference
 
 image::preferences/preferences_3.png[]
 
-[horizontal]
-Restore last window position:: Restores the previous window position when reopening the plugin.
-Restore last window size:: Restores the previous window size when reopening the plugin.
+These options let you:  
+
+- Restore the previous window position when reopening the plugin
+
+- Restore the previous window size when reopening the plugin
 
 
 

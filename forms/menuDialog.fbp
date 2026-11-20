@@ -50,7 +50,7 @@
       <property name="minimum_size"></property>
       <property name="name">DialogMenuEntryBase</property>
       <property name="pos"></property>
-      <property name="size">283,154</property>
+      <property name="size">238,103</property>
       <property name="style">wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</property>
       <property name="subclass">; ; forward_declare</property>
       <property name="title">AisLive Plugin Menu</property>
@@ -83,9 +83,19 @@
             <property name="label">Update search position</property>
             <property name="minimum_size"></property>
             <property name="name">sbSizer1</property>
-            <property name="orient">wxVERTICAL</property>
+            <property name="orient">wxHORIZONTAL</property>
             <property name="parent">1</property>
             <property name="permission">none</property>
+            <object class="sizeritem" expanded="true">
+              <property name="border">5</property>
+              <property name="flag">wxEXPAND</property>
+              <property name="proportion">1</property>
+              <object class="spacer" expanded="true">
+                <property name="height">0</property>
+                <property name="permission">protected</property>
+                <property name="width">0</property>
+              </object>
+            </object>
             <object class="sizeritem" expanded="true">
               <property name="border">5</property>
               <property name="flag">wxALIGN_CENTER|wxALL</property>
@@ -163,6 +173,16 @@
             </object>
             <object class="sizeritem" expanded="true">
               <property name="border">5</property>
+              <property name="flag">wxEXPAND</property>
+              <property name="proportion">1</property>
+              <object class="spacer" expanded="true">
+                <property name="height">0</property>
+                <property name="permission">protected</property>
+                <property name="width">0</property>
+              </object>
+            </object>
+            <object class="sizeritem" expanded="true">
+              <property name="border">5</property>
               <property name="flag">wxALIGN_CENTER|wxALL</property>
               <property name="proportion">0</property>
               <object class="wxButton" expanded="true">
@@ -234,6 +254,16 @@
                 <property name="window_name"></property>
                 <property name="window_style"></property>
                 <event name="OnButtonClick">OnButtonClick_UpdateSearchPosition</event>
+              </object>
+            </object>
+            <object class="sizeritem" expanded="true">
+              <property name="border">5</property>
+              <property name="flag">wxEXPAND</property>
+              <property name="proportion">1</property>
+              <object class="spacer" expanded="true">
+                <property name="height">0</property>
+                <property name="permission">protected</property>
+                <property name="width">0</property>
               </object>
             </object>
           </object>
